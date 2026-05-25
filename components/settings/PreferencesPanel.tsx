@@ -1,6 +1,15 @@
 "use client";
 
-import { CalendarDays, Languages, LayoutDashboard, ListChecks, Moon, Palette, Volume2 } from "lucide-react";
+import {
+  CalendarDays,
+  Languages,
+  LayoutDashboard,
+  ListChecks,
+  Moon,
+  Palette,
+  Trash2,
+  Volume2,
+} from "lucide-react";
 import { usePreferences } from "@/hooks/usePreferences";
 import type { AppPreferences } from "@/lib/preferences";
 import { useI18n } from "@/hooks/useI18n";
@@ -9,6 +18,9 @@ import { weekStartsOnOptions } from "@/lib/i18n";
 export function PreferencesPanel() {
   const { preferences, updatePreferences } = usePreferences();
   const { t, language } = useI18n();
+
+  const confirmDeleteLabel =
+    language === "en" ? "Ask before deleting" : "Vor dem Löschen nachfragen";
 
   return (
     <section className="rounded-[2rem] border border-white/10 bg-zinc-950/70 p-5 shadow-2xl shadow-black/20">
@@ -26,10 +38,14 @@ export function PreferencesPanel() {
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="space-y-1.5 text-xs text-zinc-500">
-          <span className="flex items-center gap-2"><Moon className="h-4 w-4" /> {t("settings.design")}</span>
+          <span className="flex items-center gap-2">
+            <Moon className="h-4 w-4" /> {t("settings.design")}
+          </span>
           <select
             value={preferences.theme}
-            onChange={(event) => updatePreferences({ theme: event.target.value as AppPreferences["theme"] })}
+            onChange={(event) =>
+              updatePreferences({ theme: event.target.value as AppPreferences["theme"] })
+            }
             className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 outline-none focus:border-blue-500"
           >
             <option value="dark">{t("settings.dark")}</option>
@@ -38,12 +54,17 @@ export function PreferencesPanel() {
           </select>
         </label>
 
-
         <label className="space-y-1.5 text-xs text-zinc-500">
-          <span className="flex items-center gap-2"><Palette className="h-4 w-4" /> {t("settings.accentTheme")}</span>
+          <span className="flex items-center gap-2">
+            <Palette className="h-4 w-4" /> {t("settings.accentTheme")}
+          </span>
           <select
             value={preferences.accentTheme}
-            onChange={(event) => updatePreferences({ accentTheme: event.target.value as AppPreferences["accentTheme"] })}
+            onChange={(event) =>
+              updatePreferences({
+                accentTheme: event.target.value as AppPreferences["accentTheme"],
+              })
+            }
             className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 outline-none focus:border-blue-500"
           >
             <option value="cobalt">{t("settings.accentCobalt")}</option>
@@ -54,10 +75,14 @@ export function PreferencesPanel() {
         </label>
 
         <label className="space-y-1.5 text-xs text-zinc-500">
-          <span className="flex items-center gap-2"><Languages className="h-4 w-4" /> {t("settings.language")}</span>
+          <span className="flex items-center gap-2">
+            <Languages className="h-4 w-4" /> {t("settings.language")}
+          </span>
           <select
             value={preferences.language}
-            onChange={(event) => updatePreferences({ language: event.target.value as AppPreferences["language"] })}
+            onChange={(event) =>
+              updatePreferences({ language: event.target.value as AppPreferences["language"] })
+            }
             className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 outline-none focus:border-blue-500"
           >
             <option value="de">Deutsch</option>
@@ -69,10 +94,16 @@ export function PreferencesPanel() {
         </label>
 
         <label className="space-y-1.5 text-xs text-zinc-500">
-          <span className="flex items-center gap-2"><CalendarDays className="h-4 w-4" /> {t("settings.weekStartsOn")}</span>
+          <span className="flex items-center gap-2">
+            <CalendarDays className="h-4 w-4" /> {t("settings.weekStartsOn")}
+          </span>
           <select
             value={preferences.weekStartsOn}
-            onChange={(event) => updatePreferences({ weekStartsOn: event.target.value as AppPreferences["weekStartsOn"] })}
+            onChange={(event) =>
+              updatePreferences({
+                weekStartsOn: event.target.value as AppPreferences["weekStartsOn"],
+              })
+            }
             className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 outline-none focus:border-blue-500"
           >
             {weekStartsOnOptions.map((option) => (
@@ -84,10 +115,16 @@ export function PreferencesPanel() {
         </label>
 
         <label className="space-y-1.5 text-xs text-zinc-500">
-          <span className="flex items-center gap-2"><ListChecks className="h-4 w-4" /> {t("settings.defaultView")}</span>
+          <span className="flex items-center gap-2">
+            <ListChecks className="h-4 w-4" /> {t("settings.defaultView")}
+          </span>
           <select
             value={preferences.defaultView}
-            onChange={(event) => updatePreferences({ defaultView: event.target.value as AppPreferences["defaultView"] })}
+            onChange={(event) =>
+              updatePreferences({
+                defaultView: event.target.value as AppPreferences["defaultView"],
+              })
+            }
             className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 outline-none focus:border-blue-500"
           >
             <option value="days">{t("sidebar.dayLists")}</option>
@@ -106,11 +143,27 @@ export function PreferencesPanel() {
         </label>
 
         <label className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">
-          <span className="flex items-center gap-2"><Volume2 className="h-4 w-4" /> {t("settings.soundEffects")}</span>
+          <span className="flex items-center gap-2">
+            <Volume2 className="h-4 w-4" /> {t("settings.soundEffects")}
+          </span>
           <input
             type="checkbox"
             checked={preferences.soundEffects}
             onChange={(event) => updatePreferences({ soundEffects: event.target.checked })}
+            className="h-4 w-4 accent-blue-500"
+          />
+        </label>
+
+        <label className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">
+          <span className="flex items-center gap-2">
+            <Trash2 className="h-4 w-4" /> {confirmDeleteLabel}
+          </span>
+          <input
+            type="checkbox"
+            checked={preferences.confirmBeforeDelete}
+            onChange={(event) =>
+              updatePreferences({ confirmBeforeDelete: event.target.checked })
+            }
             className="h-4 w-4 accent-blue-500"
           />
         </label>

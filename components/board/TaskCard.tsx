@@ -1,7 +1,15 @@
 "use client";
 
 import { CSSProperties, KeyboardEvent, useState } from "react";
-import { CalendarClock, GripVertical, Lock, MoreVertical, Pencil, Tag, Trash2 } from "lucide-react";
+import {
+  CalendarClock,
+  GripVertical,
+  Lock,
+  MoreVertical,
+  Pencil,
+  Tag,
+  Trash2,
+} from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Checkbox } from "@/components/ui/Checkbox";
@@ -14,7 +22,7 @@ import type { Task, UpdateTaskInput } from "@/types/task";
 const priorityClass = {
   low: "border-transparent bg-transparent px-0 text-zinc-600",
   normal: "border-white/10 bg-white/[0.03] text-zinc-500",
-  high: "border-amber-300/30 bg-amber-300/15 text-amber-100 shadow-[0_0_18px_rgba(251,191,36,0.12)]"
+  high: "border-amber-300/30 bg-amber-300/15 text-amber-100 shadow-[0_0_18px_rgba(251,191,36,0.12)]",
 };
 
 export function TaskCard({
@@ -23,7 +31,7 @@ export function TaskCard({
   onEdit,
   onDelete,
   sortable = true,
-  overlay = false
+  overlay = false,
 }: {
   task: Task;
   onToggle: (taskId: string) => void;
@@ -73,6 +81,21 @@ export function TaskCard({
     setIsEditing(true);
   }
 
+  function handleDeleteTask() {
+    if (preferences.confirmBeforeDelete) {
+      const message =
+        preferences.language === "en"
+          ? "Delete this task?"
+          : "Diese Aufgabe wirklich löschen?";
+
+      const confirmed = window.confirm(message);
+      if (!confirmed) return;
+    }
+
+    setIsEditingTitle(false);
+    onDelete(task.id);
+  }
+
   function handleTitleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Enter") {
       event.preventDefault();
@@ -84,26 +107,19 @@ export function TaskCard({
     }
   }
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging
-  } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: `task:${task.id}`,
     data: {
       type: "task",
       taskId: task.id,
-      listId: task.listId ?? null
+      listId: task.listId ?? null,
     },
-    disabled: !sortable || isEditing || isEditingTitle || overlay
+    disabled: !sortable || isEditing || isEditingTitle || overlay,
   });
 
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),
-    transition
+    transition,
   };
 
   if (isEditing) {
@@ -125,7 +141,9 @@ export function TaskCard({
       style={sortable && !overlay ? style : undefined}
       {...(sortable && !overlay ? attributes : {})}
       {...(sortable && !overlay ? listeners : {})}
-      className={`group flex gap-3 rounded-2xl border px-2 py-2.5 transition ${sortable && !overlay ? "cursor-grab select-none touch-none active:cursor-grabbing" : ""} ${
+      className={`group flex gap-3 rounded-2xl border px-2 py-2.5 transition ${
+        sortable && !overlay ? "cursor-grab select-none touch-none active:cursor-grabbing" : ""
+      } ${
         overlay
           ? "max-w-[760px] rotate-[0.5deg] border-blue-400/40 bg-[#16181c] shadow-2xl shadow-black/50 ring-1 ring-blue-400/20"
           : isDragging
@@ -140,12 +158,17 @@ export function TaskCard({
       >
         <GripVertical className="h-4 w-4" />
       </span>
+
       <div onPointerDown={(event) => event.stopPropagation()}>
         <Checkbox checked={isDone} onChange={handleToggle} aria-label={t("task.toggle")} />
       </div>
+
       <div className="min-w-0 flex-1">
         <div className="flex items-start gap-2">
-          {task.isEncrypted ? <Lock className="mt-1 h-3.5 w-3.5 shrink-0 text-amber-300" /> : null}
+          {task.isEncrypted ? (
+            <Lock className="mt-1 h-3.5 w-3.5 shrink-0 text-amber-300" />
+          ) : null}
+
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
               {isEditingTitle ? (
@@ -166,27 +189,48 @@ export function TaskCard({
                   }}
                   onPointerDown={(event) => event.stopPropagation()}
                   title={t("task.quickEditTitle")}
-                  className={isDone ? "min-w-0 max-w-full cursor-text break-words [overflow-wrap:anywhere] text-sm font-medium leading-6 text-zinc-500 line-through" : "min-w-0 max-w-full cursor-text break-words [overflow-wrap:anywhere] text-sm font-medium leading-6 text-zinc-100"}
+                  className={
+                    isDone
+                      ? "min-w-0 max-w-full cursor-text break-words [overflow-wrap:anywhere] text-sm font-medium leading-6 text-zinc-500 line-through"
+                      : "min-w-0 max-w-full cursor-text break-words [overflow-wrap:anywhere] text-sm font-medium leading-6 text-zinc-100"
+                  }
                 >
-                  {task.isEncrypted ? "🔒 " : ""}{task.title}
+                  {task.isEncrypted ? "🔒 " : ""}
+                  {task.title}
                 </h3>
               )}
-              <span className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] ${priorityClass[task.priority]}`}>
+
+              <span
+                className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] ${priorityClass[task.priority]}`}
+              >
                 <CalendarClock className="h-3 w-3" />
-                {task.priority === "low" ? t("task.priorityLow") : task.priority === "high" ? t("task.priorityHigh") : t("task.priorityNormal")}
+                {task.priority === "low"
+                  ? t("task.priorityLow")
+                  : task.priority === "high"
+                    ? t("task.priorityHigh")
+                    : t("task.priorityNormal")}
               </span>
+
               {task.scheduledDate ? (
                 <span className="inline-flex shrink-0 rounded-full border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[11px] text-zinc-500">
                   {task.scheduledDate}
                 </span>
               ) : null}
+
               {task.tags.map((tag) => (
-                <span key={tag} className="inline-flex shrink-0 items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[11px] text-zinc-500">
+                <span
+                  key={tag}
+                  className="inline-flex shrink-0 items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[11px] text-zinc-500"
+                >
                   <Tag className="h-3 w-3" />
                   {tag}
                 </span>
               ))}
-              <span className="inline-flex shrink-0 items-center gap-1 opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100" onPointerDown={(event) => event.stopPropagation()}>
+
+              <span
+                className="inline-flex shrink-0 items-center gap-1 opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100"
+                onPointerDown={(event) => event.stopPropagation()}
+              >
                 <button
                   type="button"
                   onMouseDown={(event) => {
@@ -194,6 +238,7 @@ export function TaskCard({
                     event.stopPropagation();
                   }}
                   onClick={(event) => {
+                    event.preventDefault();
                     event.stopPropagation();
                     openFullEditor();
                   }}
@@ -202,17 +247,51 @@ export function TaskCard({
                 >
                   <Pencil className="h-4 w-4" />
                 </button>
-                <button type="button" onClick={() => onDelete(task.id)} className="rounded-lg p-1 text-zinc-600 transition hover:bg-red-500/10 hover:text-red-300" aria-label={t("task.delete")}>
+
+                <button
+                  type="button"
+                  onMouseDown={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                  }}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    handleDeleteTask();
+                  }}
+                  className="rounded-lg p-1 text-zinc-600 transition hover:bg-red-500/10 hover:text-red-300"
+                  aria-label={t("task.delete")}
+                >
                   <Trash2 className="h-4 w-4" />
                 </button>
-                <button type="button" className="rounded-lg p-1 text-zinc-700" aria-label={t("task.moreOptions")} title={t("task.moreOptionsLater")}>
+
+                <button
+                  type="button"
+                  className="rounded-lg p-1 text-zinc-700"
+                  aria-label={t("task.moreOptions")}
+                  title={t("task.moreOptionsLater")}
+                  onMouseDown={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                  }}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                  }}
+                >
                   <MoreVertical className="h-4 w-4" />
                 </button>
               </span>
             </div>
 
             {task.notes ? (
-              <p className={isDone ? "mt-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-6 text-zinc-600" : "mt-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-6 text-zinc-400"}>
+              <p
+                className={
+                  isDone
+                    ? "mt-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-6 text-zinc-600"
+                    : "mt-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-6 text-zinc-400"
+                }
+              >
                 {task.notes}
               </p>
             ) : null}

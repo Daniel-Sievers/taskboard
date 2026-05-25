@@ -1,6 +1,13 @@
 export type AppTheme = "dark" | "light" | "system";
 export type AppLanguage = "de" | "en";
-export type WeekStartsOn = "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";
+export type WeekStartsOn =
+  | "monday"
+  | "tuesday"
+  | "wednesday"
+  | "thursday"
+  | "friday"
+  | "saturday"
+  | "sunday";
 export type DefaultView = "days" | "kanban";
 export type AccentTheme = "cobalt" | "violet" | "emerald" | "graphite";
 
@@ -12,6 +19,7 @@ export type AppPreferences = {
   accentTheme: AccentTheme;
   showTaskCounts: boolean;
   soundEffects: boolean;
+  confirmBeforeDelete: boolean;
 };
 
 export const preferencesStorageKey = "taskboard:preferences";
@@ -25,6 +33,7 @@ export const defaultPreferences: AppPreferences = {
   accentTheme: "cobalt",
   showTaskCounts: true,
   soundEffects: true,
+  confirmBeforeDelete: true,
 };
 
 export function readPreferences(): AppPreferences {
