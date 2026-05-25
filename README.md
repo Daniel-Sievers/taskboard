@@ -1,76 +1,359 @@
 # Taskboard
 
-Private Taskboard-App mit Tageslisten, mehreren Boards, Supabase-Sync, Dark Mode und später Offline-Sync.
+A private, installable taskboard app built with **Next.js**, **TypeScript**, **Tailwind CSS**, **Supabase**, **Vercel** and **@dnd-kit**.
 
-## Ziel
+Taskboard is a personal productivity app inspired by TasksBoard / Google Tasks Board. It focuses on fast daily lists, multiple boards, online sync, drag & drop, themes, backup/export and an installable app-like workflow across devices.
 
-Dieses Projekt ist eine persönliche Alternative zu TasksBoard / Google Tasks Board. Der Fokus liegt auf einem schnellen, dunklen, synchronisierten Taskboard für mehrere Geräte, das sich wie eine installierbare App nutzen lässt.
+**Live app:** https://taskboard-ten-steel.vercel.app
 
-## Aktueller Stand
+> This is a personal portfolio / learning project. Authentication is enabled, so private board data is only visible after login.
 
-- Supabase Auth per Magic Link funktioniert.
-- Aufgaben, Listen und Boards werden online gespeichert.
-- Mehrere Boards können erstellt, gewechselt, umbenannt und archiviert werden.
-- Tageslisten können erstellt, umbenannt, gelöscht und per Drag & Drop sortiert werden.
-- Tasks können erstellt, bearbeitet, abgehakt, gelöscht und per Drag & Drop sortiert werden.
-- Drag & Drop basiert auf `@dnd-kit` und unterstützt Auto-Scroll beim Verschieben ganzer Listen.
-- Speicheranzeige und sensible Markierung sind vorbereitet.
-- Suche, Filter, Labels und Heute-fällig-Ansicht sind eingebaut.
-- PWA-Basis ist vorbereitet: Manifest, Icons, Start direkt auf `/board`, installierbarer App-Modus.
-- Backup/Export/Import und manuelle Datenverwaltung sind eingebaut.
-- App-Einstellungen für Design, Sprache, Wochenstart, Standardansicht und Aufgabenanzahl sind aktiv.
+---
+
+## Why I built this
+
+I wanted a taskboard that opens directly into my workflow, syncs across devices, keeps a stable design, and gives me more control than the taskboard extension I was using before.
+
+The goal was not just to build another todo app, but to create a practical, private productivity tool with real-world features:
+
+- online storage and login
+- multiple boards
+- fast daily task lists
+- drag & drop sorting
+- dark/light mode
+- installable PWA behavior
+- search, filters and labels
+- backup/export/import
+- responsive layout
+- clean documentation for portfolio use
+
+---
+
+## Screenshots
+
+### Board overview
+
+![Taskboard dark board view](docs/screenshots/01-board-dark.png)
+
+### Light mode and color themes
+
+![Taskboard light mode](docs/screenshots/02-board-light.png)
+
+### Task editing
+
+![Task editor](docs/screenshots/03-task-editor.png)
+
+### Settings
+
+![Settings](docs/screenshots/04-settings.png)
+
+### Backup and export
+
+![Backup and export](docs/screenshots/05-backup-export.png)
+
+### Responsive drawer / mobile layout
+
+![Mobile drawer](docs/screenshots/06-mobile-drawer.png)
+
+### PWA / installable app
+
+![PWA install](docs/screenshots/07-pwa-install.png)
+
+---
+
+## Current Status
+
+Taskboard is currently usable as a private online taskboard with authentication, Supabase persistence and Vercel deployment.
+
+Implemented so far:
+
+- Supabase Auth with Magic Link works locally and online.
+- Boards, lists and tasks are stored online in Supabase.
+- Multiple boards can be created, switched, renamed and archived.
+- Lists can be created, renamed, deleted and reordered.
+- Tasks can be created, edited, completed, deleted and reordered.
+- Drag & drop is implemented with `@dnd-kit`.
+- Drag & drop supports auto-scroll while moving lists.
+- Search, filters, labels and a “due today” foundation are available.
+- Settings for theme, language, accent color, week start, default view, sound effects, delete confirmation and task counts are active.
+- PWA basics are implemented: manifest, icons, start URL and installable app mode.
+- JSON backup, JSON import, CSV export and manual data management are available.
+- GitHub and Vercel deployment are set up.
+- The app is still under active development.
+
+---
+
+## Features
+
+### Core Taskboard
+
+- Create, edit, complete and delete tasks
+- Quick-edit task titles directly in the list
+- Full task editor for notes, priority, date, labels and sensitive marking
+- Create, rename, delete and reorder lists
+- Multiple boards
+- Board switching through sidebar and header chips
+- Soft-delete behavior for tasks
+- Optional delete confirmation
+- Completed task counts
+- Compact task rows for better space usage
+- Emoji-friendly and long-text-friendly task titles
+
+### Drag & Drop
+
+- Drag tasks within a list
+- Drag tasks between lists
+- Drag entire lists
+- Auto-scroll while dragging
+- Saved order through Supabase
+- Smooth interaction with `@dnd-kit`
+
+### Search, Filters and Labels
+
+- Search by task title
+- Search by notes
+- Search by labels/tags
+- Filter by status
+- Filter by priority
+- Filter by label
+- “Due today” / today-focused view foundation
+
+### Settings
+
+- Dark / light / system theme
+- Multiple accent color modes
+- German / English UI language
+- Week-start setting
+- Default view setting
+- Sound effects toggle
+- Delete confirmation toggle
+- Task count visibility toggle
+
+### Data Management
+
+- JSON backup
+- JSON import
+- CSV export
+- Empty trash
+- Permanently delete archived boards
+- Approximate storage usage display
+
+### PWA
+
+- Installable app experience
+- Custom app icon
+- Manifest configured
+- Start URL configured for `/board`
+- Browser app and PWA usage
+
+---
 
 ## Tech Stack
 
-- Next.js
-- TypeScript
-- Tailwind CSS
-- Supabase Auth + Database
-- @dnd-kit für Drag & Drop
-- Vercel Hosting, vorbereitet
+- **Next.js** — app framework
+- **TypeScript** — type-safe development
+- **Tailwind CSS** — styling
+- **Supabase Auth + Database** — authentication, database and API
+- **PostgreSQL** — database layer through Supabase
+- **Vercel** — hosting and deployment
+- **@dnd-kit** — drag & drop
+- **Lucide React** — icons
+- **PWA manifest / service worker** — installable app foundation
 
-## Lokales Setup
+---
+
+## Architecture
+
+The project is structured around a clear separation of UI, data access, app settings and documentation.
+
+```txt
+app/
+  board/
+  login/
+  settings/
+
+components/
+  app-shell/
+  board/
+  settings/
+  pwa/
+  ui/
+
+hooks/
+  useAuth.ts
+  useBoard.ts
+  usePreferences.ts
+  useI18n.ts
+
+lib/
+  supabase/
+  preferences.ts
+  i18n.ts
+  sound.ts
+
+supabase/
+  migrations/
+
+docs/
+  screenshots/
+  ARCHITECTURE.md
+  DATABASE.md
+  DEVELOPMENT_LOG.md
+  DRAG_AND_DROP.md
+  GITHUB_PORTFOLIO.md
+  NEXT_STEPS.md
+  PWA_INSTALLATION.md
+  SECURITY.md
+  SUPABASE_SETUP.md
+  VERCEL_DEPLOYMENT.md
+```
+
+---
+
+## Local Development
+
+Clone the repository:
+
+```bash
+git clone https://github.com/Daniel-Sievers/taskboard.git
+cd taskboard
+```
+
+Install dependencies:
 
 ```bash
 npm install
-cp .env.example .env.local
-npm run dev
 ```
 
-Unter Windows PowerShell:
+Create an environment file:
+
+```bash
+cp .env.example .env.local
+```
+
+On Windows PowerShell:
 
 ```powershell
-npm install
 copy .env.example .env.local
+```
+
+Add your Supabase environment variables to `.env.local`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-key
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
+
+The app also supports the older variable name:
+
+```env
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+Start the development server:
+
+```bash
 npm run dev
 ```
 
-Danach öffnen:
+Open:
 
 ```txt
 http://localhost:3000/board
 ```
 
+Important:
+
+```txt
+Do not commit .env.local.
+Do not commit node_modules.
+Do not commit .next.
+Only .env.example belongs in the repository.
+```
+
+---
+
 ## Environment Variables
 
-In `.env.local` müssen deine Supabase-Werte stehen:
+Required locally and in Vercel:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://dein-projekt.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=dein-publishable-key
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-key
+NEXT_PUBLIC_SITE_URL=https://taskboard-ten-steel.vercel.app
 ```
 
-Alternativ wird auch unterstützt:
+Alternative supported key name:
 
 ```env
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=dein-publishable-key
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
 
-`.env.local` niemals auf GitHub committen.
+Never expose or commit Supabase secret keys or service role keys.
 
-## Dokumentation
+---
 
-Weitere Planung liegt im Ordner `docs/`:
+## Deployment
+
+The app is deployed with Vercel.
+
+Main deployment URL:
+
+```txt
+https://taskboard-ten-steel.vercel.app
+```
+
+Vercel hosts the app. The data is stored in Supabase.
+
+For production deployment, the following environment variables are needed in Vercel:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-key
+NEXT_PUBLIC_SITE_URL=https://taskboard-ten-steel.vercel.app
+```
+
+Supabase Auth redirect URLs should include:
+
+```txt
+https://taskboard-ten-steel.vercel.app/**
+http://localhost:3000/**
+```
+
+More deployment notes are available in:
+
+```txt
+docs/VERCEL_DEPLOYMENT.md
+```
+
+---
+
+## Database
+
+The database is managed through Supabase migrations.
+
+Main entities:
+
+- `profiles`
+- `boards`
+- `lists`
+- `tasks`
+- `task_versions`
+
+The app uses Row Level Security so users can only access their own boards, lists and tasks.
+
+More database notes are available in:
+
+```txt
+docs/DATABASE.md
+```
+
+---
+
+## Documentation
+
+Additional planning and implementation notes are stored in the `docs/` folder:
 
 - `docs/SUPABASE_SETUP.md`
 - `docs/DRAG_AND_DROP.md`
@@ -83,25 +366,71 @@ Weitere Planung liegt im Ordner `docs/`:
 - `docs/VERCEL_DEPLOYMENT.md`
 - `docs/GITHUB_PORTFOLIO.md`
 
-## Entwicklungsgeschichte
+---
 
-Die Entwicklung wird bewusst in Paketen dokumentiert. Siehe `docs/DEVELOPMENT_LOG.md` für die Story von Starter-Projekt über Supabase-Sync und Drag-&-Drop-Iterationen bis zu mehreren Boards.
+## Development Story
 
-## Nächste Pakete
+This project was built iteratively in focused development packages:
 
-1. GitHub + Vercel Deployment
-2. Horizontal-/Kanban-Ansicht ausbauen
-3. Realtime-Sync zwischen Geräten
-4. Offline-Sync
-5. optionale clientseitige Verschlüsselung
+1. Initial Next.js / TypeScript / Tailwind project setup
+2. Supabase authentication and database connection
+3. Online task storage
+4. Boards, lists and tasks
+5. Drag & drop with saved ordering
+6. Responsive sidebar and mobile drawer
+7. Search, filters and labels
+8. PWA setup and custom app icon
+9. Backup, export and import tools
+10. Theme, color and language settings
+11. GitHub and Vercel deployment
+12. UI polish and portfolio documentation
 
-### Datenhoheit
+A more detailed development log is available in:
 
-Die App enthält inzwischen JSON-Backup, CSV-Export, JSON-Import, Papierkorb-Leeren und endgültiges Löschen archivierter Boards. Das reduziert Abhängigkeit vom Anbieter und macht die privaten Daten leichter portierbar.
+```txt
+docs/DEVELOPMENT_LOG.md
+```
 
+---
 
-## Deployment
+## Data Ownership
 
-Die App ist für Vercel vorbereitet. Vercel hostet nur die App; die Daten liegen weiterhin in Supabase. Siehe `docs/VERCEL_DEPLOYMENT.md`.
+The app includes JSON backup, CSV export, JSON import, empty trash and permanent deletion of archived boards.
 
-Für GitHub ist wichtig: `.env.local`, `.next` und `node_modules` nicht committen. Nur `.env.example` gehört ins Repository.
+This reduces vendor lock-in and makes private data easier to move or back up manually.
+
+---
+
+## Roadmap
+
+Planned improvements:
+
+- Realtime sync across open devices
+- Improved horizontal / Kanban view
+- Offline sync with IndexedDB
+- Recurring tasks
+- More complete archive/trash views
+- Optional Google login
+- Optional custom SMTP for auth emails
+- Client-side encryption for sensitive tasks
+
+---
+
+## What I learned
+
+This project helped me practice:
+
+- building a real-world app with Next.js and TypeScript
+- working with Supabase Auth and Row Level Security
+- structuring a frontend project for maintainability
+- implementing drag & drop interactions
+- deploying through GitHub and Vercel
+- handling environment variables safely
+- designing around sync, backups, privacy and UX details
+- documenting an iterative development process
+
+---
+
+## License
+
+This is currently a personal portfolio / learning project.
