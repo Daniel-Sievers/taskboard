@@ -1,8 +1,21 @@
+import { Suspense } from "react";
 import { AppShell } from "@/components/app-shell/AppShell";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { ShieldCheck } from "lucide-react";
 
-export default function LoginPage() {
+function LoginFallback() {
+  return (
+    <div className="min-h-screen bg-zinc-950 px-4 py-10 text-zinc-100">
+      <div className="mx-auto max-w-5xl">
+        <div className="rounded-[2rem] border border-white/10 bg-white/[0.035] p-6 shadow-2xl shadow-black/25">
+          <p className="text-sm text-zinc-400">Login wird geladen ...</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LoginContent() {
   return (
     <AppShell>
       <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-[0.95fr_1.05fr]">
@@ -32,5 +45,13 @@ export default function LoginPage() {
         </section>
       </div>
     </AppShell>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginFallback />}>
+      <LoginContent />
+    </Suspense>
   );
 }
