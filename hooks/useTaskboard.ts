@@ -18,7 +18,7 @@ import {
   updateTaskOrder,
   updateTaskStatus,
 } from "@/lib/db/tasks";
-import { isSupabaseConfigured } from "@/lib/supabase/client";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase/client";
 import { toDateKey } from "@/lib/dates/calendar";
 import { reorderById, withSequentialPositions } from "@/lib/dnd/reorder";
 import { initialDemoTasks } from "@/lib/demo-data";
@@ -92,8 +92,11 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mode, setMode] = useState<"demo" | "supabase">("demo");
+  const [realtimeStatus, setRealtimeStatus] = useState<"off" | "connecting" | "live" | "syncing" | "error">("off");
+  const [lastRealtimeUpdate, setLastRealtimeUpdate] = useState<string | null>(null);
   const listsRef = useRef<BoardList[]>([]);
   const tasksRef = useRef<Task[]>(initialDemoTasks);
+  const realtimeRefreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     listsRef.current = lists;
@@ -103,15 +106,18 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
     tasksRef.current = tasks;
   }, [tasks]);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (options?: { showLoading?: boolean }) => {
+    const showLoading = options?.showLoading ?? true;
+
     if (!isSupabaseConfigured || !user) {
       setMode("demo");
       setTasks(initialDemoTasks);
+      setRealtimeStatus("off");
       setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
+    if (showLoading) setIsLoading(true);
     setError(null);
 
     try {
@@ -139,13 +145,84 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
           : "Taskboard konnte nicht geladen werden.";
       setError(message);
     } finally {
-      setIsLoading(false);
+      if (showLoading) setIsLoading(false);
     }
   }, [user, requestedBoardId]);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured || !user || !board || mode !== "supabase") {
+      setRealtimeStatus("off");
+      return;
+    }
+
+    setRealtimeStatus("connecting");
+
+    function scheduleRealtimeRefresh() {
+      if (realtimeRefreshTimerRef.current) {
+        clearTimeout(realtimeRefreshTimerRef.current);
+      }
+
+      setRealtimeStatus("syncing");
+      realtimeRefreshTimerRef.current = setTimeout(() => {
+        setLastRealtimeUpdate(new Date().toISOString());
+        void load({ showLoading: false }).finally(() => {
+          setRealtimeStatus("live");
+        });
+      }, 450);
+    }
+
+    const channel = supabase
+      .channel(`taskboard-realtime:${user.id}:${board.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "tasks",
+          filter: `board_id=eq.${board.id}`,
+        },
+        scheduleRealtimeRefresh,
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "lists",
+          filter: `board_id=eq.${board.id}`,
+        },
+        scheduleRealtimeRefresh,
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "boards",
+          filter: `user_id=eq.${user.id}`,
+        },
+        scheduleRealtimeRefresh,
+      )
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") setRealtimeStatus("live");
+        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          setRealtimeStatus("error");
+        }
+      });
+
+    return () => {
+      if (realtimeRefreshTimerRef.current) {
+        clearTimeout(realtimeRefreshTimerRef.current);
+        realtimeRefreshTimerRef.current = null;
+      }
+      supabase.removeChannel(channel);
+    };
+  }, [board, load, mode, user]);
+
 
   async function addList(title = "Neue Liste") {
     const now = new Date().toISOString();
@@ -668,6 +745,8 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
     isLoading,
     isSaving,
     error,
+    realtimeStatus,
+    lastRealtimeUpdate,
     reload: load,
     addBoard,
     renameBoard,

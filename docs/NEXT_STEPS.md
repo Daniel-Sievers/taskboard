@@ -57,3 +57,11 @@
 - Task-/Board-/Listen-Inhalte bleiben unverändert und werden nicht automatisch übersetzt.
 - Wochentag-Auswahl für „Woche beginnt am“ auf alle sieben Tage erweitert.
 - Neue Doku: `docs/I18N.md`.
+
+
+## Realtime Sync
+
+- Added Supabase Realtime subscription for boards, lists and tasks.
+- Added a Live-Sync status pill to the board header.
+- Added `supabase/migrations/0004_enable_realtime.sql`.
+- Added `docs/REALTIME_SYNC.md`.

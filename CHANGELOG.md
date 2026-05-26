@@ -230,3 +230,11 @@
 - Moved the Board menu next to Filter again for a more compact header.
 - Raised the mobile drawer layer so underlying board controls cannot appear above it.
 - Improved light-mode contrast for board labels and active board chips.
+
+
+## Realtime Sync
+
+- Added Supabase Realtime subscription for boards, lists and tasks.
+- Added a Live-Sync status pill to the board header.
+- Added `supabase/migrations/0004_enable_realtime.sql`.
+- Added `docs/REALTIME_SYNC.md`.

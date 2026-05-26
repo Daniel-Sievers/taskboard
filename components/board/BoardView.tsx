@@ -93,6 +93,8 @@ export function BoardView() {
     isLoading,
     isSaving,
     error,
+    realtimeStatus,
+    lastRealtimeUpdate,
     reload,
     renameBoard,
     deleteBoard,
@@ -483,9 +485,33 @@ export function BoardView() {
                     {t("board.mainBoard")}
                   </p>
                   {mode === "supabase" ? (
-                    <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] text-zinc-400">
-                      {t("board.boardCount", { count: boards.length })}
-                    </span>
+                    <>
+                      <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] text-zinc-400">
+                        {t("board.boardCount", { count: boards.length })}
+                      </span>
+                      <span
+                        className={
+                          realtimeStatus === "live"
+                            ? "rounded-full border border-emerald-400/20 bg-emerald-500/10 px-2 py-1 text-[11px] text-emerald-200"
+                            : realtimeStatus === "syncing" || realtimeStatus === "connecting"
+                              ? "rounded-full border border-blue-400/20 bg-blue-500/10 px-2 py-1 text-[11px] text-blue-200"
+                              : realtimeStatus === "error"
+                                ? "rounded-full border border-amber-400/20 bg-amber-500/10 px-2 py-1 text-[11px] text-amber-200"
+                                : "rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] text-zinc-400"
+                        }
+                        title={lastRealtimeUpdate ? `Realtime update: ${lastRealtimeUpdate}` : undefined}
+                      >
+                        {realtimeStatus === "live"
+                          ? "Live-Sync"
+                          : realtimeStatus === "syncing"
+                            ? "Synchronisiert …"
+                            : realtimeStatus === "connecting"
+                              ? "Verbinde …"
+                              : realtimeStatus === "error"
+                                ? "Sync prüfen"
+                                : "Manuell"}
+                      </span>
+                    </>
                   ) : null}
                   {mode === "supabase" && boards.length > 0 ? (
                     <div className="flex max-w-full flex-wrap gap-1.5">
