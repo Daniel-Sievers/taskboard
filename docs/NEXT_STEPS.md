@@ -10,46 +10,43 @@
 - PWA installation basics
 - Backup/export/import and data management
 - Active settings for theme, default view and task count display
-- GitHub + Vercel deployment
-- Realtime sync v1, tested online between desktop and mobile
-- Mobile touch drag improved with long-press behavior
-- Horizontal view changed to swipeable list columns
-- Dependency versions pinned for more reproducible builds
+- GitHub and Vercel deployment
+- Supabase Realtime sync v1
+- Mobile touch drag improvements
+- Horizontal/swipe view polish
+- Trash and archive management
 
 ## Recommended next packages
 
-1. **Horizontal/Kanban view polish**
-   - Improve horizontal drag and drop behavior further
-   - Add clearer drop indicators between horizontal columns
-   - Tune mobile snap behavior and column widths
-   - Decide whether horizontal view should become the default on mobile
+1. **Wiederholende Aufgaben**
+   - täglich / wöchentlich / monatlich
+   - alle X Tage
+   - Werktage
+   - nach Erledigung automatisch neu erzeugen
+   - UI im Task-Editor ergänzen
 
-2. **Archive and trash management**
-   - Add a dedicated trash view
-   - Restore deleted tasks
-   - Show archived boards
-   - Restore archived boards
-   - Make permanent deletion clearer
+2. **Realtime sync robustness**
+   - Sync status more precise
+   - Better reconnect and error states
+   - Debounce refreshes after multiple events
+   - Avoid unnecessary reloads where possible
 
-3. **Recurring tasks**
-   - Daily, weekly, monthly recurrence
-   - Every X days
-   - Weekdays only
-   - Generate next occurrence after completion
-
-4. **Realtime sync hardening**
-   - More precise sync status
-   - Better reconnect/error states
-   - Debounce board refreshes after rapid events
-   - Later: update affected items without full board reload
-
-5. **Offline sync**
+3. **Offline sync**
    - IndexedDB cache
    - Offline mutation queue
    - Last-write-wins conflict strategy
    - Reconnect sync
 
-6. **Optional encryption**
+4. **Optional auth improvements**
+   - Google login
+   - Custom SMTP for Magic Links
+   - Better login rate-limit handling
+
+5. **Optional encryption**
    - Client-side encryption for selected sensitive tasks
-   - Local password/key flow
-   - Clear warning that lost keys cannot be recovered
+   - Local passphrase/key flow
+   - Clear UX for encrypted content
+
+## Current focus
+
+The next practical feature package is likely **recurring tasks**, because it adds everyday value after the core board, sync, mobile and data-management features are in place.

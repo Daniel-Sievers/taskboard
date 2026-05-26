@@ -223,3 +223,23 @@ Lernpunkte:
 - Ein Long-Press-Delay verhindert, dass jeder Scrollversuch sofort als Drag erkannt wird.
 - Für reproduzierbare Deployments sind gepinnte Dependency-Versionen besser als `"latest"`.
 
+
+
+## Trash and Archive Management
+
+The data management area was expanded from simple bulk cleanup actions into a real recovery interface.
+
+Added:
+
+- deleted tasks are now visible in a dedicated trash section
+- individual deleted tasks can be restored
+- individual deleted tasks can be permanently deleted
+- the full trash can still be emptied in one action
+- archived boards are listed in the settings
+- archived boards can be restored
+- archived boards can be permanently deleted
+- dangerous permanent deletion actions always ask for confirmation
+
+Learning point:
+
+- Soft delete and archive states are more useful when the user can inspect and recover items before permanently deleting them. Bulk cleanup is still useful, but it should not be the only management option.

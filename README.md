@@ -81,7 +81,7 @@ Implemented so far:
 - Search, filters, labels and a “due today” foundation are available.
 - Settings for theme, language, accent color, week start, default view, sound effects, delete confirmation and task counts are active.
 - PWA basics are implemented: manifest, icons, start URL and installable app mode.
-- JSON backup, JSON import, CSV export and manual data management are available.
+- JSON backup, JSON import, CSV export, trash recovery and archive management are available.
 - GitHub and Vercel deployment are set up.
 - The app is still under active development.
 
@@ -138,7 +138,11 @@ Implemented so far:
 - JSON backup
 - JSON import
 - CSV export
-- Empty trash
+- Trash view for deleted tasks
+- Restore individual deleted tasks
+- Permanently delete individual deleted tasks
+- Archive view for archived boards
+- Restore archived boards
 - Permanently delete archived boards
 - Approximate storage usage display
 
@@ -429,7 +433,6 @@ Planned improvements:
 - Improved horizontal / Kanban view
 - Offline sync with IndexedDB
 - Recurring tasks
-- More complete archive/trash views
 - Optional Google login
 - Optional custom SMTP for auth emails
 - Client-side encryption for sensitive tasks
