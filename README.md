@@ -133,6 +133,15 @@ Implemented so far:
 - Delete confirmation toggle
 - Task count visibility toggle
 
+### Recurring Tasks
+
+- Repeat tasks daily, weekly, monthly or every X days
+- Completing a recurring task creates the next open copy in the same list
+- Future recurring copies are muted and cannot be checked off before their date
+- Future recurring copies can still be edited or deleted
+- Today's due dates are highlighted in green
+- Overdue due dates are highlighted in orange
+
 ### Data Management
 
 - JSON backup
@@ -230,6 +239,7 @@ docs/
   SECURITY.md
   SUPABASE_SETUP.md
   VERCEL_DEPLOYMENT.md
+  RECURRING_TASKS.md
 ```
 
 ---
@@ -389,6 +399,7 @@ Additional planning and implementation notes are stored in the `docs/` folder:
 - `docs/PWA_INSTALLATION.md`
 - `docs/VERCEL_DEPLOYMENT.md`
 - `docs/GITHUB_PORTFOLIO.md`
+- `docs/RECURRING_TASKS.md`
 
 ---
 

@@ -355,3 +355,22 @@ html[data-theme="light"][data-accent="graphite"] .tb-board-chip-active {
     display: none;
   }
 }
+
+/* Recurring tasks and due-date emphasis */
+[data-theme="light"] .tb-date-today {
+  border-color: rgba(5, 150, 105, 0.35);
+  background: rgba(16, 185, 129, 0.16);
+  color: rgb(4, 120, 87);
+}
+
+[data-theme="light"] .tb-date-overdue {
+  border-color: rgba(234, 88, 12, 0.35);
+  background: rgba(249, 115, 22, 0.16);
+  color: rgb(194, 65, 12);
+}
+
+[data-theme="light"] .tb-recurrence-chip {
+  border-color: rgba(8, 145, 178, 0.3);
+  background: rgba(6, 182, 212, 0.14);
+  color: rgb(14, 116, 144);
+}

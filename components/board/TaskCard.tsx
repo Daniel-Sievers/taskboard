@@ -7,6 +7,7 @@ import {
   Lock,
   MoreVertical,
   Pencil,
+  Repeat2,
   Tag,
   Trash2,
 } from "lucide-react";
@@ -18,6 +19,53 @@ import { usePreferences } from "@/hooks/usePreferences";
 import { playTaskDoneSound } from "@/lib/sound";
 import { useI18n } from "@/hooks/useI18n";
 import type { Task, UpdateTaskInput } from "@/types/task";
+
+function todayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function recurrenceLabel(task: Task, language: string) {
+  if ((task.recurrenceType ?? "none") === "none") return null;
+  const interval = Math.max(1, task.recurrenceInterval || 1);
+
+  if (language === "en") {
+    if (task.recurrenceType === "daily") return interval === 1 ? "daily" : `every ${interval} days`;
+    if (task.recurrenceType === "weekly") return interval === 1 ? "weekly" : `every ${interval} weeks`;
+    if (task.recurrenceType === "monthly") return interval === 1 ? "monthly" : `every ${interval} months`;
+    if (task.recurrenceType === "interval") return `every ${interval} days`;
+  }
+
+  if (task.recurrenceType === "daily") return interval === 1 ? "täglich" : `alle ${interval} Tage`;
+  if (task.recurrenceType === "weekly") return interval === 1 ? "wöchentlich" : `alle ${interval} Wochen`;
+  if (task.recurrenceType === "monthly") return interval === 1 ? "monatlich" : `alle ${interval} Monate`;
+  if (task.recurrenceType === "interval") return `alle ${interval} Tage`;
+
+  return null;
+}
+
+function dateClass(task: Task) {
+  if (!task.scheduledDate || task.status !== "open") {
+    return "border-white/10 bg-white/[0.03] text-zinc-500";
+  }
+
+  const today = todayKey();
+  if (task.scheduledDate === today) {
+    return "border-emerald-400/30 bg-emerald-500/15 text-emerald-200 tb-date-today";
+  }
+  if (task.scheduledDate < today) {
+    return "border-orange-400/30 bg-orange-500/15 text-orange-200 tb-date-overdue";
+  }
+  return "border-white/10 bg-white/[0.03] text-zinc-500";
+}
+
+function isFutureRecurringTask(task: Task) {
+  return (
+    task.status === "open" &&
+    (task.recurrenceType ?? "none") !== "none" &&
+    Boolean(task.scheduledDate) &&
+    task.scheduledDate > todayKey()
+  );
+}
 
 const priorityClass = {
   low: "border-transparent bg-transparent px-0 text-zinc-600",
@@ -46,8 +94,11 @@ export function TaskCard({
   const { preferences } = usePreferences();
   const { t } = useI18n();
   const isDone = task.status === "done";
+  const isFutureLocked = isFutureRecurringTask(task);
+  const recurringLabel = recurrenceLabel(task, preferences.language);
 
   function handleToggle() {
+    if (isFutureLocked) return;
     if (!isDone && preferences.soundEffects) {
       playTaskDoneSound();
     }
@@ -148,7 +199,9 @@ export function TaskCard({
           ? "max-w-[760px] rotate-[0.5deg] border-blue-400/40 bg-[#16181c] shadow-2xl shadow-black/50 ring-1 ring-blue-400/20"
           : isDragging
             ? "border-blue-400/20 bg-blue-500/5 opacity-35"
-            : "border-transparent hover:border-white/5 hover:bg-white/[0.045]"
+            : isFutureLocked
+              ? "border-white/5 bg-white/[0.018] opacity-65 hover:border-white/10 hover:bg-white/[0.035]"
+              : "border-transparent hover:border-white/5 hover:bg-white/[0.045]"
       }`}
     >
       <span
@@ -192,7 +245,9 @@ export function TaskCard({
                   className={
                     isDone
                       ? "min-w-0 max-w-full cursor-text break-words [overflow-wrap:anywhere] text-sm font-medium leading-6 text-zinc-500 line-through"
-                      : "min-w-0 max-w-full cursor-text break-words [overflow-wrap:anywhere] text-sm font-medium leading-6 text-zinc-100"
+                      : isFutureLocked
+                        ? "min-w-0 max-w-full cursor-text break-words [overflow-wrap:anywhere] text-sm font-medium leading-6 text-zinc-500"
+                        : "min-w-0 max-w-full cursor-text break-words [overflow-wrap:anywhere] text-sm font-medium leading-6 text-zinc-100"
                   }
                 >
                   {task.isEncrypted ? "🔒 " : ""}
@@ -212,8 +267,21 @@ export function TaskCard({
               </span>
 
               {task.scheduledDate ? (
-                <span className="inline-flex shrink-0 rounded-full border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[11px] text-zinc-500">
+                <span className={`inline-flex shrink-0 rounded-full border px-2 py-0.5 text-[11px] ${dateClass(task)}`}>
                   {task.scheduledDate}
+                </span>
+              ) : null}
+
+              {recurringLabel ? (
+                <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-cyan-400/20 bg-cyan-500/10 px-2 py-0.5 text-[11px] text-cyan-200 tb-recurrence-chip">
+                  <Repeat2 className="h-3 w-3" />
+                  {recurringLabel}
+                </span>
+              ) : null}
+
+              {isFutureLocked ? (
+                <span className="inline-flex shrink-0 rounded-full border border-white/10 bg-white/[0.025] px-2 py-0.5 text-[11px] text-zinc-500">
+                  {preferences.language === "en" ? "not due yet" : "noch nicht fällig"}
                 </span>
               ) : null}
 
@@ -289,7 +357,9 @@ export function TaskCard({
                 className={
                   isDone
                     ? "mt-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-6 text-zinc-600"
-                    : "mt-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-6 text-zinc-400"
+                    : isFutureLocked
+                      ? "mt-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-6 text-zinc-600"
+                      : "mt-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-6 text-zinc-400"
                 }
               >
                 {task.notes}

@@ -11,7 +11,9 @@ import {
   updateListTitle,
 } from "@/lib/db/lists";
 import {
+  createNextRecurringTask,
   createTask,
+  getNextRecurrenceDate,
   listTasks,
   softDeleteTask,
   updateTask,
@@ -25,6 +27,12 @@ import { initialDemoTasks } from "@/lib/demo-data";
 import type { Board, BoardList } from "@/types/board";
 import type { CreateTaskInput, Task, UpdateTaskInput } from "@/types/task";
 import type { User } from "@supabase/supabase-js";
+
+
+function isFutureRecurringTask(task: Task) {
+  if (task.status !== "open" || (task.recurrenceType ?? "none") === "none" || !task.scheduledDate) return false;
+  return task.scheduledDate > toDateKey(new Date());
+}
 
 function reorderTasksForMove({
   currentTasks,
@@ -284,6 +292,12 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
           priority: input.priority ?? "normal",
           tags: input.tags ?? [],
           isEncrypted: input.isEncrypted ?? false,
+          recurrenceType: input.recurrenceType ?? "none",
+          recurrenceInterval: Math.max(1, input.recurrenceInterval ?? 1),
+          recurrenceAnchorDate:
+            (input.recurrenceType ?? "none") === "none"
+              ? null
+              : input.recurrenceAnchorDate ?? input.scheduledDate ?? toDateKey(new Date()),
           createdAt: now,
           updatedAt: now,
         },
@@ -316,27 +330,58 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
     const task = tasks.find((item) => item.id === taskId);
     if (!task) return;
 
+    if (isFutureRecurringTask(task)) {
+      setError("Diese wiederholende Aufgabe ist noch nicht fällig und kann noch nicht abgehakt werden.");
+      return;
+    }
+
     const nextStatus = task.status === "done" ? "open" : "done";
+    const now = new Date().toISOString();
     const optimistic: Task = {
       ...task,
       status: nextStatus,
-      completedAt: nextStatus === "done" ? new Date().toISOString() : null,
-      updatedAt: new Date().toISOString(),
+      completedAt: nextStatus === "done" ? now : null,
+      updatedAt: now,
     };
 
     setTasks((current) =>
       current.map((item) => (item.id === taskId ? optimistic : item)),
     );
 
-    if (mode === "demo") return;
+    if (mode === "demo") {
+      if (nextStatus === "done" && (task.recurrenceType ?? "none") !== "none") {
+        const nextDate = getNextRecurrenceDate(task);
+        if (nextDate) {
+          const nextTask: Task = {
+            ...task,
+            id: crypto.randomUUID(),
+            status: "open",
+            scheduledDate: nextDate,
+            completedAt: null,
+            recurrenceAnchorDate: nextDate,
+            position: tasks.filter((item) => item.listId === task.listId).length + 1,
+            createdAt: now,
+            updatedAt: now,
+          };
+          setTasks((current) => [...current, nextTask]);
+        }
+      }
+      return;
+    }
 
     setIsSaving(true);
     setError(null);
     try {
       const updated = await updateTaskStatus(task, nextStatus);
-      setTasks((current) =>
-        current.map((item) => (item.id === taskId ? updated : item)),
-      );
+      const nextRecurringTask =
+        nextStatus === "done" && user ? await createNextRecurringTask(user.id, task) : null;
+
+      setTasks((current) => {
+        const withUpdated = current.map((item) =>
+          item.id === taskId ? updated : item,
+        );
+        return nextRecurringTask ? [...withUpdated, nextRecurringTask] : withUpdated;
+      });
     } catch (nextError) {
       setTasks((current) =>
         current.map((item) => (item.id === taskId ? task : item)),
@@ -366,6 +411,12 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
       priority: input.priority ?? previousTask.priority,
       tags: input.tags ?? previousTask.tags,
       isEncrypted: input.isEncrypted ?? previousTask.isEncrypted,
+      recurrenceType: input.recurrenceType ?? previousTask.recurrenceType,
+      recurrenceInterval: input.recurrenceInterval ?? previousTask.recurrenceInterval,
+      recurrenceAnchorDate:
+        input.recurrenceAnchorDate === undefined
+          ? previousTask.recurrenceAnchorDate
+          : input.recurrenceAnchorDate,
       updatedAt: new Date().toISOString(),
     };
 

@@ -243,3 +243,11 @@ Added:
 Learning point:
 
 - Soft delete and archive states are more useful when the user can inspect and recover items before permanently deleting them. Bulk cleanup is still useful, but it should not be the only management option.
+
+## Recurring tasks v1
+
+Recurring tasks were added as a focused productivity feature. The app does not generate a full calendar. Instead, a recurring task stays inside its list and creates the next open copy when completed. Future copies are visible but muted and cannot be checked off before their scheduled date. Today and overdue due dates are visually highlighted with green and orange chips.
+
+Lernpunkt:
+
+- Recurrence can be useful without building a full calendar. For this app, list-based recurrence fits better than pre-generating months or years of tasks.

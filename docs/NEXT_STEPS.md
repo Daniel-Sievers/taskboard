@@ -10,43 +10,34 @@
 - PWA installation basics
 - Backup/export/import and data management
 - Active settings for theme, default view and task count display
-- GitHub and Vercel deployment
-- Supabase Realtime sync v1
-- Mobile touch drag improvements
-- Horizontal/swipe view polish
+- Realtime sync v1
+- Mobile touch and horizontal view polish
 - Trash and archive management
+- Recurring tasks v1
 
 ## Recommended next packages
 
-1. **Wiederholende Aufgaben**
-   - täglich / wöchentlich / monatlich
-   - alle X Tage
-   - Werktage
-   - nach Erledigung automatisch neu erzeugen
-   - UI im Task-Editor ergänzen
+1. **Recurring tasks polish**
+   - Add weekdays-only recurrence
+   - Add selected weekdays
+   - Add recurrence end conditions
+   - Improve editing rules for future recurring instances
 
 2. **Realtime sync robustness**
-   - Sync status more precise
-   - Better reconnect and error states
-   - Debounce refreshes after multiple events
-   - Avoid unnecessary reloads where possible
+   - More precise sync status
+   - Debounced refreshes for bursts of realtime events
+   - Reconnect indicator
+   - Last synced timestamp
 
-3. **Offline sync**
+3. **Auth improvements**
+   - Optional custom SMTP for Magic Links
+   - Optional Google Login only if desired
+   - Improve login copy and mobile session handling
+
+4. **Offline sync**
    - IndexedDB cache
    - Offline mutation queue
    - Last-write-wins conflict strategy
-   - Reconnect sync
-
-4. **Optional auth improvements**
-   - Google login
-   - Custom SMTP for Magic Links
-   - Better login rate-limit handling
 
 5. **Optional encryption**
    - Client-side encryption for selected sensitive tasks
-   - Local passphrase/key flow
-   - Clear UX for encrypted content
-
-## Current focus
-
-The next practical feature package is likely **recurring tasks**, because it adds everyday value after the core board, sync, mobile and data-management features are in place.
