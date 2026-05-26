@@ -142,7 +142,7 @@ export function TaskCard({
       {...(sortable && !overlay ? attributes : {})}
       {...(sortable && !overlay ? listeners : {})}
       className={`group flex gap-3 rounded-2xl border px-2 py-2.5 transition ${
-        sortable && !overlay ? "cursor-grab select-none touch-none active:cursor-grabbing" : ""
+        sortable && !overlay ? "cursor-grab select-none touch-manipulation active:cursor-grabbing" : ""
       } ${
         overlay
           ? "max-w-[760px] rotate-[0.5deg] border-blue-400/40 bg-[#16181c] shadow-2xl shadow-black/50 ring-1 ring-blue-400/20"

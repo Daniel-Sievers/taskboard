@@ -208,3 +208,18 @@ Dadurch bedeutet kurzes Wischen auf dem Handy wieder Scrollen, während längere
 ## Dependency-Versionierung
 
 Ein wichtiges Deployment-Learning war, dass `latest` bei Framework-Abhängigkeiten unvorhersehbare Builds verursachen kann. Ein Next.js-Upgrade auf eine neuere Major-Version erzeugte lokal/Vercel unterschiedliche Build-Probleme. Das Projekt pinnt deshalb zentrale Versionen und committet `package-lock.json`, damit lokale Builds und Vercel-Deployments reproduzierbarer bleiben.
+
+
+## Mobile Touch UX und horizontale Ansicht
+
+Nach dem erfolgreichen Realtime-Test auf Handy und Desktop wurde die mobile Bedienung verbessert. Auf Touch-Geräten startet Drag & Drop nun erst nach kurzem Halten, während normales Wischen über Tasks zum Scrollen genutzt werden kann. Dafür wurde der DnD-Sensor-Aufbau von einem allgemeinen PointerSensor auf getrennte Mouse- und Touch-Sensoren umgestellt.
+
+Die horizontale Ansicht wurde ebenfalls näher an das TasksBoard-Gefühl gebracht: Listen werden als seitlich swipebare Spalten dargestellt, die auf dem Handy per horizontalem Scroll-Snap durchgeblättert werden können. Außerdem wurde die PWA-Manifest-Ausrichtung auf Portrait gesetzt, damit die installierte App nicht ungewollt ins Querformat kippt.
+
+Lernpunkte:
+
+- Desktop-Mausverhalten und Mobile-Touchverhalten sollten getrennt gedacht werden.
+- `touch-action: none` kann auf Touch-Geräten normales Scrollen blockieren.
+- Ein Long-Press-Delay verhindert, dass jeder Scrollversuch sofort als Drag erkannt wird.
+- Für reproduzierbare Deployments sind gepinnte Dependency-Versionen besser als `"latest"`.
+

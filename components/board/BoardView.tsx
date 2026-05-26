@@ -34,6 +34,7 @@ import {
 } from "@dnd-kit/core";
 import {
   SortableContext,
+  horizontalListSortingStrategy,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
@@ -191,8 +192,10 @@ export function BoardView() {
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 280,
-        tolerance: 8,
+        // Mobile UX: a quick swipe should scroll; only a deliberate
+        // long-press should start dragging a task or list.
+        delay: 350,
+        tolerance: 12,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -454,29 +457,7 @@ export function BoardView() {
     }
   }
 
-  const kanbanColumns = [
-    {
-      id: "today",
-      title: t("kanban.today"),
-      tasks: filteredTasks.filter(
-        (task) =>
-          toDateKey(task.scheduledDate) === todayKey && task.status === "open",
-      ),
-    },
-    {
-      id: "week",
-      title: t("kanban.planned"),
-      tasks: filteredTasks.filter(
-        (task) =>
-          toDateKey(task.scheduledDate) !== todayKey && task.status === "open",
-      ),
-    },
-    {
-      id: "done",
-      title: t("kanban.done"),
-      tasks: filteredTasks.filter((task) => task.status === "done"),
-    },
-  ];
+
 
   if (authLoading || isLoading) {
     return (
@@ -844,44 +825,98 @@ export function BoardView() {
           </DragOverlay>
         </DndContext>
       ) : (
-        <div className="grid gap-4 lg:grid-cols-3">
-          {kanbanColumns.map((column) => (
-            <section
-              key={column.id}
-              className="min-h-96 rounded-[2rem] border border-white/10 bg-zinc-950/70 p-4 shadow-2xl shadow-black/20"
-            >
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="font-semibold text-zinc-100">{column.title}</h2>
-                <span className="rounded-full bg-white/5 px-2 py-1 text-xs text-zinc-500">
-                  {column.tasks.length}
-                </span>
-              </div>
-              <div className="space-y-2">
-                {column.tasks.length === 0 ? (
-                  <p className="rounded-2xl border border-dashed border-white/10 p-4 text-sm text-zinc-600">
-                    {t("kanban.emptyColumn")}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCorners}
+          autoScroll={false}
+          onDragStart={handleDragStart}
+          onDragMove={handleDragMove}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+          onDragCancel={handleDragCancel}
+        >
+          <SortableContext
+            items={boardLists.map((list) => `list:${list.id}`)}
+            strategy={horizontalListSortingStrategy}
+          >
+            <div className="tb-horizontal-board -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 md:-mx-5 md:px-5">
+              {boardLists.length === 0 ? (
+                <div className="min-w-[min(88vw,28rem)] snap-start rounded-[1.6rem] border border-dashed border-white/10 bg-[#111113] p-8 text-center">
+                  <p className="text-sm font-medium text-zinc-300">
+                    {t("board.noListsTitle")}
                   </p>
-                ) : (
-                  column.tasks.map((task) => (
-                    <div
-                      key={task.id}
-                      className="rounded-2xl border border-white/10 bg-white/[0.03] p-3"
-                    >
-                      <p className="break-words text-sm font-medium text-zinc-100">
-                        {task.title}
-                      </p>
-                      {task.notes ? (
-                        <p className="mt-1 text-xs leading-5 text-zinc-500">
-                          {task.notes}
-                        </p>
-                      ) : null}
-                    </div>
-                  ))
-                )}
+                  <p className="mt-2 text-sm text-zinc-600">
+                    {t("board.noListsBody")}
+                  </p>
+                </div>
+              ) : null}
+              {boardLists.map((list) => {
+                const tasksForList = filteredTasks
+                  .filter(
+                    (task) =>
+                      task.listId === list.id ||
+                      (!task.listId &&
+                        list.date &&
+                        toDateKey(task.scheduledDate) === list.date),
+                  )
+                  .sort((a, b) => a.position - b.position);
+
+                return (
+                  <div
+                    key={list.id}
+                    className="w-[min(88vw,28rem)] shrink-0 snap-start md:w-[24rem] lg:w-[26rem]"
+                  >
+                    <DayList
+                      list={list}
+                      tasks={tasksForList}
+                      onToggleTask={toggleTask}
+                      onAddTask={addTask}
+                      onEditTask={editTask}
+                      onDeleteTask={deleteTask}
+                      onDeleteList={deleteList}
+                      onRenameList={renameList}
+                      onToggleCollapsed={toggleListCollapsed}
+                      isTaskDragActive={activeDrag?.type === "task"}
+                      showTaskCounts={preferences.showTaskCounts}
+                      visibleStatus={statusFilter}
+                    />
+                  </div>
+                );
+              })}
+              <button
+                type="button"
+                onClick={() => void addList()}
+                className="flex min-h-40 w-[min(78vw,20rem)] shrink-0 snap-start items-center justify-center gap-2 rounded-[1.6rem] border border-dashed border-white/10 bg-zinc-950/70 px-6 py-3 text-sm text-zinc-300 hover:bg-white/5"
+              >
+                <Plus className="h-4 w-4" /> {t("board.addList")}
+              </button>
+            </div>
+          </SortableContext>
+          <DragOverlay
+            dropAnimation={{
+              duration: 180,
+              easing: "cubic-bezier(0.2, 0, 0, 1)",
+            }}
+          >
+            {activeTask ? (
+              <TaskCard
+                task={activeTask}
+                onToggle={() => undefined}
+                onEdit={() => undefined}
+                onDelete={() => undefined}
+                sortable={false}
+                overlay
+              />
+            ) : activeList ? (
+              <div className="rounded-[1.6rem] border border-blue-400/40 bg-[#16181c] p-5 shadow-2xl shadow-black/50 ring-1 ring-blue-400/20">
+                <p className="font-semibold text-zinc-100">
+                  {activeList.title}
+                </p>
+                <p className="mt-1 text-xs text-zinc-500">{t("board.moveList")}</p>
               </div>
-            </section>
-          ))}
-        </div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
       )}
     </section>
   );

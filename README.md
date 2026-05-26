@@ -74,6 +74,8 @@ Implemented so far:
 - Tasks can be created, edited, completed, deleted and reordered.
 - Drag & drop is implemented with `@dnd-kit`.
 - Drag & drop supports auto-scroll while moving lists.
+- Mobile touch drag uses long-press behavior so normal swipe scrolling stays usable.
+- Horizontal view uses swipeable list columns on mobile and wider screens.
 - Mobile touch drag now uses long-press behavior so normal touch scrolling stays usable.
 - Realtime sync v1 was tested online across devices.
 - Search, filters, labels and a “due today” foundation are available.
@@ -445,6 +447,8 @@ This project helped me practice:
 - deploying through GitHub and Vercel
 - handling environment variables safely
 - designing around sync, backups, privacy and UX details
+- improving mobile touch interactions with delayed drag activation
+- pinning framework dependencies instead of using `latest` for reproducible local and Vercel builds
 - documenting an iterative development process
 - pinning framework dependencies instead of relying on `latest` for reproducible local and Vercel builds
 

@@ -331,3 +331,27 @@ html[data-theme="light"][data-accent="graphite"] .tb-board-chip-active {
   border-color: rgba(51, 65, 85, 0.38) !important;
   color: #0f172a !important;
 }
+
+
+/* Mobile horizontal board: swipe between lists without rotating the app. */
+.tb-horizontal-board {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  overscroll-behavior-y: auto;
+  touch-action: pan-x pan-y;
+  scroll-padding-inline: 1rem;
+}
+
+.tb-horizontal-board > * {
+  scroll-snap-align: start;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .tb-horizontal-board {
+    scrollbar-width: none;
+  }
+
+  .tb-horizontal-board::-webkit-scrollbar {
+    display: none;
+  }
+}

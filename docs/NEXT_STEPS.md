@@ -9,46 +9,47 @@
 - Search, filters and labels
 - PWA installation basics
 - Backup/export/import and data management
-- Active settings for theme, language, default view and task count display
+- Active settings for theme, default view and task count display
 - GitHub + Vercel deployment
-- Realtime Sync v1 across devices
+- Realtime sync v1, tested online between desktop and mobile
 - Mobile touch drag improved with long-press behavior
+- Horizontal view changed to swipeable list columns
 - Dependency versions pinned for more reproducible builds
 
 ## Recommended next packages
 
 1. **Horizontal/Kanban view polish**
-   - Make the horizontal view visually closer to TasksBoard/Trello
-   - Add horizontal drag and drop
-   - Add horizontal autoscroll
-   - Decide how list creation should work in horizontal mode
+   - Improve horizontal drag and drop behavior further
+   - Add clearer drop indicators between horizontal columns
+   - Tune mobile snap behavior and column widths
+   - Decide whether horizontal view should become the default on mobile
 
-2. **Archive and trash views**
-   - Show deleted tasks in a real trash view
-   - Restore individual deleted tasks
+2. **Archive and trash management**
+   - Add a dedicated trash view
+   - Restore deleted tasks
    - Show archived boards
    - Restore archived boards
-   - Keep permanent deletion behind clear confirmation
+   - Make permanent deletion clearer
 
 3. **Recurring tasks**
-   - Daily, weekly and monthly repeats
+   - Daily, weekly, monthly recurrence
    - Every X days
    - Weekdays only
-   - Create the next occurrence after completion
+   - Generate next occurrence after completion
 
-4. **Realtime refinements**
-   - More detailed sync status
-   - Better error/reconnect handling
-   - Debounce refreshes if many changes arrive quickly
-   - Later: update only affected tasks/lists instead of refreshing the active board
+4. **Realtime sync hardening**
+   - More precise sync status
+   - Better reconnect/error states
+   - Debounce board refreshes after rapid events
+   - Later: update affected items without full board reload
 
 5. **Offline sync**
    - IndexedDB cache
    - Offline mutation queue
    - Last-write-wins conflict strategy
-   - Sync after reconnect
+   - Reconnect sync
 
 6. **Optional encryption**
    - Client-side encryption for selected sensitive tasks
-   - Local passphrase/key handling
-   - Clear UX around password loss and recovery limits
+   - Local password/key flow
+   - Clear warning that lost keys cannot be recovered

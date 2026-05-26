@@ -154,7 +154,7 @@ export function DayList({
     >
       <div className="flex items-start justify-between gap-3">
         <div
-          className="flex min-w-0 flex-1 cursor-grab touch-none select-none items-start gap-3 active:cursor-grabbing"
+          className="flex min-w-0 flex-1 cursor-grab touch-manipulation select-none items-start gap-3 active:cursor-grabbing"
           title={t("board.moveList")}
           {...attributes}
           {...listeners}
