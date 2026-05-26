@@ -34,3 +34,14 @@ For a private one-person app, Realtime usage should stay comfortably inside the 
 4. The small status pill in the board header should show Live-Sync / syncing states.
 
 Manual refresh stays available as a fallback through the refresh button in the top bar.
+
+
+## Verified behavior
+
+Realtime Sync v1 was tested locally and online. Changes made on a phone update the laptop view shortly afterwards, and changes made on the laptop update the phone view as well.
+
+The current implementation favors robustness over minimal payload updates: when a relevant Realtime event arrives for the active board, the board data is refreshed in the background.
+
+## Mobile note
+
+Touch devices use a long-press drag activation so normal vertical scrolling remains possible when the finger starts on a task card. Drag & drop on mobile now requires holding briefly before moving the task or list.

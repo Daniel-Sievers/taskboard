@@ -189,3 +189,22 @@ The light theme received another contrast pass, especially around the signed-in 
 - Added a Live-Sync status pill to the board header.
 - Added `supabase/migrations/0004_enable_realtime.sql`.
 - Added `docs/REALTIME_SYNC.md`.
+
+
+## Realtime Sync v1: online getestet
+
+Realtime wurde lokal und online getestet: Änderungen auf dem Handy erscheinen unmittelbar auf dem Laptop und umgekehrt. Die erste Version lädt bei relevanten Supabase-Realtime-Events das aktive Board neu. Das ist bewusst robust und einfach gehalten; spätere Optimierungen können gezieltere Updates einzelner Tasks oder Listen ergänzen.
+
+## Mobile Touch UX
+
+Auf Touch-Geräten war Drag & Drop zunächst zu aggressiv: Beim normalen Wischen über einem Task wurde der Task sofort gezogen. Die DnD-Sensoren wurden deshalb getrennt:
+
+- `MouseSensor` für Desktop mit kurzer Bewegungsdistanz
+- `TouchSensor` für Handy/Tablet mit Long-Press-Delay und Toleranz
+- `KeyboardSensor` bleibt für Tastaturbedienung erhalten
+
+Dadurch bedeutet kurzes Wischen auf dem Handy wieder Scrollen, während längeres Halten Drag & Drop startet.
+
+## Dependency-Versionierung
+
+Ein wichtiges Deployment-Learning war, dass `latest` bei Framework-Abhängigkeiten unvorhersehbare Builds verursachen kann. Ein Next.js-Upgrade auf eine neuere Major-Version erzeugte lokal/Vercel unterschiedliche Build-Probleme. Das Projekt pinnt deshalb zentrale Versionen und committet `package-lock.json`, damit lokale Builds und Vercel-Deployments reproduzierbarer bleiben.

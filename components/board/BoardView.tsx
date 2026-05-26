@@ -23,7 +23,8 @@ import {
   DndContext,
   DragOverlay,
   KeyboardSensor,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
@@ -183,9 +184,15 @@ export function BoardView() {
   const dragStartPointerYRef = useRef<number | null>(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(MouseSensor, {
       activationConstraint: {
         distance: 6,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 280,
+        tolerance: 8,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -341,12 +348,20 @@ export function BoardView() {
   function handleDragStart(event: DragStartEvent) {
     lastDragOverKeyRef.current = null;
     const activatorEvent = event.activatorEvent;
-    if (
-      activatorEvent instanceof PointerEvent ||
-      activatorEvent instanceof MouseEvent
-    ) {
+    if (activatorEvent instanceof MouseEvent) {
       pointerYRef.current = activatorEvent.clientY;
       dragStartPointerYRef.current = activatorEvent.clientY;
+    }
+
+    if (
+      typeof TouchEvent !== "undefined" &&
+      activatorEvent instanceof TouchEvent
+    ) {
+      const touch = activatorEvent.touches[0] ?? activatorEvent.changedTouches[0];
+      if (touch) {
+        pointerYRef.current = touch.clientY;
+        dragStartPointerYRef.current = touch.clientY;
+      }
     }
     const data = getDragData(event);
     if (data?.type === "list" && data.listId) {

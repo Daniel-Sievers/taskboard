@@ -9,59 +9,46 @@
 - Search, filters and labels
 - PWA installation basics
 - Backup/export/import and data management
-- Active settings for theme, default view and task count display
+- Active settings for theme, language, default view and task count display
+- GitHub + Vercel deployment
+- Realtime Sync v1 across devices
+- Mobile touch drag improved with long-press behavior
+- Dependency versions pinned for more reproducible builds
 
 ## Recommended next packages
 
-1. **GitHub + Vercel deployment**
-   - Create/clean GitHub repo
-   - Improve README for portfolio use
-   - Add screenshots
-   - Connect Vercel
-   - Add environment variables
-   - Configure Supabase redirect URLs
-   - Test on phone and second laptop
-
-2. **Horizontal/Kanban view polish**
+1. **Horizontal/Kanban view polish**
    - Make the horizontal view visually closer to TasksBoard/Trello
-   - Decide which view should support drag and drop first
-   - Store preferred view more consistently per user/device
+   - Add horizontal drag and drop
+   - Add horizontal autoscroll
+   - Decide how list creation should work in horizontal mode
 
-3. **Realtime sync**
-   - Subscribe to Supabase changes
-   - Update open devices live
-   - Add visible sync status
+2. **Archive and trash views**
+   - Show deleted tasks in a real trash view
+   - Restore individual deleted tasks
+   - Show archived boards
+   - Restore archived boards
+   - Keep permanent deletion behind clear confirmation
 
-4. **Offline sync**
+3. **Recurring tasks**
+   - Daily, weekly and monthly repeats
+   - Every X days
+   - Weekdays only
+   - Create the next occurrence after completion
+
+4. **Realtime refinements**
+   - More detailed sync status
+   - Better error/reconnect handling
+   - Debounce refreshes if many changes arrive quickly
+   - Later: update only affected tasks/lists instead of refreshing the active board
+
+5. **Offline sync**
    - IndexedDB cache
    - Offline mutation queue
    - Last-write-wins conflict strategy
+   - Sync after reconnect
 
-5. **Optional encryption**
+6. **Optional encryption**
    - Client-side encryption for selected sensitive tasks
-
-
-## Nächster Fokus
-
-1. GitHub-Repository erstellen und ersten Commit pushen.
-2. Vercel-Projekt mit GitHub verbinden.
-3. Supabase Environment Variables in Vercel setzen.
-4. Supabase Redirect URLs für die Vercel-Domain ergänzen.
-5. Online-Test auf Laptop und Handy.
-6. Danach Horizontal-/Kanban-Ansicht ausbauen.
-
-
-## Internationalisierung und Wochenstart
-
-- UI-Übersetzungsschicht für Deutsch/Englisch ergänzt.
-- Task-/Board-/Listen-Inhalte bleiben unverändert und werden nicht automatisch übersetzt.
-- Wochentag-Auswahl für „Woche beginnt am“ auf alle sieben Tage erweitert.
-- Neue Doku: `docs/I18N.md`.
-
-
-## Realtime Sync
-
-- Added Supabase Realtime subscription for boards, lists and tasks.
-- Added a Live-Sync status pill to the board header.
-- Added `supabase/migrations/0004_enable_realtime.sql`.
-- Added `docs/REALTIME_SYNC.md`.
+   - Local passphrase/key handling
+   - Clear UX around password loss and recovery limits

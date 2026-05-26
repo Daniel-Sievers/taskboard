@@ -74,6 +74,8 @@ Implemented so far:
 - Tasks can be created, edited, completed, deleted and reordered.
 - Drag & drop is implemented with `@dnd-kit`.
 - Drag & drop supports auto-scroll while moving lists.
+- Mobile touch drag now uses long-press behavior so normal touch scrolling stays usable.
+- Realtime sync v1 was tested online across devices.
 - Search, filters, labels and a “due today” foundation are available.
 - Settings for theme, language, accent color, week start, default view, sound effects, delete confirmation and task counts are active.
 - PWA basics are implemented: manifest, icons, start URL and installable app mode.
@@ -159,6 +161,22 @@ Implemented so far:
 - **@dnd-kit** — drag & drop
 - **Lucide React** — icons
 - **PWA manifest / service worker** — installable app foundation
+
+---
+
+## Dependency Management
+
+The project intentionally pins core framework dependencies instead of relying on `latest`. During deployment, a `latest` upgrade pulled in a newer Next.js/Turbopack build that behaved differently from the local setup. The project now keeps framework versions explicit and commits `package-lock.json` so local and Vercel builds are more reproducible.
+
+Recommended workflow for dependency changes:
+
+```txt
+npm install
+npm run build
+git add package.json package-lock.json
+git commit -m "Update dependencies"
+git push
+```
 
 ---
 
@@ -405,7 +423,7 @@ This reduces vendor lock-in and makes private data easier to move or back up man
 
 Planned improvements:
 
-- Realtime sync across open devices
+- Realtime sync refinements and more detailed sync status
 - Improved horizontal / Kanban view
 - Offline sync with IndexedDB
 - Recurring tasks
@@ -428,6 +446,7 @@ This project helped me practice:
 - handling environment variables safely
 - designing around sync, backups, privacy and UX details
 - documenting an iterative development process
+- pinning framework dependencies instead of relying on `latest` for reproducible local and Vercel builds
 
 ---
 
