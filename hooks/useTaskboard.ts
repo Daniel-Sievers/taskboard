@@ -29,8 +29,8 @@ import type { CreateTaskInput, Task, UpdateTaskInput } from "@/types/task";
 import type { User } from "@supabase/supabase-js";
 
 
-function isFutureRecurringTask(task: Task) {
-  if (task.status !== "open" || (task.recurrenceType ?? "none") === "none" || !task.scheduledDate) return false;
+function isFutureLockedTask(task: Task) {
+  if (task.status !== "open" || !task.scheduledDate) return false;
   return task.scheduledDate > toDateKey(new Date());
 }
 
@@ -330,8 +330,8 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
     const task = tasks.find((item) => item.id === taskId);
     if (!task) return;
 
-    if (isFutureRecurringTask(task)) {
-      setError("Diese wiederholende Aufgabe ist noch nicht fällig und kann noch nicht abgehakt werden.");
+    if (isFutureLockedTask(task)) {
+      setError("Diese Aufgabe ist noch nicht fällig und kann noch nicht abgehakt werden.");
       return;
     }
 

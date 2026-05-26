@@ -58,10 +58,9 @@ function dateClass(task: Task) {
   return "border-white/10 bg-white/[0.03] text-zinc-500";
 }
 
-function isFutureRecurringTask(task: Task) {
+function isFutureLockedTask(task: Task) {
   return (
     task.status === "open" &&
-    (task.recurrenceType ?? "none") !== "none" &&
     Boolean(task.scheduledDate) &&
     task.scheduledDate > todayKey()
   );
@@ -94,7 +93,7 @@ export function TaskCard({
   const { preferences } = usePreferences();
   const { t } = useI18n();
   const isDone = task.status === "done";
-  const isFutureLocked = isFutureRecurringTask(task);
+  const isFutureLocked = isFutureLockedTask(task);
   const recurringLabel = recurrenceLabel(task, preferences.language);
 
   function handleToggle() {
@@ -200,7 +199,7 @@ export function TaskCard({
           : isDragging
             ? "border-blue-400/20 bg-blue-500/5 opacity-35"
             : isFutureLocked
-              ? "border-white/5 bg-white/[0.018] opacity-65 hover:border-white/10 hover:bg-white/[0.035]"
+              ? "border-white/5 bg-white/[0.012] opacity-45 hover:border-white/10 hover:bg-white/[0.025]"
               : "border-transparent hover:border-white/5 hover:bg-white/[0.045]"
       }`}
     >
@@ -212,7 +211,17 @@ export function TaskCard({
         <GripVertical className="h-4 w-4" />
       </span>
 
-      <div onPointerDown={(event) => event.stopPropagation()}>
+      <div
+        className={isFutureLocked ? "cursor-not-allowed opacity-45 grayscale" : ""}
+        title={isFutureLocked ? (preferences.language === "en" ? "Not due yet" : "Noch nicht fällig") : undefined}
+        aria-disabled={isFutureLocked}
+        onPointerDown={(event) => event.stopPropagation()}
+        onClickCapture={(event) => {
+          if (!isFutureLocked) return;
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+      >
         <Checkbox checked={isDone} onChange={handleToggle} aria-label={t("task.toggle")} />
       </div>
 
@@ -246,7 +255,7 @@ export function TaskCard({
                     isDone
                       ? "min-w-0 max-w-full cursor-text break-words [overflow-wrap:anywhere] text-sm font-medium leading-6 text-zinc-500 line-through"
                       : isFutureLocked
-                        ? "min-w-0 max-w-full cursor-text break-words [overflow-wrap:anywhere] text-sm font-medium leading-6 text-zinc-500"
+                        ? "min-w-0 max-w-full cursor-text break-words [overflow-wrap:anywhere] text-sm font-medium leading-6 text-zinc-600"
                         : "min-w-0 max-w-full cursor-text break-words [overflow-wrap:anywhere] text-sm font-medium leading-6 text-zinc-100"
                   }
                 >
@@ -358,7 +367,7 @@ export function TaskCard({
                   isDone
                     ? "mt-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-6 text-zinc-600"
                     : isFutureLocked
-                      ? "mt-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-6 text-zinc-600"
+                      ? "mt-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-6 text-zinc-700"
                       : "mt-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-6 text-zinc-400"
                 }
               >
