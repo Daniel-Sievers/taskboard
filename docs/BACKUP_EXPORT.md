@@ -1,10 +1,14 @@
 # Backup and export
 
-Taskboard includes manual data-management tools so private task data is not locked into the UI.
+Taskboard includes manual data-management tools so authenticated task data is not locked into the UI.
+
+## Availability
+
+Backup, import, restore and cleanup workflows are intended for signed-in Supabase boards. The public demo uses local sample data and does not persist changes to Supabase, so it is not the primary place to test durable backup/restore behavior.
 
 ## JSON backup
 
-A JSON backup exports the current board data in a structured format that can later be imported again. This is the safest manual backup format because it preserves boards, lists, tasks and metadata.
+A JSON backup exports the current authenticated board data in a structured format that can later be imported again. This is the safest manual backup format because it preserves boards, lists, tasks and metadata.
 
 ## JSON import
 
@@ -20,4 +24,4 @@ Deleted tasks first move into trash. Archived boards remain recoverable until pe
 
 ## Data ownership goal
 
-The feature set reflects the main data-ownership goal of the project: authenticated data lives in Supabase, but the user-facing app still provides manual export and recovery paths.
+The feature set reflects the main data-ownership goal of the project: authenticated data lives in Supabase, while the user-facing app still provides manual export and recovery paths.

@@ -18,6 +18,10 @@ Local environment values belong in `.env.local`, which is ignored by Git. The re
 
 The public demo uses anonymized local data and does not write to Supabase. This keeps portfolio testing separate from private authenticated data.
 
+## Public signups
+
+If Supabase email signups are enabled, visitors can create their own Magic Link account. With RLS enabled, their account is isolated from other users and can only access rows owned by that authenticated user. If the app should be limited to existing users only, new signups can be disabled in Supabase Auth settings.
+
 ## Known security boundaries
 
 Optional client-side encryption for sensitive tasks is future work. Current protection relies on Supabase Auth, RLS and safe environment-variable handling.

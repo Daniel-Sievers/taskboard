@@ -28,4 +28,4 @@ Install prompts, icons and shortcut behavior can differ between Chrome, Edge, Fi
 
 ## Public demo
 
-The public demo uses anonymized local data and does not persist changes to Supabase. This is intentional so the project can be tested without login or private data access.
+The public demo uses anonymized local data and does not persist changes to Supabase. This is intentional so the project can be tested without login or private data access. Persistent boards, realtime database sync and full backup/import/restore workflows belong to the authenticated Magic Link mode.

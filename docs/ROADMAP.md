@@ -23,12 +23,12 @@ The current project phase is final portfolio polish. The main product foundation
 - Notification settings preparation
 - GitHub Actions and Vercel deployment
 
-## Final portfolio polish
+## Final release checks
 
-- Replace screenshots with anonymized demo screenshots
 - Confirm the public demo and login deployment
 - Confirm GitHub Actions build status
-- Keep README, docs and deployment URL aligned
+- Confirm README screenshots render correctly on GitHub
+- Confirm no local build artifacts or environment files are committed
 
 ## Future product improvements
 

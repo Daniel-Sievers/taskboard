@@ -22,11 +22,11 @@ The project is intentionally more than a todo-list tutorial. It is a practical f
 
 ## Screenshots
 
-### Board overview
+### Board overview / dark mode
 
 ![Taskboard dark board view](docs/screenshots/01-board-dark.png)
 
-### Light mode and color themes
+### Light mode
 
 ![Taskboard light mode](docs/screenshots/02-board-light.png)
 
@@ -34,11 +34,11 @@ The project is intentionally more than a todo-list tutorial. It is a practical f
 
 ![Task editor](docs/screenshots/03-task-editor.png)
 
-### Settings
+### Settings and notification preparation
 
 ![Settings](docs/screenshots/04-settings.png)
 
-### Backup and export
+### Signed-in data tools
 
 ![Backup and export](docs/screenshots/05-backup-export.png)
 
@@ -46,9 +46,9 @@ The project is intentionally more than a todo-list tutorial. It is a practical f
 
 ![Mobile drawer](docs/screenshots/06-mobile-drawer.png)
 
-### PWA / installable app
+### Login and public demo entry
 
-![PWA install](docs/screenshots/07-pwa-install.png)
+![Login and demo entry](docs/screenshots/07-pwa-install.png)
 
 ---
 
@@ -60,15 +60,15 @@ The demo route opens a local, anonymized board without requiring a Magic Link lo
 https://taskboard-ten-steel.vercel.app/demo
 ```
 
-Demo mode supports the main interaction flow: creating and editing tasks, changing priority/date/labels/recurrence, dragging tasks between lists, completing recurring tasks, switching views and opening settings/data-management screens.
+Demo mode supports the main review flow: creating and editing tasks, changing priority/date/labels/recurrence, dragging tasks between lists, completing recurring tasks, switching views and opening the settings area.
 
-Demo changes are intentionally not saved to Supabase. Authenticated boards keep persistent private data in Supabase.
+Demo changes are intentionally not saved to Supabase and can reset after reload. Persistent boards, Supabase sync and full backup/import/restore workflows belong to the authenticated Magic Link mode. This keeps portfolio testing quick while private data remains behind Supabase Auth and Row Level Security.
 
 ---
 
 ## Current status
 
-Taskboard is usable as a private online taskboard with Supabase authentication, database persistence, realtime sync and Vercel deployment.
+Taskboard is usable as a private online taskboard with Supabase authentication, database persistence, realtime sync, signed-in data-management tools and Vercel deployment.
 
 Implemented highlights:
 
@@ -84,7 +84,7 @@ Implemented highlights:
 - Trash recovery, archived board management and permanent cleanup actions
 - Theme, accent color, language, week-start, sound and view preferences
 - Browser-notification permission preparation with honest status handling
-- JSON backup/import and CSV export
+- JSON backup/import and CSV export for authenticated boards
 - PWA manifest, icons, installable app mode and demo shortcut
 - Public demo route without login
 - GitHub Actions build check and Vercel deployment
@@ -151,7 +151,7 @@ Implemented highlights:
 - German/English language foundation
 - Week-start and default-view preferences
 - Notification permission preparation
-- JSON backup/import and CSV export
+- JSON backup/import and CSV export for authenticated boards
 - Trash recovery and archive management
 - Approximate storage usage display
 
@@ -310,6 +310,12 @@ Main deployment URL:
 https://taskboard-ten-steel.vercel.app
 ```
 
+Public review URL:
+
+```txt
+https://taskboard-ten-steel.vercel.app/demo
+```
+
 Production environment variables are configured in Vercel:
 
 ```env
@@ -398,6 +404,7 @@ Current limits are documented rather than hidden:
 - Realtime sync v1 refreshes board data rather than applying every remote event locally in a granular way.
 - Recurring tasks cover the main repeat patterns, but advanced series management remains future work.
 - Browser/PWA icon behavior can differ between platforms.
+- The public demo does not persist changes to Supabase; backup/import/restore is intended for authenticated boards.
 
 More detail is documented in `docs/KNOWN_LIMITS.md`.
 
@@ -409,7 +416,7 @@ Planned improvements:
 
 - Full Web Push reminder implementation
 - More robust realtime reconnect/status handling
-- Optional custom SMTP setup for Magic Links
+- Optional custom SMTP setup for Magic Links, if email delivery limits become relevant
 - Offline sync with IndexedDB
 - Optional client-side encryption for sensitive tasks
 - More advanced recurring-series controls

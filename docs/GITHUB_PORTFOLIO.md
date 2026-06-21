@@ -34,7 +34,7 @@ The public entry point is:
 https://taskboard-ten-steel.vercel.app/demo
 ```
 
-The demo uses anonymized local data and does not require login. Private persisted boards remain behind Supabase authentication.
+The demo uses anonymized local data and does not require login. Private persisted boards, Supabase sync and full backup/import/restore workflows remain behind Supabase authentication.
 
 ## Portfolio framing
 

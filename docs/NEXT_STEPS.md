@@ -22,13 +22,13 @@ Taskboard is in a portfolio-ready finalization phase. The remaining work is focu
 - Notification settings preparation
 - GitHub Actions build check and Vercel deployment
 
-## Final release polish
+## Final release checks
 
-- Replace screenshots with anonymized demo screenshots
 - Confirm the public demo route works after deployment
 - Confirm the login page is connected to Supabase
 - Confirm GitHub Actions is green
-- Confirm no local files such as `.env.local`, `.next`, `node_modules` or `.vercel` are committed
+- Confirm README screenshots render correctly on GitHub
+- Confirm no local files such as `.env.local`, `.next`, `node_modules`, `.vercel` or `tsconfig.tsbuildinfo` are committed
 - Keep README and docs aligned with the final deployment URL
 
 ## Future product work

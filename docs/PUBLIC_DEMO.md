@@ -25,12 +25,16 @@ Demo mode uses local anonymized sample data. It does not write to Supabase and d
 - Drag and drop
 - Recurring tasks
 - Filters and labels
-- Settings and data-management screens
+- Settings and preference screens
 - PWA/demo entry behavior
+
+## What requires authenticated mode
+
+Persistent boards, Supabase sync and full backup/import/restore workflows are designed for Magic Link users. The demo can show the interface and interaction model, but it intentionally does not treat local sample data as a durable backup source.
 
 ## Persistence
 
-Demo changes can reset after reload or a new browser session. This keeps the demo safe for public testing.
+Demo changes can reset after reload or a new browser session. This keeps the demo safe for public testing and avoids storing reviewer changes in the production database.
 
 ## Purpose
 
