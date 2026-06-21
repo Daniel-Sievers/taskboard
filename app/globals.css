@@ -475,3 +475,123 @@ html[data-theme="light"][data-accent="graphite"] .tb-board-chip-active {
   background: rgba(6, 182, 212, 0.14);
   color: rgb(14, 116, 144);
 }
+
+/* Task modal keeps a dark, high-contrast surface in both themes.
+   The light theme still applies to the board behind it, but the editor itself
+   stays readable and consistent with the dark-mode modal. */
+html[data-theme="light"] .tb-modal-backdrop {
+  background-color: rgba(9, 9, 11, 0.62) !important;
+}
+
+html[data-theme="light"] .tb-task-modal {
+  --tw-ring-color: rgba(255, 255, 255, 0.04) !important;
+  background-color: rgba(16, 17, 20, 0.98) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #f4f4f5 !important;
+}
+
+html[data-theme="light"][data-accent="cobalt"] .tb-task-modal {
+  --tb-accent-text: #bfdbfe;
+  --tb-accent-strong-text: #dbeafe;
+  --tb-accent-soft: rgba(59, 130, 246, 0.14);
+  --tb-accent-border: rgba(96, 165, 250, 0.32);
+}
+
+html[data-theme="light"][data-accent="violet"] .tb-task-modal {
+  --tb-accent-text: #ddd6fe;
+  --tb-accent-strong-text: #ede9fe;
+  --tb-accent-soft: rgba(139, 92, 246, 0.16);
+  --tb-accent-border: rgba(167, 139, 250, 0.36);
+}
+
+html[data-theme="light"][data-accent="emerald"] .tb-task-modal {
+  --tb-accent-text: #a7f3d0;
+  --tb-accent-strong-text: #d1fae5;
+  --tb-accent-soft: rgba(16, 185, 129, 0.15);
+  --tb-accent-border: rgba(52, 211, 153, 0.34);
+}
+
+html[data-theme="light"][data-accent="graphite"] .tb-task-modal {
+  --tb-accent-text: #cbd5e1;
+  --tb-accent-strong-text: #e2e8f0;
+  --tb-accent-soft: rgba(100, 116, 139, 0.18);
+  --tb-accent-border: rgba(148, 163, 184, 0.36);
+}
+
+html[data-theme="light"] .tb-task-modal .bg-\[\#101114\]\/95,
+html[data-theme="light"] .tb-task-modal .bg-\[\#101114\]\/98 {
+  background-color: rgba(16, 17, 20, 0.98) !important;
+}
+
+html[data-theme="light"] .tb-task-modal .bg-zinc-950,
+html[data-theme="light"] .tb-task-modal .bg-zinc-950\/50,
+html[data-theme="light"] .tb-task-modal .bg-zinc-950\/60,
+html[data-theme="light"] .tb-task-modal .bg-zinc-950\/70,
+html[data-theme="light"] .tb-task-modal .bg-zinc-900,
+html[data-theme="light"] .tb-task-modal .bg-zinc-900\/80 {
+  background-color: rgba(24, 24, 27, 0.86) !important;
+}
+
+html[data-theme="light"] .tb-task-modal .bg-white\/\[0\.02\],
+html[data-theme="light"] .tb-task-modal .bg-white\/\[0\.025\],
+html[data-theme="light"] .tb-task-modal .bg-white\/\[0\.03\],
+html[data-theme="light"] .tb-task-modal .bg-white\/\[0\.035\],
+html[data-theme="light"] .tb-task-modal .bg-white\/\[0\.04\],
+html[data-theme="light"] .tb-task-modal .bg-white\/\[0\.045\],
+html[data-theme="light"] .tb-task-modal .bg-white\/\[0\.05\],
+html[data-theme="light"] .tb-task-modal .bg-white\/\[0\.06\] {
+  background-color: rgba(255, 255, 255, 0.035) !important;
+}
+
+html[data-theme="light"] .tb-task-modal input,
+html[data-theme="light"] .tb-task-modal textarea,
+html[data-theme="light"] .tb-task-modal select {
+  background-color: rgba(24, 24, 27, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #f4f4f5 !important;
+}
+
+html[data-theme="light"] .tb-task-modal input::placeholder,
+html[data-theme="light"] .tb-task-modal textarea::placeholder {
+  color: #71717a !important;
+}
+
+html[data-theme="light"] .tb-task-modal .border-white\/5,
+html[data-theme="light"] .tb-task-modal .border-white\/10,
+html[data-theme="light"] .tb-task-modal .border-white\/15,
+html[data-theme="light"] .tb-task-modal .border-zinc-800 {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+html[data-theme="light"] .tb-task-modal .text-white,
+html[data-theme="light"] .tb-task-modal .text-zinc-100,
+html[data-theme="light"] .tb-task-modal .text-zinc-200,
+html[data-theme="light"] .tb-task-modal .text-zinc-300 {
+  color: #f4f4f5 !important;
+}
+
+html[data-theme="light"] .tb-task-modal .text-zinc-400 {
+  color: #a1a1aa !important;
+}
+
+html[data-theme="light"] .tb-task-modal .text-zinc-500,
+html[data-theme="light"] .tb-task-modal .text-zinc-600,
+html[data-theme="light"] .tb-task-modal .text-zinc-700 {
+  color: #71717a !important;
+}
+
+html[data-theme="light"] .tb-task-modal .text-blue-100,
+html[data-theme="light"] .tb-task-modal .text-blue-200,
+html[data-theme="light"] .tb-task-modal .text-blue-300 {
+  color: var(--tb-accent-text) !important;
+}
+
+html[data-theme="light"] .tb-task-modal .bg-blue-500\/10,
+html[data-theme="light"] .tb-task-modal .bg-blue-500\/15 {
+  background-color: var(--tb-accent-soft) !important;
+}
+
+html[data-theme="light"] .tb-task-modal .border-blue-400\/20,
+html[data-theme="light"] .tb-task-modal .border-blue-400\/30 {
+  border-color: var(--tb-accent-border) !important;
+}

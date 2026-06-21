@@ -104,7 +104,6 @@ export function TaskModal({
   const [visibleFields, setVisibleFields] = useState<VisibleFields>(() =>
     defaultVisibleFields(),
   );
-  const [titleTouched, setTitleTouched] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   const options = useMemo(
@@ -112,7 +111,6 @@ export function TaskModal({
     [preferences.language],
   );
   const showInterval = recurrenceType === "interval";
-  const titleError = titleTouched && title.trim().length === 0;
   const wasRecurring = Boolean(task && isRecurringTask(task));
   const currentRecurrenceLabel = task ? getRecurrenceRuleLabel(task, preferences.language) : null;
   const currentRecurrenceStatus = task ? getRecurringTaskStatus(task, preferences.language) : null;
@@ -152,10 +150,12 @@ export function TaskModal({
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setTitleTouched(true);
 
-    const nextTitle = title.trim();
-    if (!nextTitle) return;
+    const notesFallback = notes.trim().split(/\r?\n/)[0]?.trim();
+    const nextTitle =
+      title.trim() ||
+      (notesFallback ? notesFallback.slice(0, 80) : "") ||
+      (preferences.language === "en" ? "Untitled task" : "Ohne Titel");
 
     const interval = Math.max(1, Number.parseInt(recurrenceInterval, 10) || 1);
     const nextScheduledDate = scheduledDate || "";
@@ -189,7 +189,7 @@ export function TaskModal({
 
   const modal = (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-zinc-950/60 px-2 py-2 backdrop-blur-[2px] sm:px-4 sm:py-4"
+      className="tb-modal-backdrop fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-zinc-950/60 px-2 py-2 backdrop-blur-[2px] sm:px-4 sm:py-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="task-modal-title"
@@ -199,7 +199,7 @@ export function TaskModal({
     >
       <form
         onSubmit={submit}
-        className="flex max-h-[calc(100dvh-1rem)] w-full max-w-2xl flex-col overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#101114]/98 shadow-2xl shadow-black/70 ring-1 ring-white/[0.04] sm:max-h-[min(94dvh,52rem)]"
+        className="tb-task-modal flex max-h-[calc(100dvh-1rem)] w-full max-w-2xl flex-col overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#101114]/98 shadow-2xl shadow-black/70 ring-1 ring-white/[0.04] sm:max-h-[min(94dvh,52rem)]"
       >
         <div className="border-b border-white/10 bg-gradient-to-r from-blue-500/10 via-transparent to-purple-500/10 px-4 py-3 sm:px-5">
           <div className="flex items-start justify-between gap-3">
@@ -233,14 +233,9 @@ export function TaskModal({
             <Input
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              onBlur={() => setTitleTouched(true)}
               placeholder={t("task.titlePlaceholder")}
               autoFocus
-              aria-invalid={titleError}
             />
-            {titleError ? (
-              <p className="px-1 text-xs text-red-300">{t("task.titleRequired")}</p>
-            ) : null}
           </div>
 
           {mode === "edit" && wasRecurring ? (
