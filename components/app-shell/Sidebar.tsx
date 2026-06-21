@@ -22,6 +22,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { usePreferences } from "@/hooks/usePreferences";
 import { useI18n } from "@/hooks/useI18n";
 import { createBoard, listBoards } from "@/lib/db/boards";
+import { demoBoard } from "@/lib/demo-data";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import type { Board } from "@/types/board";
 
@@ -42,13 +43,15 @@ type BoardUiAction = (typeof boardActionItems)[number]["action"];
 
 const pendingBoardActionKey = "taskboard:pending-board-action";
 
-function boardHref(boardId: string) {
+function boardHref(boardId: string, isDemo = false) {
+  if (isDemo) return "/board?demo=1";
   return `/board?board=${boardId}`;
 }
 
-function viewHref(key: string, boardId: string | null) {
+function viewHref(key: string, boardId: string | null, isDemo = false) {
   if (key === "settings") return "/settings";
   const params = new URLSearchParams();
+  if (isDemo) params.set("demo", "1");
   if (boardId) params.set("board", boardId);
   if (key === "kanban") params.set("view", "kanban");
   if (key === "today") params.set("filter", "today");
@@ -72,7 +75,8 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
   const { preferences, updatePreferences } = usePreferences();
   const { t } = useI18n();
 
-  const activeBoardId = searchParams.get("board");
+  const isDemoMode = searchParams.get("demo") === "1" || (!user && !authLoading);
+  const activeBoardId = isDemoMode ? null : searchParams.get("board");
   const activeView = useMemo(() => {
     if (pathname === "/settings") return "settings";
     if (searchParams.get("filter") === "today") return "today";
@@ -81,8 +85,8 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
   }, [pathname, preferences.defaultView, searchParams]);
 
   async function reloadBoards() {
-    if (!isSupabaseConfigured || !user) {
-      setBoards([]);
+    if (isDemoMode || !isSupabaseConfigured || !user) {
+      setBoards([demoBoard]);
       return;
     }
 
@@ -124,14 +128,14 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
       );
     } else {
       window.sessionStorage.setItem(pendingBoardActionKey, action);
-      router.push(activeBoardId ? boardHref(activeBoardId) : "/board");
+      router.push(activeBoardId ? boardHref(activeBoardId, isDemoMode) : isDemoMode ? "/board?demo=1" : "/board");
     }
 
     onNavigate?.();
   }
 
   async function handleAddBoard() {
-    if (!user || authLoading) {
+    if (isDemoMode || !user || authLoading) {
       router.push("/login");
       return;
     }
@@ -179,7 +183,7 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
             return (
               <Link
                 key={item.key}
-                href={viewHref(item.key, activeBoardId)}
+                href={viewHref(item.key, activeBoardId, isDemoMode)}
                 onClick={() => {
                   if (item.key === "days" || item.key === "kanban")
                     updatePreferences({ defaultView: item.key });
@@ -218,7 +222,7 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
             return (
               <Link
                 key={item.key}
-                href={viewHref(item.key, activeBoardId)}
+                href={viewHref(item.key, activeBoardId, isDemoMode)}
                 onClick={() => {
                   onNavigate?.();
                 }}
@@ -246,9 +250,11 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
           <div className="space-y-1">
             {boards.length === 0 ? (
               <p className="px-3 py-2 text-xs leading-5 text-zinc-500">
-                {isSupabaseConfigured
-                  ? "After signing in, your boards will appear here."
-                  : "Supabase is not connected yet."}
+                {isDemoMode
+                  ? t("demo.sidebarHint")
+                  : isSupabaseConfigured
+                    ? "After signing in, your boards will appear here."
+                    : "Supabase is not connected yet."}
               </p>
             ) : null}
 
@@ -259,7 +265,7 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
               return (
                 <Link
                   key={board.id}
-                  href={boardHref(board.id)}
+                  href={boardHref(board.id, isDemoMode)}
                   onClick={onNavigate}
                   className={
                     isActive

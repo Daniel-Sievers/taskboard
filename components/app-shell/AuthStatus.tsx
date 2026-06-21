@@ -1,11 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { CheckCircle2, Loader2, LogIn } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 export function AuthStatus() {
+  const searchParams = useSearchParams();
+  const isForcedDemo = searchParams.get("demo") === "1";
   const { user, isLoading, isSupabaseConfigured } = useAuth();
+
+  if (isForcedDemo) {
+    return (
+      <Link href="/login" className="rounded-2xl border border-blue-400/20 bg-blue-500/10 px-3 py-2 text-sm text-blue-100 hover:bg-blue-500/15">
+        Demo-Modus
+      </Link>
+    );
+  }
 
   if (!isSupabaseConfigured) {
     return (

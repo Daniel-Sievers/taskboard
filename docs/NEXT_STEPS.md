@@ -17,44 +17,43 @@
 - Collapsible board header and hamburger/sidebar board actions
 - Portfolio README and documentation polish
 - GitHub Actions build check
+- Public demo access without login
 
 ## Recommended next packages
 
-1. **Demo video or GIF**
-   - Show task creation
-   - Show editing and recurring tasks
-   - Show drag and drop
-   - Show realtime sync across devices
-   - Use demo/anonymized data
-
-2. **Task editor modal**
+1. **Task editor modal**
    - Open a centered modal when adding or editing tasks
    - Mobile: full-height app-like dialog
    - Desktop: compact centered dialog
    - Optional field selection for date, notes, priority, recurrence, labels and sensitive marker
 
-3. **Automatic date recognition for day lists**
+2. **Automatic date recognition for day lists**
    - Detect titles such as `Dienstag, 26.05.2026`
    - Route tasks with matching dates into existing manual lists
    - Move very old open tasks into an `Offen` list if needed
    - Add a settings hint for supported date formats
 
-4. **Realtime sync robustness**
+3. **Realtime sync robustness**
    - More precise sync status
    - Debounced refreshes for bursts of realtime events
    - Reconnect indicator
    - Last synced timestamp
 
-5. **Auth and offline improvements**
+4. **Auth and offline improvements**
    - Optional custom SMTP for Magic Links
    - Offline sync with IndexedDB
    - Optional client-side encryption
 
+5. **Optional demo video or GIF**
+   - Only needed if the GitHub README should show a quick preview without opening the app
+   - Use demo/anonymized data only
+   - Keep it short: task creation, edit modal, drag and drop, recurring task, settings
+
 ## Portfolio checklist
 
-- [ ] Confirm the live app link works.
+- [ ] Confirm the live demo link works: `https://taskboard-ten-steel.vercel.app/demo`.
 - [ ] Confirm screenshots are anonymized.
-- [ ] Add or record a short demo video/GIF.
 - [ ] Confirm GitHub Actions build check passes after the latest push.
 - [ ] Confirm `.env.local`, `.next`, `node_modules` and `.vercel` are not committed.
 - [ ] Review README before making the repository public.
+- [ ] Optional: add or record a short demo video/GIF.

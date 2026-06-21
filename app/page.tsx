@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { ArrowRight, Database, Code2, Lock, Moon, Wifi } from "lucide-react";
+import { ArrowRight, Database, Code2, Lock, Moon, PlayCircle, Wifi } from "lucide-react";
 
 const features = [
   { title: "Tageslisten", text: "Hauptansicht wie TasksBoard: heute, morgen, kommende Tage.", icon: Moon },
-  { title: "Supabase-ready", text: "Datenbank, Auth und Sync sind als nächster Schritt vorbereitet.", icon: Database },
+  { title: "Supabase Sync", text: "Auth, Datenbank und Realtime-Sync sind online verbunden.", icon: Database },
   { title: "Privat gedacht", text: "Login, RLS und später optionale Verschlüsselung einzelner Tasks.", icon: Lock },
   { title: "Offline geplant", text: "Später mit IndexedDB, Sync-Queue und Last-write-wins.", icon: Wifi }
 ];
@@ -24,10 +24,16 @@ export default function HomePage() {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              href="/board"
+              href="/demo"
               className="inline-flex items-center gap-2 rounded-2xl bg-blue-500 px-5 py-3 font-medium text-white shadow-lg shadow-blue-500/20 hover:bg-blue-400"
             >
-              Board öffnen <ArrowRight className="h-4 w-4" />
+              Live-Demo testen <PlayCircle className="h-4 w-4" />
+            </Link>
+            <Link
+              href="/board"
+              className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-3 font-medium text-zinc-200 hover:bg-white/[0.07]"
+            >
+              Privates Board öffnen <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="/login"
@@ -48,7 +54,7 @@ export default function HomePage() {
               <Code2 className="h-5 w-5 text-zinc-500" />
             </div>
             <div className="space-y-3">
-              {["Brave aufräumen", "Wasserhahn wechseln", "Supabase-Projekt erstellen"].map((task) => (
+              {["README final prüfen", "Drag & Drop testen", "Backup exportieren"].map((task) => (
                 <div key={task} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3">
                   <span className="h-4 w-4 rounded-full border border-zinc-600" />
                   <span className="text-sm text-zinc-200">{task}</span>

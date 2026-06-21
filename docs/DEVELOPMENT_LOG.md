@@ -274,8 +274,17 @@ Learning point:
 
 A small CI workflow was added in `.github/workflows/ci.yml`. It runs on pushes to `main`, pull requests into `main` and manual workflow dispatches.
 
-The workflow installs dependencies with `npm ci`, runs `npm run typecheck` and then runs `npm run build`. This gives the repository a visible build signal for portfolio use and helps catch dependency, TypeScript or production-build issues before they become deployment problems.
+The workflow installs dependencies with `npm install`, runs `npm run typecheck` and then runs `npm run build`. This gives the repository a visible build signal for portfolio use and helps catch dependency, TypeScript or production-build issues before they become deployment problems.
 
 Learning point:
 
 - A portfolio project is stronger when it can be built from a clean checkout. GitHub Actions makes the build status visible and reinforces the dependency-management lesson from the earlier Vercel/Next.js versioning issue.
+
+## Public demo access
+
+- Added `/demo`, which redirects to `/board?demo=1`.
+- Added a public demo path for GitHub visitors so the app can be tested without Magic Link login.
+- Demo mode now uses anonymized sample board/list/task data.
+- Demo changes stay local and are not saved to Supabase.
+- Login and landing pages now include clearer demo CTAs.
+- README and portfolio notes now point to the public demo URL.

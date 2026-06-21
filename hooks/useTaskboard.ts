@@ -23,7 +23,7 @@ import {
 import { isSupabaseConfigured, supabase } from "@/lib/supabase/client";
 import { isFutureDateKey, toDateKey } from "@/lib/dates/calendar";
 import { reorderById, withSequentialPositions } from "@/lib/dnd/reorder";
-import { initialDemoTasks } from "@/lib/demo-data";
+import { createDemoBoard, createInitialDemoLists, createInitialDemoTasks, initialDemoLists, initialDemoTasks } from "@/lib/demo-data";
 import type { Board, BoardList } from "@/types/board";
 import type { CreateTaskInput, Task, UpdateTaskInput } from "@/types/task";
 import type { User } from "@supabase/supabase-js";
@@ -90,10 +90,10 @@ function reorderTasksForMove({
   return [...unaffectedTasks, ...positionedTargetTasks, ...sourceTasks];
 }
 
-export function useTaskboard(user: User | null, requestedBoardId?: string | null) {
-  const [boards, setBoards] = useState<Board[]>([]);
-  const [board, setBoard] = useState<Board | null>(null);
-  const [lists, setLists] = useState<BoardList[]>([]);
+export function useTaskboard(user: User | null, requestedBoardId?: string | null, forceDemo = false) {
+  const [boards, setBoards] = useState<Board[]>(() => [createDemoBoard()]);
+  const [board, setBoard] = useState<Board | null>(() => createDemoBoard());
+  const [lists, setLists] = useState<BoardList[]>(initialDemoLists);
   const [tasks, setTasks] = useState<Task[]>(initialDemoTasks);
   const [isLoading, setIsLoading] = useState(isSupabaseConfigured);
   const [isSaving, setIsSaving] = useState(false);
@@ -101,7 +101,7 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
   const [mode, setMode] = useState<"demo" | "supabase">("demo");
   const [realtimeStatus, setRealtimeStatus] = useState<"off" | "connecting" | "live" | "syncing" | "error">("off");
   const [lastRealtimeUpdate, setLastRealtimeUpdate] = useState<string | null>(null);
-  const listsRef = useRef<BoardList[]>([]);
+  const listsRef = useRef<BoardList[]>(initialDemoLists);
   const tasksRef = useRef<Task[]>(initialDemoTasks);
   const realtimeRefreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -116,10 +116,20 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
   const load = useCallback(async (options?: { showLoading?: boolean }) => {
     const showLoading = options?.showLoading ?? true;
 
-    if (!isSupabaseConfigured || !user) {
+    if (forceDemo || !isSupabaseConfigured || !user) {
+      const nextBoard = createDemoBoard();
+      const nextLists = createInitialDemoLists();
+      const nextTasks = createInitialDemoTasks();
+
       setMode("demo");
-      setTasks(initialDemoTasks);
+      setBoards([nextBoard]);
+      setBoard(nextBoard);
+      setLists(nextLists);
+      setTasks(nextTasks);
+      listsRef.current = nextLists;
+      tasksRef.current = nextTasks;
       setRealtimeStatus("off");
+      setError(null);
       setIsLoading(false);
       return;
     }
@@ -154,7 +164,7 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
     } finally {
       if (showLoading) setIsLoading(false);
     }
-  }, [user, requestedBoardId]);
+  }, [forceDemo, user, requestedBoardId]);
 
   useEffect(() => {
     void load();

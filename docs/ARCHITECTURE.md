@@ -22,6 +22,7 @@ flowchart LR
 ```txt
 app/
   board/
+  demo/
   login/
   settings/
 
@@ -70,6 +71,8 @@ components/board/TaskCard.tsx
 This makes the app easier to maintain and keeps UI code focused on interaction and presentation.
 
 ## State and sync
+
+The public `/demo` route redirects to `/board?demo=1`, which forces `useTaskboard` into local demo mode with anonymized sample data.
 
 The board page receives data through `useTaskboard`. Local UI state handles view mode, filters, active drag state and board controls. Persistent data changes go through Supabase.
 

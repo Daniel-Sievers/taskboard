@@ -21,16 +21,11 @@ This roadmap is grouped into practical product packages.
 - Collapsible board controls and sidebar actions
 - GitHub/Vercel deployment
 - Portfolio README polish
+- Public demo access without login
 
 ## Next
 
-### 1. Demo assets
-
-- Record short demo video/GIF
-- Use anonymized demo data
-- Show task creation, editing, drag & drop, recurring tasks and realtime sync
-
-### 2. Task editor modal
+### 1. Task editor modal
 
 - Open add/edit flow in a centered modal
 - Mobile: full-height app-like dialog
@@ -38,35 +33,40 @@ This roadmap is grouped into practical product packages.
 - Keep the flow fast for quick task creation
 - Optional field selection for date, notes, priority, recurrence, labels and sensitive marker
 
-### 3. Automatic date recognition
+### 2. Automatic date recognition
 
 - Detect manual list titles such as `Dienstag, 26.05.2026`
 - Route tasks with matching dates into existing manual lists
 - Move very old open tasks into an `Offen` list if needed
 - Add format hints in settings/documentation
 
-### 4. Realtime robustness
+### 3. Realtime robustness
 
 - More precise sync status
 - Debounced refreshes for bursts of realtime events
 - Reconnect indicator
 - Last synced timestamp
 
-### 5. Auth improvements
+### 4. Auth improvements
 
 - Evaluate custom SMTP for Magic Links
 - Keep Google Login optional, not required
 - Improve login copy and mobile auth flow
 
-### 6. Offline sync
+### 5. Offline sync
 
 - IndexedDB cache
 - Offline mutation queue
 - Reconnect sync
 - Simple conflict strategy
 
-### 7. Security and privacy
+### 6. Security and privacy
 
 - Optional client-side encryption for sensitive tasks
 - Stronger backup/restore safety
-- Better public-demo mode
+
+### Optional demo assets
+
+- Record short demo video/GIF if the README should show a preview without opening the live demo
+- Use anonymized demo data only
+- Keep the clip short and focused on task creation, editing, drag & drop and settings

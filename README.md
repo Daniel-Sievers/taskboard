@@ -4,10 +4,11 @@
 
 A private, installable taskboard app for daily lists, multiple boards, drag & drop planning, realtime sync and manual data ownership.
 
+**Live demo:** https://taskboard-ten-steel.vercel.app/demo  
 **Live app:** https://taskboard-ten-steel.vercel.app  
 **Repository:** https://github.com/Daniel-Sievers/taskboard
 
-> Personal portfolio / learning project. Authentication is enabled, so private board data is only visible after login.
+> Personal portfolio / learning project. The public demo can be tested without login; private board data is only visible after authentication.
 
 ---
 
@@ -64,23 +65,23 @@ The goal was not to build a generic todo tutorial. The goal was to build a pract
 
 ## Demo
 
-The live deployment is available here:
+The public demo opens a local, anonymized demo board without requiring a Magic Link login:
 
 ```txt
-https://taskboard-ten-steel.vercel.app
+https://taskboard-ten-steel.vercel.app/demo
 ```
 
-The app requires login for private board data. A short demo video/GIF is planned as a separate portfolio asset and should show anonymized data only.
+What can be tested immediately:
 
-Suggested demo flow:
+1. Open the demo board.
+2. Create and edit tasks.
+3. Change priority, date, labels and recurrence.
+4. Drag tasks between day lists.
+5. Complete a recurring task and see the next instance.
+6. Switch between day-list and horizontal views.
+7. Open details, filters and board actions through the sidebar/hamburger menu.
 
-1. Open the board.
-2. Create a task.
-3. Edit priority, date, labels and recurrence.
-4. Drag a task between lists.
-5. Complete a recurring task.
-6. Show realtime sync in a second browser/device.
-7. Open backup/export settings.
+Demo changes are intentionally not saved to Supabase. They are local to the browser session and may reset when the page reloads. Private boards still require authentication.
 
 ---
 
@@ -107,7 +108,8 @@ Implemented so far:
 - PWA basics are implemented: manifest, icons, start URL and installable app mode.
 - JSON backup, JSON import, CSV export, trash recovery and archive management are available.
 - GitHub and Vercel deployment are set up.
-- A GitHub Actions CI workflow is included for typechecking and production builds.
+- A public demo route is available at `/demo` without login.
+- A GitHub Actions CI workflow installs dependencies, typechecks and builds the app.
 
 The app is still under active development.
 
@@ -509,6 +511,7 @@ This project was built iteratively in focused packages:
 15. Recurring tasks
 16. Collapsible board controls and sidebar actions
 17. Portfolio README and documentation polish
+18. Public demo access without login
 
 Detailed log:
 
@@ -529,7 +532,7 @@ The project is intentionally still evolving. Current known limits include:
 - Recurring tasks are implemented as a first version and may need more series-management controls later.
 - The task editor still needs a stronger modal-based creation/editing flow.
 - Browser/PWA icon behavior can differ between Chrome, Edge, Firefox and mobile platforms.
-- Demo screenshots should be anonymized before a public portfolio release.
+- Public demo data is anonymized; README screenshots should still be reviewed before a public portfolio release.
 
 More detail:
 
@@ -551,7 +554,7 @@ Planned improvements:
 - Optional custom SMTP for Magic Links
 - Offline sync with IndexedDB
 - Optional client-side encryption for sensitive tasks
-- Demo video/GIF for the portfolio README
+- Optional demo video/GIF for the portfolio README
 
 More detail:
 

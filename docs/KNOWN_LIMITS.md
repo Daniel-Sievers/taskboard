@@ -42,3 +42,9 @@ This document lists current limitations intentionally left visible for portfolio
 - The app is built for private task data.
 - Any public screenshots, videos or GIFs should use demo/anonymized data only.
 - `.env.local`, Supabase secret keys and service-role keys must never be committed.
+
+## Public demo mode
+
+- Demo mode is intentionally local and does not persist changes to Supabase.
+- Demo data can reset after reload or a new browser session.
+- The demo is for portfolio testing, not a shared production workspace.

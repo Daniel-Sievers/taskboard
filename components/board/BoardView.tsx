@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { addDays, startOfDay } from "date-fns";
 import {
   CalendarDays,
   LayoutGrid,
@@ -45,27 +44,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useTaskboard } from "@/hooks/useTaskboard";
 import { usePreferences } from "@/hooks/usePreferences";
 import { useI18n } from "@/hooks/useI18n";
-import { titleForDate } from "@/lib/db/lists";
 import { toDateKey } from "@/lib/dates/calendar";
-import type { BoardList } from "@/types/board";
-
-function buildDemoLists(): BoardList[] {
-  const start = startOfDay(new Date());
-  return Array.from({ length: 7 }, (_, index) => {
-    const date = toDateKey(addDays(start, index));
-    return {
-      id: `demo-list-${date}`,
-      userId: "demo",
-      boardId: "demo-board",
-      title: titleForDate(date),
-      date,
-      position: index + 1,
-      collapsed: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-  });
-}
 
 type ActiveDrag = { type: "list" | "task"; id: string } | null;
 type BoardUiAction = "details" | "filter" | "board";
@@ -87,7 +66,8 @@ function getOverData(event: DragOverEvent | DragEndEvent) {
 export function BoardView() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const activeBoardId = searchParams.get("board");
+  const forceDemo = searchParams.get("demo") === "1";
+  const activeBoardId = forceDemo ? null : searchParams.get("board");
   const { user, isLoading: authLoading, isSupabaseConfigured } = useAuth();
   const {
     boards,
@@ -115,7 +95,7 @@ export function BoardView() {
     previewMoveTask,
     persistListOrder,
     persistTaskOrder,
-  } = useTaskboard(user, activeBoardId);
+  } = useTaskboard(forceDemo ? null : user, activeBoardId, forceDemo);
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
   const [priorityFilter, setPriorityFilter] = useState<
@@ -373,8 +353,7 @@ export function BoardView() {
     };
   }, [activeDrag]);
 
-  const boardLists =
-    mode === "demo" && lists.length === 0 ? buildDemoLists() : lists;
+  const boardLists = lists;
   const activeTask =
     activeDrag?.type === "task"
       ? tasks.find((task) => task.id === activeDrag.id)
@@ -828,6 +807,26 @@ export function BoardView() {
               ) : null}
             </div>
           ) : null}
+        </div>
+      ) : null}
+
+      {mode === "demo" ? (
+        <div className="rounded-3xl border border-blue-400/20 bg-blue-500/10 p-4 text-sm text-blue-50 shadow-lg shadow-blue-950/20">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-medium">{t("demo.bannerTitle")}</p>
+              <p className="mt-1 text-xs leading-5 text-blue-100/75">
+                {t("demo.bannerBody")}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => router.push("/login")}
+              className="inline-flex w-fit items-center justify-center rounded-2xl border border-blue-100/20 bg-blue-950/40 px-3 py-2 text-xs font-medium text-blue-50 hover:bg-blue-900/60"
+            >
+              {t("demo.loginCta")}
+            </button>
+          </div>
         </div>
       ) : null}
 

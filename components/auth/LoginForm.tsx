@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { CheckCircle2, Code2, Loader2, LogOut, Mail, TriangleAlert } from "lucide-react";
+import { CheckCircle2, Code2, Loader2, LogOut, Mail, PlayCircle, TriangleAlert } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { signInWithGoogle, signInWithMagicLink, signOut } from "@/lib/supabase/auth";
@@ -105,6 +106,12 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...`}
       <Button type="button" variant="secondary" className="w-full" onClick={handleGoogleLogin} disabled={status === "loading"}>
         <Code2 className="h-4 w-4" /> Mit Google einloggen
       </Button>
+      <Link
+        href="/demo"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-blue-400/20 bg-blue-500/10 px-4 py-3 text-sm font-medium text-blue-100 transition hover:bg-blue-500/15"
+      >
+        <PlayCircle className="h-4 w-4" /> Demo ohne Login starten
+      </Link>
       {message ? (
         <p className={status === "error" ? "rounded-2xl border border-red-400/20 bg-red-400/10 p-3 text-sm text-red-100" : "rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-3 text-sm text-emerald-100"}>
           {message}

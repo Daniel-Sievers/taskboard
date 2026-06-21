@@ -41,7 +41,7 @@ Private installable taskboard app with Supabase Auth, realtime sync, drag & drop
 
 ## Suggested README sections
 
-- Live demo
+- Live demo without login
 - Why I built this
 - Screenshots
 - Current status
@@ -56,7 +56,17 @@ Private installable taskboard app with Supabase Auth, realtime sync, drag & drop
 - Roadmap
 - What I learned
 
-## Demo video/GIF idea
+## Public demo
+
+The recommended portfolio entry point is:
+
+```txt
+https://taskboard-ten-steel.vercel.app/demo
+```
+
+This opens an anonymized local demo board without requiring Magic Link login. Demo changes are not persisted to Supabase. Private user boards still require authentication.
+
+## Optional demo video/GIF idea
 
 Use demo/anonymized data only.
 
@@ -81,9 +91,9 @@ Before making the repository public:
 - [ ] `.next`, `node_modules` and `.vercel` are not committed.
 - [ ] Screenshots do not show private tasks, e-mail addresses or real private data.
 - [ ] Supabase service role keys are not present anywhere in the repository.
-- [ ] README contains the live demo link.
-- [ ] README explains that private data requires login.
+- [x] README contains the live demo link.
+- [x] README explains that the public demo works without login and private data requires login.
 - [ ] README contains setup instructions.
-- [ ] Known limits are documented.
-- [ ] Roadmap is clear and realistic.
+- [x] Known limits are documented.
+- [x] Roadmap is clear and realistic.
 - [ ] GitHub Actions build check passes after the latest push.
