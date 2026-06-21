@@ -48,6 +48,31 @@ type BoardUiState = {
 };
 
 const pendingBoardActionKey = "taskboard:pending-board-action";
+const boardUiStateStorageKey = "taskboard:board-ui-state";
+
+const defaultBoardUiState: BoardUiState = {
+  detailsOpen: false,
+  filterOpen: false,
+  filtersActive: false,
+  boardMenuOpen: false,
+};
+
+function readStoredBoardUiState(): BoardUiState {
+  if (typeof window === "undefined") return defaultBoardUiState;
+
+  try {
+    const rawState = window.sessionStorage.getItem(boardUiStateStorageKey);
+    if (!rawState) return defaultBoardUiState;
+
+    const parsedState = JSON.parse(rawState) as Partial<BoardUiState>;
+    return {
+      ...defaultBoardUiState,
+      ...parsedState,
+    };
+  } catch {
+    return defaultBoardUiState;
+  }
+}
 
 function boardHref(boardId: string, isDemo = false) {
   if (isDemo) return "/board?demo=1";
@@ -78,12 +103,9 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
   const [boards, setBoards] = useState<Board[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [boardUiState, setBoardUiState] = useState<BoardUiState>({
-    detailsOpen: false,
-    filterOpen: false,
-    filtersActive: false,
-    boardMenuOpen: false,
-  });
+  const [boardUiState, setBoardUiState] = useState<BoardUiState>(
+    readStoredBoardUiState,
+  );
   const { preferences, updatePreferences } = usePreferences();
   const { t } = useI18n();
 

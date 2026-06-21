@@ -65,6 +65,7 @@ type TaskModalState =
     };
 
 const pendingBoardActionKey = "taskboard:pending-board-action";
+const boardUiStateStorageKey = "taskboard:board-ui-state";
 
 function getDragData(event: DragStartEvent | DragOverEvent | DragEndEvent) {
   return event.active.data.current as
@@ -233,7 +234,9 @@ export function BoardView() {
     if (action === "details") {
       setStatsOpen((open) => {
         const nextOpen = !open;
-        if (nextOpen) setBoardHeaderOpen(true);
+        setBoardHeaderOpen((headerOpen) =>
+          nextOpen ? true : filterOpen || boardMenuOpen || hasActiveFilters ? headerOpen : false,
+        );
         return nextOpen;
       });
       return;
@@ -249,8 +252,13 @@ export function BoardView() {
     }
 
     if (action === "board") {
-      setBoardHeaderOpen(true);
-      setBoardMenuOpen((open) => !open);
+      setBoardMenuOpen((open) => {
+        const nextOpen = !open;
+        setBoardHeaderOpen((headerOpen) =>
+          nextOpen ? true : statsOpen || filterOpen || hasActiveFilters ? headerOpen : false,
+        );
+        return nextOpen;
+      });
     }
   }
 
@@ -424,14 +432,20 @@ export function BoardView() {
     query.trim().length > 0;
 
   useEffect(() => {
+    const nextBoardUiState = {
+      detailsOpen: statsOpen,
+      filterOpen,
+      filtersActive: hasActiveFilters,
+      boardMenuOpen,
+    };
+
+    window.sessionStorage.setItem(
+      boardUiStateStorageKey,
+      JSON.stringify(nextBoardUiState),
+    );
     window.dispatchEvent(
       new CustomEvent("taskboard:board-ui-state", {
-        detail: {
-          detailsOpen: statsOpen,
-          filterOpen,
-          filtersActive: hasActiveFilters,
-          boardMenuOpen,
-        },
+        detail: nextBoardUiState,
       }),
     );
   }, [boardMenuOpen, filterOpen, hasActiveFilters, statsOpen]);
