@@ -1,9 +1,22 @@
+# dependencies
 node_modules
+
+# Next.js build output
 .next
 out
 dist
+
+# local environment files
 .env
 .env.local
 .env.*.local
+
+# Vercel local project metadata
 .vercel
+
+# TypeScript / local build cache
+*.tsbuildinfo
+
+# OS / editor noise
 .DS_Store
+*.log
