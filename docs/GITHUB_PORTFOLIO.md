@@ -111,3 +111,7 @@ GitHub does not automatically read the right-side About website link from `READM
 ```txt
 docs/GITHUB_REPOSITORY_SETTINGS.md
 ```
+
+## Portfolio note: recurring tasks
+
+The project now includes a pragmatic recurring-task implementation: repeat rules, generated next instances, future-task locking, clearer status labels, and duplicate prevention. The README/known-limits documentation intentionally explains where this stops short of a full calendar system.

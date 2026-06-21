@@ -353,3 +353,12 @@ Learning point:
 Learning point:
 
 - Bei Features wie Push Notifications ist eine ehrliche Zwischenstufe besser als ein irreführender Schalter. Die UI kann Bereitschaft und Browser-Berechtigung zeigen, ohne so zu tun, als gäbe es bereits geplante Server-Erinnerungen.
+
+## Paket 10 – recurring task polish
+
+- Wiederholende Aufgaben zeigen jetzt klarere Statushinweise direkt auf der Aufgabenkarte.
+- Zukünftige Wiederholungen zeigen `noch nicht fällig bis …` statt nur einen gesperrten Zustand.
+- Das Aufgabenmodal zeigt bei wiederholenden Aufgaben einen eigenen Wiederholungsbereich.
+- Eine Wiederholung kann im Modal bewusst beendet werden; bestehende Kopien bleiben als Einzelaufgaben erhalten.
+- Beim erneuten Abhaken einer wieder geöffneten Wiederholungsaufgabe werden doppelte Folgekopien vermieden.
+- Die Wiederholungsdokumentation wurde aktualisiert.

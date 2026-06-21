@@ -2,12 +2,13 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { CalendarDays, Flag, Lock, Repeat2, Save, StickyNote, Tag, X } from "lucide-react";
+import { CalendarDays, Flag, Info, Lock, Repeat2, Save, StickyNote, Tag, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { usePreferences } from "@/hooks/usePreferences";
 import { useI18n } from "@/hooks/useI18n";
+import { getRecurrenceRuleLabel, getRecurringTaskStatus, isRecurringTask } from "@/lib/recurrence";
 import type { Task, TaskPriority, TaskRecurrenceType } from "@/types/task";
 
 export type TaskModalInput = {
@@ -113,6 +114,10 @@ export function TaskModal({
   );
   const showInterval = recurrenceType === "interval";
   const titleError = titleTouched && title.trim().length === 0;
+  const wasRecurring = Boolean(task && isRecurringTask(task));
+  const currentRecurrenceLabel = task ? getRecurrenceRuleLabel(task, preferences.language) : null;
+  const currentRecurrenceStatus = task ? getRecurringTaskStatus(task, preferences.language) : null;
+  const recurrenceStopped = wasRecurring && recurrenceType === "none";
 
   useEffect(() => {
     setIsMounted(true);
@@ -138,6 +143,12 @@ export function TaskModal({
 
   function toggleField(field: FieldKey) {
     setVisibleFields((current) => ({ ...current, [field]: !current[field] }));
+  }
+
+  function stopRecurrence() {
+    setVisibleFields((current) => ({ ...current, recurrence: true }));
+    setRecurrenceType("none");
+    setRecurrenceInterval("1");
   }
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -233,6 +244,50 @@ export function TaskModal({
               <p className="px-1 text-xs text-red-300">{t("task.titleRequired")}</p>
             ) : null}
           </div>
+
+          {mode === "edit" && wasRecurring ? (
+            <div className="rounded-3xl border border-cyan-400/15 bg-cyan-500/[0.045] p-3 text-sm text-cyan-50/80">
+              <div className="flex items-start gap-3">
+                <span className="mt-0.5 rounded-xl border border-cyan-400/20 bg-cyan-500/10 p-2 text-cyan-200">
+                  <Repeat2 className="h-4 w-4" />
+                </span>
+                <div className="min-w-0 flex-1 space-y-2">
+                  <div>
+                    <p className="font-semibold text-cyan-100">{t("task.recurrenceSeriesTitle")}</p>
+                    <p className="mt-1 text-xs leading-5 text-cyan-100/65">
+                      {t("task.recurrenceEditHint")}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs">
+                    {currentRecurrenceLabel ? (
+                      <span className="rounded-full border border-cyan-400/20 bg-cyan-500/10 px-2 py-1 text-cyan-100">
+                        {currentRecurrenceLabel}
+                      </span>
+                    ) : null}
+                    {currentRecurrenceStatus ? (
+                      <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-cyan-100/70">
+                        {currentRecurrenceStatus}
+                      </span>
+                    ) : null}
+                  </div>
+                  {recurrenceStopped ? (
+                    <p className="rounded-2xl border border-amber-300/20 bg-amber-300/10 px-3 py-2 text-xs leading-5 text-amber-100/80">
+                      {t("task.recurrenceWillStop")}
+                    </p>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={stopRecurrence}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/20 bg-cyan-500/10 px-3 py-1.5 text-xs font-medium text-cyan-100 transition hover:bg-cyan-500/15"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                      {t("task.stopRecurrence")}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : null}
 
           <div className="rounded-3xl border border-white/10 bg-white/[0.025] p-3">
             <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
@@ -341,8 +396,9 @@ export function TaskModal({
             ) : null}
 
             {visibleFields.recurrence && recurrenceType !== "none" ? (
-              <p className="rounded-2xl border border-cyan-400/15 bg-cyan-500/5 px-3 py-2 text-xs leading-5 text-cyan-100/75">
-                {t("task.recurrenceHelp")}
+              <p className="flex gap-2 rounded-2xl border border-cyan-400/15 bg-cyan-500/5 px-3 py-2 text-xs leading-5 text-cyan-100/75">
+                <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <span>{t("task.recurrenceHelp")}</span>
               </p>
             ) : null}
 

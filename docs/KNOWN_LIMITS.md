@@ -61,3 +61,14 @@ This document lists current limitations intentionally left visible for portfolio
 - Demo mode is intentionally local and does not persist changes to Supabase.
 - Demo data can reset after reload or a new browser session.
 - The demo is for portfolio testing, not a shared production workspace.
+
+## Recurring task limits after polish
+
+Wiederholende Aufgaben sind für einfache tägliche, wöchentliche, monatliche und Intervall-Aufgaben nutzbar. Es gibt aber noch keine vollständige Kalender-Serienlogik.
+
+Das bedeutet:
+
+- Bereits existierende Kopien bleiben eigenständige Aufgaben.
+- Das Beenden einer Wiederholung stoppt die aktuelle Aufgabe, löscht aber keine vorhandenen Kopien.
+- Bulk-Bearbeitung einer ganzen Serie ist noch nicht implementiert.
+- Erinnerungen für Wiederholungen sind vorbereitet, aber noch nicht als echte serverseitige Push-Erinnerung aktiv.

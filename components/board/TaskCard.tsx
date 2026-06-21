@@ -17,27 +17,9 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import { usePreferences } from "@/hooks/usePreferences";
 import { playTaskDeleteSound, playTaskDoneSound } from "@/lib/sound";
 import { useI18n } from "@/hooks/useI18n";
-import { isFutureDateKey, isPastDateKey, isTodayDateKey } from "@/lib/dates/calendar";
+import { isPastDateKey, isTodayDateKey } from "@/lib/dates/calendar";
+import { getRecurrenceRuleLabel, getRecurringTaskStatus, isFutureLockedTask } from "@/lib/recurrence";
 import type { Task } from "@/types/task";
-
-function recurrenceLabel(task: Task, language: string) {
-  if ((task.recurrenceType ?? "none") === "none") return null;
-  const interval = Math.max(1, task.recurrenceInterval || 1);
-
-  if (language === "en") {
-    if (task.recurrenceType === "daily") return interval === 1 ? "daily" : `every ${interval} days`;
-    if (task.recurrenceType === "weekly") return interval === 1 ? "weekly" : `every ${interval} weeks`;
-    if (task.recurrenceType === "monthly") return interval === 1 ? "monthly" : `every ${interval} months`;
-    if (task.recurrenceType === "interval") return `every ${interval} days`;
-  }
-
-  if (task.recurrenceType === "daily") return interval === 1 ? "täglich" : `alle ${interval} Tage`;
-  if (task.recurrenceType === "weekly") return interval === 1 ? "wöchentlich" : `alle ${interval} Wochen`;
-  if (task.recurrenceType === "monthly") return interval === 1 ? "monatlich" : `alle ${interval} Monate`;
-  if (task.recurrenceType === "interval") return `alle ${interval} Tage`;
-
-  return null;
-}
 
 function dateClass(task: Task) {
   if (!task.scheduledDate || task.status !== "open") {
@@ -53,9 +35,6 @@ function dateClass(task: Task) {
   return "border-white/10 bg-white/[0.03] text-zinc-500";
 }
 
-function isFutureLockedTask(task: Task) {
-  return task.status === "open" && isFutureDateKey(task.scheduledDate);
-}
 
 const priorityClass = {
   low: "border-transparent bg-transparent px-0 text-zinc-600",
@@ -86,7 +65,8 @@ export function TaskCard({
   const { t } = useI18n();
   const isDone = task.status === "done";
   const isFutureLocked = isFutureLockedTask(task);
-  const recurringLabel = recurrenceLabel(task, preferences.language);
+  const recurringLabel = getRecurrenceRuleLabel(task, preferences.language);
+  const recurringStatus = getRecurringTaskStatus(task, preferences.language);
   const taskDoneSoundEnabled =
     soundPreferences.taskDoneSoundEffects ?? preferences.soundEffects;
   const taskDeleteSoundEnabled =
@@ -166,7 +146,7 @@ export function TaskCard({
 
         <div
           className={isFutureLocked ? "cursor-not-allowed opacity-50 grayscale" : ""}
-          title={isFutureLocked ? (preferences.language === "en" ? "Not due yet" : "Noch nicht fällig") : undefined}
+          title={isFutureLocked ? t("task.notDueYet") : undefined}
           aria-disabled={isFutureLocked}
           onPointerDown={(event) => event.stopPropagation()}
           onClick={(event) => {
@@ -178,7 +158,7 @@ export function TaskCard({
           {isFutureLocked ? (
             <span
               className="grid h-5 w-5 place-items-center rounded-md border border-white/10 bg-white/[0.025] text-[10px] text-zinc-600"
-              aria-label={preferences.language === "en" ? "Not due yet" : "Noch nicht fällig"}
+              aria-label={t("task.notDueYet")}
               role="img"
             >
               —
@@ -241,7 +221,7 @@ export function TaskCard({
 
                 {isFutureLocked ? (
                   <span className="inline-flex shrink-0 rounded-full border border-white/10 bg-white/[0.025] px-2 py-0.5 text-[11px] text-zinc-500">
-                    {preferences.language === "en" ? "not due yet" : "noch nicht fällig"}
+                    {t("task.notDueShort")}
                   </span>
                 ) : null}
 
@@ -323,6 +303,17 @@ export function TaskCard({
                   }
                 >
                   {task.notes}
+                </p>
+              ) : null}
+
+              {recurringStatus ? (
+                <p className={
+                  isFutureLocked
+                    ? "mt-1 inline-flex items-center gap-1.5 rounded-full border border-cyan-400/10 bg-cyan-500/[0.04] px-2 py-0.5 text-[11px] text-cyan-100/45"
+                    : "mt-1 inline-flex items-center gap-1.5 rounded-full border border-cyan-400/15 bg-cyan-500/[0.06] px-2 py-0.5 text-[11px] text-cyan-100/70"
+                }>
+                  <Repeat2 className="h-3 w-3" />
+                  {recurringStatus}
                 </p>
               ) : null}
             </div>

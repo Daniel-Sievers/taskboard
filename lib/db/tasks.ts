@@ -139,7 +139,29 @@ export async function createTask(userId: string, input: CreateTaskInput): Promis
 
 export async function createNextRecurringTask(userId: string, task: Task): Promise<Task | null> {
   const nextDate = getNextRecurrenceDate(task);
-  if (!nextDate || !task.boardId || !task.listId || (task.recurrenceType ?? "none") === "none") return null;
+  const recurrenceType = task.recurrenceType ?? "none";
+
+  if (!nextDate || !task.boardId || !task.listId || recurrenceType === "none") return null;
+
+  // Completing, reopening and completing the same recurring task again should
+  // not create duplicate next instances. Without a dedicated series_id we use
+  // the stable fields that the generated copy receives.
+  const { data: existingData, error: existingError } = await supabase
+    .from("tasks")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("board_id", task.boardId)
+    .eq("list_id", task.listId)
+    .eq("title", task.title)
+    .eq("status", "open")
+    .eq("scheduled_date", nextDate)
+    .eq("recurrence_type", recurrenceType)
+    .is("deleted_at", null)
+    .limit(1);
+
+  if (existingError) throw existingError;
+  const existingTask = existingData?.[0];
+  if (existingTask) return mapRecurringTask(existingTask as TaskRow);
 
   return createTask(userId, {
     boardId: task.boardId,
@@ -150,7 +172,7 @@ export async function createNextRecurringTask(userId: string, task: Task): Promi
     priority: task.priority,
     tags: task.tags,
     isEncrypted: task.isEncrypted,
-    recurrenceType: task.recurrenceType ?? "none",
+    recurrenceType,
     recurrenceInterval: task.recurrenceInterval ?? 1,
     recurrenceAnchorDate: nextDate,
   });

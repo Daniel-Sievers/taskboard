@@ -609,3 +609,7 @@ This project helped me practice:
 ## License
 
 This is currently a personal portfolio / learning project.
+
+## Recurring task polish note
+
+Recurring tasks support daily, weekly, monthly and custom interval rules. When a recurring task is completed, Taskboard creates the next open copy, avoids duplicate next copies, and marks future copies as not due yet. The task modal can stop a repeat rule while keeping existing copies as normal independent tasks.

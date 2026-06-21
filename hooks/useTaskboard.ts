@@ -93,6 +93,22 @@ function getNextPositionForList(
   return positions.length > 0 ? Math.max(...positions) + 1 : 1;
 }
 
+
+function findExistingNextRecurringTask(currentTasks: Task[], task: Task, nextDate: string) {
+  const recurrenceType = task.recurrenceType ?? "none";
+
+  return currentTasks.find(
+    (item) =>
+      item.id !== task.id &&
+      item.status === "open" &&
+      item.boardId === task.boardId &&
+      item.listId === task.listId &&
+      item.title === task.title &&
+      item.scheduledDate === nextDate &&
+      (item.recurrenceType ?? "none") === recurrenceType,
+  );
+}
+
 function getAutoTargetList(task: Task, currentLists: BoardList[]) {
   if (task.status !== "open") return null;
 
@@ -616,18 +632,23 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
       if (nextStatus === "done" && (task.recurrenceType ?? "none") !== "none") {
         const nextDate = getNextRecurrenceDate(task);
         if (nextDate) {
-          const nextTask: Task = {
-            ...task,
-            id: crypto.randomUUID(),
-            status: "open",
-            scheduledDate: nextDate,
-            completedAt: null,
-            recurrenceAnchorDate: nextDate,
-            position: tasks.filter((item) => item.listId === task.listId).length + 1,
-            createdAt: now,
-            updatedAt: now,
-          };
-          setTasks((current) => [...current, nextTask]);
+          setTasks((current) => {
+            const existing = findExistingNextRecurringTask(current, task, nextDate);
+            if (existing) return current;
+
+            const nextTask: Task = {
+              ...task,
+              id: crypto.randomUUID(),
+              status: "open",
+              scheduledDate: nextDate,
+              completedAt: null,
+              recurrenceAnchorDate: nextDate,
+              position: current.filter((item) => item.listId === task.listId).length + 1,
+              createdAt: now,
+              updatedAt: now,
+            };
+            return [...current, nextTask];
+          });
         }
       }
       return;
@@ -644,7 +665,11 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
         const withUpdated = current.map((item) =>
           item.id === taskId ? updated : item,
         );
-        return nextRecurringTask ? [...withUpdated, nextRecurringTask] : withUpdated;
+        if (!nextRecurringTask) return withUpdated;
+        if (withUpdated.some((item) => item.id === nextRecurringTask.id)) {
+          return withUpdated;
+        }
+        return [...withUpdated, nextRecurringTask];
       });
     } catch (nextError) {
       setTasks((current) =>

@@ -62,3 +62,12 @@
 - [ ] Confirm `.env.local`, `.next`, `node_modules` and `.vercel` are not committed.
 - [ ] Review README before making the repository public.
 - [ ] Optional: add or record a short demo video/GIF.
+
+## Nach Paket 10
+
+Empfohlene nächste Pakete:
+
+1. Mobile Tageslisten / Swipe / Floating Plus Button
+2. Auth-/SMTP-Polish für Magic-Link-Limits
+3. Bewerbungs-Finalcheck nach aktualisierten Screenshots
+4. Später: Offline-Sync und echte Push-Erinnerungen

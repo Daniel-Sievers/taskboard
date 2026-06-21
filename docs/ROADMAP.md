@@ -74,3 +74,14 @@ This roadmap is grouped into practical product packages.
 - Record short demo video/GIF if the README should show a preview without opening the live demo
 - Use anonymized demo data only
 - Keep the clip short and focused on task creation, editing, drag & drop and settings
+
+## Recurring task polish done
+
+Wiederholende Aufgaben sind jetzt verständlicher sichtbar: Taskkarten zeigen Regel und Status, das Modal kann Wiederholungen stoppen, und doppelte Folgekopien werden vermieden.
+
+Weitere mögliche Wiederholungs-Ausbaustufen bleiben bewusst Roadmap-Themen:
+
+- bestimmte Wochentage
+- Enddatum / Anzahl Wiederholungen
+- echte Serien-ID für Bulk-Bearbeitung
+- Erinnerungen pro Wiederholung
