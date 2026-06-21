@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { CalendarDays, Flag, Info, Lock, Repeat2, Save, StickyNote, Tag, X } from "lucide-react";
+import { CalendarDays, Flag, Info, Repeat2, Save, StickyNote, Tag, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
@@ -23,7 +23,7 @@ export type TaskModalInput = {
   recurrenceAnchorDate: string | null;
 };
 
-type FieldKey = "notes" | "date" | "priority" | "recurrence" | "tags" | "sensitive";
+type FieldKey = "notes" | "date" | "priority" | "recurrence" | "tags";
 
 type VisibleFields = Record<FieldKey, boolean>;
 
@@ -45,7 +45,6 @@ function defaultVisibleFields(): VisibleFields {
     priority: true,
     recurrence: true,
     tags: true,
-    sensitive: true,
   };
 }
 
@@ -95,7 +94,7 @@ export function TaskModal({
     task?.priority ?? "normal",
   );
   const [tags, setTags] = useState(tagsToText(task?.tags ?? []));
-  const [isEncrypted, setIsEncrypted] = useState(task?.isEncrypted ?? false);
+  const isEncrypted = task?.isEncrypted ?? false;
   const [recurrenceType, setRecurrenceType] = useState<TaskRecurrenceType>(
     task?.recurrenceType ?? "none",
   );
@@ -186,12 +185,11 @@ export function TaskModal({
     { key: "priority", label: t("task.fieldPriority"), icon: Flag },
     { key: "recurrence", label: t("task.fieldRecurrence"), icon: Repeat2 },
     { key: "tags", label: t("task.fieldLabels"), icon: Tag },
-    { key: "sensitive", label: t("task.fieldSensitive"), icon: Lock },
   ];
 
   const modal = (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-zinc-950/60 px-3 py-4 backdrop-blur-[2px] sm:px-6 sm:py-8"
+      className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-zinc-950/60 px-2 py-2 backdrop-blur-[2px] sm:px-4 sm:py-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="task-modal-title"
@@ -201,9 +199,9 @@ export function TaskModal({
     >
       <form
         onSubmit={submit}
-        className="flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[#101114]/98 shadow-2xl shadow-black/70 ring-1 ring-white/[0.04] sm:max-h-[min(88dvh,52rem)]"
+        className="flex max-h-[calc(100dvh-1rem)] w-full max-w-2xl flex-col overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#101114]/98 shadow-2xl shadow-black/70 ring-1 ring-white/[0.04] sm:max-h-[min(94dvh,52rem)]"
       >
-        <div className="border-b border-white/10 bg-gradient-to-r from-blue-500/10 via-transparent to-purple-500/10 px-4 py-4 sm:px-5">
+        <div className="border-b border-white/10 bg-gradient-to-r from-blue-500/10 via-transparent to-purple-500/10 px-4 py-3 sm:px-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="text-xs font-medium uppercase tracking-[0.28em] text-blue-300">
@@ -211,7 +209,7 @@ export function TaskModal({
               </p>
               <h2
                 id="task-modal-title"
-                className="mt-1 text-lg font-semibold tracking-tight text-zinc-100"
+                className="mt-1 text-base font-semibold tracking-tight text-zinc-100 sm:text-lg"
               >
                 {mode === "create" ? t("task.modalCreateTitle") : t("task.modalEditTitle")}
               </h2>
@@ -230,7 +228,7 @@ export function TaskModal({
           </div>
         </div>
 
-        <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4 sm:px-5">
+        <div className="flex-1 space-y-3 overflow-y-auto px-4 py-3 sm:px-5">
           <div className="space-y-1.5">
             <Input
               value={title}
@@ -246,55 +244,46 @@ export function TaskModal({
           </div>
 
           {mode === "edit" && wasRecurring ? (
-            <div className="rounded-3xl border border-cyan-400/15 bg-cyan-500/[0.045] p-3 text-sm text-cyan-50/80">
-              <div className="flex items-start gap-3">
-                <span className="mt-0.5 rounded-xl border border-cyan-400/20 bg-cyan-500/10 p-2 text-cyan-200">
-                  <Repeat2 className="h-4 w-4" />
+            <div className="rounded-2xl border border-cyan-400/15 bg-cyan-500/[0.045] p-2.5 text-xs text-cyan-50/80">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 font-semibold text-cyan-100">
+                  <Repeat2 className="h-3.5 w-3.5" />
+                  {t("task.recurrenceSeriesTitle")}
                 </span>
-                <div className="min-w-0 flex-1 space-y-2">
-                  <div>
-                    <p className="font-semibold text-cyan-100">{t("task.recurrenceSeriesTitle")}</p>
-                    <p className="mt-1 text-xs leading-5 text-cyan-100/65">
-                      {t("task.recurrenceEditHint")}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-2 text-xs">
-                    {currentRecurrenceLabel ? (
-                      <span className="rounded-full border border-cyan-400/20 bg-cyan-500/10 px-2 py-1 text-cyan-100">
-                        {currentRecurrenceLabel}
-                      </span>
-                    ) : null}
-                    {currentRecurrenceStatus ? (
-                      <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-cyan-100/70">
-                        {currentRecurrenceStatus}
-                      </span>
-                    ) : null}
-                  </div>
-                  {recurrenceStopped ? (
-                    <p className="rounded-2xl border border-amber-300/20 bg-amber-300/10 px-3 py-2 text-xs leading-5 text-amber-100/80">
-                      {t("task.recurrenceWillStop")}
-                    </p>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={stopRecurrence}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/20 bg-cyan-500/10 px-3 py-1.5 text-xs font-medium text-cyan-100 transition hover:bg-cyan-500/15"
-                    >
-                      <X className="h-3.5 w-3.5" />
-                      {t("task.stopRecurrence")}
-                    </button>
-                  )}
-                </div>
+                {currentRecurrenceLabel ? (
+                  <span className="rounded-full border border-cyan-400/20 bg-cyan-500/10 px-2 py-1 text-cyan-100">
+                    {currentRecurrenceLabel}
+                  </span>
+                ) : null}
+                {currentRecurrenceStatus ? (
+                  <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-cyan-100/70">
+                    {currentRecurrenceStatus}
+                  </span>
+                ) : null}
+                {recurrenceStopped ? (
+                  <span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-2 py-1 text-amber-100/80">
+                    {t("task.recurrenceWillStop")}
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={stopRecurrence}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/20 bg-cyan-500/10 px-2.5 py-1 text-xs font-medium text-cyan-100 transition hover:bg-cyan-500/15"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                    {t("task.stopRecurrence")}
+                  </button>
+                )}
               </div>
             </div>
           ) : null}
 
-          <div className="rounded-3xl border border-white/10 bg-white/[0.025] p-3">
-            <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-2.5">
+            <div className="mb-2 flex flex-col gap-0.5 sm:flex-row sm:items-end sm:justify-between">
               <p className="text-xs font-medium text-zinc-300">{t("task.fieldsTitle")}</p>
               <p className="text-xs text-zinc-600">{t("task.fieldsHint")}</p>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {fieldButtons.map((field) => {
                 const Icon = field.icon;
                 const active = visibleFields[field.key];
@@ -305,8 +294,8 @@ export function TaskModal({
                     onClick={() => toggleField(field.key)}
                     className={
                       active
-                        ? "inline-flex items-center gap-1.5 rounded-full border border-blue-400/30 bg-blue-500/15 px-3 py-1.5 text-xs font-medium text-blue-100"
-                        : "inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1.5 text-xs text-zinc-500 hover:bg-white/[0.05] hover:text-zinc-200"
+                        ? "inline-flex items-center gap-1.5 rounded-full border border-blue-400/30 bg-blue-500/15 px-2.5 py-1 text-xs font-medium text-blue-100"
+                        : "inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.02] px-2.5 py-1 text-xs text-zinc-500 hover:bg-white/[0.05] hover:text-zinc-200"
                     }
                     aria-pressed={active}
                   >
@@ -324,6 +313,7 @@ export function TaskModal({
                 value={notes}
                 onChange={(event) => setNotes(event.target.value)}
                 placeholder={t("task.notesPlaceholder")}
+                className="min-h-20 py-2.5"
               />
             ) : null}
 
@@ -348,7 +338,7 @@ export function TaskModal({
                       onChange={(event) =>
                         setPriority(event.target.value as TaskPriority)
                       }
-                      className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/80 px-4 py-3 text-sm text-zinc-100 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                      className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                     >
                       <option value="low">{t("task.priorityLow")}</option>
                       <option value="normal">{t("task.priorityNormal")}</option>
@@ -370,7 +360,7 @@ export function TaskModal({
                     onChange={(event) =>
                       setRecurrenceType(event.target.value as TaskRecurrenceType)
                     }
-                    className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/80 px-4 py-3 text-sm text-zinc-100 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                   >
                     {options.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -409,23 +399,10 @@ export function TaskModal({
                 placeholder={t("task.tagsPlaceholder")}
               />
             ) : null}
-
-            {visibleFields.sensitive ? (
-              <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.02] px-3 py-2 text-sm text-zinc-400">
-                <input
-                  type="checkbox"
-                  checked={isEncrypted}
-                  onChange={(event) => setIsEncrypted(event.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-700 bg-zinc-950 accent-blue-500"
-                />
-                <Lock className="h-4 w-4 text-amber-300" />
-                {t("task.markSensitive")}
-              </label>
-            ) : null}
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2 border-t border-white/10 bg-[#101114]/95 px-4 py-3 sm:px-5">
+        <div className="flex flex-wrap gap-2 border-t border-white/10 bg-[#101114]/95 px-4 py-2.5 sm:px-5">
           <Button type="submit" size="sm">
             <Save className="h-4 w-4" />{" "}
             {mode === "create" ? t("task.addSubmit") : t("task.save")}

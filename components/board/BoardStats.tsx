@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Cloud, Database, Loader2, Lock, Wifi } from "lucide-react";
+import { CheckCircle2, Cloud, Database, Loader2, Wifi } from "lucide-react";
 import { formatBytes } from "@/lib/utils";
 import type { Task } from "@/types/task";
 import { useI18n } from "@/hooks/useI18n";
@@ -8,18 +8,16 @@ import { useI18n } from "@/hooks/useI18n";
 export function BoardStats({ tasks, mode, isSaving }: { tasks: Task[]; mode: "demo" | "supabase"; isSaving: boolean }) {
   const { t } = useI18n();
   const completed = tasks.filter((task) => task.status === "done").length;
-  const encrypted = tasks.filter((task) => task.isEncrypted).length;
   const estimatedBytes = new Blob([JSON.stringify(tasks)]).size;
 
   const stats = [
     { label: t("stats.tasks"), value: tasks.length, icon: CheckCircle2 },
     { label: t("stats.done"), value: completed, icon: CheckCircle2 },
-    { label: t("stats.sensitive"), value: encrypted, icon: Lock },
     { label: t("stats.storage"), value: formatBytes(estimatedBytes), icon: Database }
   ];
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
       {stats.map((stat) => {
         const Icon = stat.icon;
         return (

@@ -37,7 +37,6 @@ function LoginContent() {
               <ul className="mt-4 space-y-3 text-sm leading-6 text-emerald-100/70">
                 <li>• App ist öffentlich erreichbar; private Boarddaten bleiben durch Login geschützt.</li>
                 <li>• Supabase Row Level Security schützt Tasks pro User.</li>
-                <li>• Sensible Tasks bekommen später clientseitige Verschlüsselung.</li>
                 <li>• Demo-Daten sind anonymisiert und bleiben lokal im Browser.</li>
               </ul>
             </div>

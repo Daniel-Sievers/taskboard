@@ -5,7 +5,7 @@ import { AppShell } from "@/components/app-shell/AppShell";
 import { PreferencesPanel } from "@/components/settings/PreferencesPanel";
 import { DataManagementPanel } from "@/components/settings/DataManagementPanel";
 import { InstallAppCard } from "@/components/pwa/InstallAppCard";
-import { KeyRound, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { useI18n } from "@/hooks/useI18n";
 
 function SettingsFallback() {
@@ -44,23 +44,7 @@ function SettingsContent() {
 
         <DataManagementPanel />
 
-        <section className="grid gap-4 md:grid-cols-2">
-          <article className="rounded-[2rem] border border-white/10 bg-zinc-950/70 p-5 shadow-2xl shadow-black/20">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="font-semibold text-zinc-100">
-                  {t("settings.encryptionTitle")}
-                </h2>
-                <p className="mt-2 text-sm leading-6 text-zinc-500">
-                  {t("settings.encryptionBody")}
-                </p>
-              </div>
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-blue-500/10 text-blue-300">
-                <KeyRound className="h-5 w-5" />
-              </span>
-            </div>
-          </article>
-
+        <section className="grid gap-4">
           <article className="rounded-[2rem] border border-white/10 bg-zinc-950/70 p-5 shadow-2xl shadow-black/20">
             <div className="flex items-start justify-between gap-4">
               <div>
