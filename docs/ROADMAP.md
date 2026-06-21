@@ -22,45 +22,38 @@ This roadmap is grouped into practical product packages.
 - GitHub/Vercel deployment
 - Portfolio README polish
 - Public demo access without login
+- Task create/edit modal with optional fields
 
 ## Next
 
-### 1. Task editor modal
-
-- Open add/edit flow in a centered modal
-- Mobile: full-height app-like dialog
-- Desktop: compact centered modal
-- Keep the flow fast for quick task creation
-- Optional field selection for date, notes, priority, recurrence, labels and sensitive marker
-
-### 2. Automatic date recognition
+### 1. Automatic date recognition
 
 - Detect manual list titles such as `Dienstag, 26.05.2026`
 - Route tasks with matching dates into existing manual lists
 - Move very old open tasks into an `Offen` list if needed
 - Add format hints in settings/documentation
 
-### 3. Realtime robustness
+### 2. Realtime robustness
 
 - More precise sync status
 - Debounced refreshes for bursts of realtime events
 - Reconnect indicator
 - Last synced timestamp
 
-### 4. Auth improvements
+### 3. Auth improvements
 
 - Evaluate custom SMTP for Magic Links
 - Keep Google Login optional, not required
 - Improve login copy and mobile auth flow
 
-### 5. Offline sync
+### 4. Offline sync
 
 - IndexedDB cache
 - Offline mutation queue
 - Reconnect sync
 - Simple conflict strategy
 
-### 6. Security and privacy
+### 5. Security and privacy
 
 - Optional client-side encryption for sensitive tasks
 - Stronger backup/restore safety

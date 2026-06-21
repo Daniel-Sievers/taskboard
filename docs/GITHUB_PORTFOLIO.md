@@ -31,6 +31,7 @@ Private installable taskboard app with Supabase Auth, realtime sync, drag & drop
 - Postgres data modeling for boards, lists and tasks
 - Supabase Realtime
 - Drag & drop with `@dnd-kit`
+- Modal-based task creation/editing UX
 - Mobile touch UX
 - PWA setup
 - JSON/CSV backup and import/export
@@ -74,8 +75,8 @@ Suggested flow:
 
 1. Open the board.
 2. Collapse/expand board controls.
-3. Add a task.
-4. Edit date, priority, recurrence and labels.
+3. Add a task in the modal.
+4. Edit date, priority, recurrence and labels in the same modal.
 5. Drag a task between lists.
 6. Complete a recurring task.
 7. Show realtime sync in a second device/window.

@@ -29,8 +29,7 @@ This document lists current limitations intentionally left visible for portfolio
 ## Mobile UX
 
 - Mobile horizontal view and long-press drag behavior have been improved.
-- Further polish is still planned for carousel-like list navigation and task creation.
-- The task editor should become a stronger modal/fullscreen dialog for mobile use.
+- Further polish is still planned for carousel-like list navigation.
 
 ## Browser/PWA behavior
 

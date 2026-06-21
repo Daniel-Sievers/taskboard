@@ -21,7 +21,7 @@ import { AddTaskButton } from "./AddTaskButton";
 import { useI18n } from "@/hooks/useI18n";
 import { TaskCard } from "./TaskCard";
 import type { BoardList } from "@/types/board";
-import type { Task, TaskPriority, UpdateTaskInput } from "@/types/task";
+import type { Task, TaskPriority, TaskRecurrenceType, UpdateTaskInput } from "@/types/task";
 
 export function DayList({
   list,
@@ -48,6 +48,9 @@ export function DayList({
     priority: TaskPriority;
     tags: string[];
     isEncrypted: boolean;
+    recurrenceType?: TaskRecurrenceType;
+    recurrenceInterval?: number;
+    recurrenceAnchorDate?: string | null;
   }) => void;
   onEditTask: (taskId: string, input: UpdateTaskInput) => void;
   onDeleteTask: (taskId: string) => void;
@@ -267,6 +270,7 @@ export function DayList({
           <AddTaskButton
             listId={list.id}
             dateKey={list.date}
+            listTitle={list.title}
             onAddTask={onAddTask}
           />
 

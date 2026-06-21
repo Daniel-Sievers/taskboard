@@ -288,3 +288,13 @@ Learning point:
 - Demo changes stay local and are not saved to Supabase.
 - Login and landing pages now include clearer demo CTAs.
 - README and portfolio notes now point to the public demo URL.
+
+## Task modal
+
+Task creation and full editing now open in a modal instead of expanding inline inside a list. On desktop the editor is a compact centered dialog; on mobile it behaves more like a near-fullscreen app dialog.
+
+The modal keeps the title as the required core field and lets the user show or hide optional fields with chips: date, note, priority, recurrence, labels and sensitive marker. This keeps quick task creation fast while still making the full task data model reachable.
+
+Learning point:
+
+- Task editing is easier to understand when create and edit use the same pattern. A modal also prevents long inline forms from pushing the list layout around, especially on mobile.

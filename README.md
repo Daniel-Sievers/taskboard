@@ -120,8 +120,10 @@ The app is still under active development.
 ### Core taskboard
 
 - Create, edit, complete and delete tasks
-- Quick-edit task titles directly in the list
-- Full task editor for notes, priority, date, labels, recurrence and sensitive marking
+- Add and edit tasks in a modal instead of inline expansion
+- Desktop: compact centered editor dialog
+- Mobile: app-like near-fullscreen editor dialog
+- Optional field chips for notes, date, priority, recurrence, labels and sensitive marking
 - Create, rename, delete and reorder lists
 - Multiple boards
 - Board switching through sidebar and header chips
@@ -530,7 +532,6 @@ The project is intentionally still evolving. Current known limits include:
 - Push notifications are not implemented yet.
 - Realtime sync v1 refreshes board data rather than applying every remote event locally in a granular way.
 - Recurring tasks are implemented as a first version and may need more series-management controls later.
-- The task editor still needs a stronger modal-based creation/editing flow.
 - Browser/PWA icon behavior can differ between Chrome, Edge, Firefox and mobile platforms.
 - Public demo data is anonymized; README screenshots should still be reviewed before a public portfolio release.
 
@@ -546,7 +547,6 @@ docs/KNOWN_LIMITS.md
 
 Planned improvements:
 
-- Task create/edit modal
 - Automatic date recognition from manual list titles
 - More complete mobile carousel behavior
 - More robust realtime sync status and reconnect behavior
