@@ -251,3 +251,13 @@ Recurring tasks were added as a focused productivity feature. The app does not g
 Lernpunkt:
 
 - Recurrence can be useful without building a full calendar. For this app, list-based recurrence fits better than pre-generating months or years of tasks.
+
+## Header collapse and hamburger actions
+
+The board control area was made collapsible so the app opens with more task content visible. On the board page, clicking the Taskboard brand in the top bar now toggles the board controls. From other pages, the same brand link still navigates back to the board as expected.
+
+The main board actions are now also available from the hamburger/sidebar menu: day lists, horizontal view, details, filter and board actions. This makes the mobile layout more compact and keeps the core controls reachable even when the board header is collapsed. The project status card was also updated so Vercel is marked as active instead of a future step.
+
+Learning point:
+
+- A portfolio app benefits from a clean default view. Advanced controls should stay available, but they do not need to consume screen space on every page load.

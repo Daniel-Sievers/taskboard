@@ -42,3 +42,51 @@ export function playTaskDoneSound() {
     // Sound effects are optional. If the browser blocks audio, silently skip it.
   }
 }
+
+export function playTaskDeleteSound() {
+  if (typeof window === "undefined") return;
+
+  const AudioContextClass =
+    window.AudioContext ||
+    (window as unknown as { webkitAudioContext?: typeof AudioContext })
+      .webkitAudioContext;
+
+  if (!AudioContextClass) return;
+
+  try {
+    const context = new AudioContextClass();
+    const now = context.currentTime;
+    const master = context.createGain();
+
+    master.gain.setValueAtTime(0.0001, now);
+    master.gain.exponentialRampToValueAtTime(0.44, now + 0.012);
+    master.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
+    master.connect(context.destination);
+
+    const notes = [392.0, 261.63];
+    notes.forEach((frequency, index) => {
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      const start = now + index * 0.055;
+      const end = start + 0.16;
+
+      oscillator.type = "triangle";
+      oscillator.frequency.setValueAtTime(frequency, start);
+      oscillator.frequency.exponentialRampToValueAtTime(frequency * 0.82, end);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.95, start + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, end);
+      oscillator.connect(gain);
+      gain.connect(master);
+      oscillator.start(start);
+      oscillator.stop(end + 0.02);
+    });
+
+    window.setTimeout(() => {
+      void context.close().catch(() => undefined);
+    }, 450);
+  } catch {
+    // Sound effects are optional. If the browser blocks audio, silently skip it.
+  }
+}
+

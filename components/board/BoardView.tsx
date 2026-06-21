@@ -68,6 +68,9 @@ function buildDemoLists(): BoardList[] {
 }
 
 type ActiveDrag = { type: "list" | "task"; id: string } | null;
+type BoardUiAction = "details" | "filter" | "board";
+
+const pendingBoardActionKey = "taskboard:pending-board-action";
 
 function getDragData(event: DragStartEvent | DragOverEvent | DragEndEvent) {
   return event.active.data.current as
@@ -115,8 +118,12 @@ export function BoardView() {
   } = useTaskboard(user, activeBoardId);
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
-  const [priorityFilter, setPriorityFilter] = useState<"all" | "high" | "normal" | "low">("all");
-  const [statusFilter, setStatusFilter] = useState<"open" | "done" | "all">("open");
+  const [priorityFilter, setPriorityFilter] = useState<
+    "all" | "high" | "normal" | "low"
+  >("all");
+  const [statusFilter, setStatusFilter] = useState<"open" | "done" | "all">(
+    "open",
+  );
   const [filterOpen, setFilterOpen] = useState(false);
   const { preferences, updatePreferences } = usePreferences();
   const { t } = useI18n();
@@ -124,12 +131,17 @@ export function BoardView() {
   const [activeDrag, setActiveDrag] = useState<ActiveDrag>(null);
   const [boardMenuOpen, setBoardMenuOpen] = useState(false);
   const [statsOpen, setStatsOpen] = useState(false);
+  const [boardHeaderOpen, setBoardHeaderOpen] = useState(false);
   const boardMenuRef = useRef<HTMLDivElement>(null);
 
   const activeFilter = searchParams.get("filter");
 
   useEffect(() => {
-    setView(searchParams.get("view") === "kanban" ? "kanban" : preferences.defaultView);
+    setView(
+      searchParams.get("view") === "kanban"
+        ? "kanban"
+        : preferences.defaultView,
+    );
     setQuery(searchParams.get("q") ?? "");
   }, [preferences.defaultView, searchParams]);
 
@@ -141,6 +153,41 @@ export function BoardView() {
     window.addEventListener("taskboard:reload", handleReload);
     return () => window.removeEventListener("taskboard:reload", handleReload);
   }, [reload]);
+
+  useEffect(() => {
+    function handleToggleBoardHeader() {
+      setBoardHeaderOpen((open) => !open);
+    }
+
+    function handleBoardAction(event: Event) {
+      const customEvent = event as CustomEvent<{ action?: BoardUiAction }>;
+      const action = customEvent.detail?.action;
+      if (action) runBoardAction(action);
+    }
+
+    const pendingAction = window.sessionStorage.getItem(pendingBoardActionKey);
+    if (
+      pendingAction === "details" ||
+      pendingAction === "filter" ||
+      pendingAction === "board"
+    ) {
+      window.sessionStorage.removeItem(pendingBoardActionKey);
+      window.setTimeout(() => runBoardAction(pendingAction), 0);
+    }
+
+    window.addEventListener(
+      "taskboard:toggle-board-header",
+      handleToggleBoardHeader,
+    );
+    window.addEventListener("taskboard:board-action", handleBoardAction);
+    return () => {
+      window.removeEventListener(
+        "taskboard:toggle-board-header",
+        handleToggleBoardHeader,
+      );
+      window.removeEventListener("taskboard:board-action", handleBoardAction);
+    };
+  }, []);
 
   useEffect(() => {
     function handlePointerDown(event: PointerEvent) {
@@ -158,9 +205,12 @@ export function BoardView() {
     updatePreferences({ defaultView: nextView });
     const params = new URLSearchParams(searchParams.toString());
     params.delete("view");
-    router.replace(params.toString() ? `/board?${params.toString()}` : "/board", {
-      scroll: false,
-    });
+    router.replace(
+      params.toString() ? `/board?${params.toString()}` : "/board",
+      {
+        scroll: false,
+      },
+    );
   }
 
   function updateBoardSearch(nextQuery: string) {
@@ -169,15 +219,36 @@ export function BoardView() {
     const trimmed = nextQuery.trim();
     if (trimmed) params.set("q", trimmed);
     else params.delete("q");
-    router.replace(params.toString() ? `/board?${params.toString()}` : "/board", {
-      scroll: false,
-    });
+    router.replace(
+      params.toString() ? `/board?${params.toString()}` : "/board",
+      {
+        scroll: false,
+      },
+    );
   }
 
   function switchBoard(boardId: string) {
     const params = new URLSearchParams(searchParams.toString());
     params.set("board", boardId);
     router.push(`/board?${params.toString()}`);
+  }
+
+  function runBoardAction(action: BoardUiAction) {
+    if (action === "details") {
+      setStatsOpen((open) => !open);
+      return;
+    }
+
+    if (action === "filter") {
+      setBoardHeaderOpen(true);
+      setFilterOpen((open) => !open);
+      return;
+    }
+
+    if (action === "board") {
+      setBoardHeaderOpen(true);
+      setBoardMenuOpen((open) => !open);
+    }
   }
 
   const lastDragOverKeyRef = useRef<string | null>(null);
@@ -294,7 +365,8 @@ export function BoardView() {
       window.removeEventListener("touchmove", rememberTouchY, {
         capture: true,
       });
-      document.documentElement.style.scrollBehavior = previousHtmlScrollBehavior;
+      document.documentElement.style.scrollBehavior =
+        previousHtmlScrollBehavior;
       document.body.style.scrollBehavior = previousBodyScrollBehavior;
       pointerYRef.current = null;
       dragStartPointerYRef.current = null;
@@ -329,7 +401,8 @@ export function BoardView() {
         if (!isDueToday || task.status !== "open") return false;
       }
 
-      if (priorityFilter !== "all" && task.priority !== priorityFilter) return false;
+      if (priorityFilter !== "all" && task.priority !== priorityFilter)
+        return false;
       if (selectedLabel && !task.tags.includes(selectedLabel)) return false;
 
       if (!normalized) return true;
@@ -360,7 +433,8 @@ export function BoardView() {
       typeof TouchEvent !== "undefined" &&
       activatorEvent instanceof TouchEvent
     ) {
-      const touch = activatorEvent.touches[0] ?? activatorEvent.changedTouches[0];
+      const touch =
+        activatorEvent.touches[0] ?? activatorEvent.changedTouches[0];
       if (touch) {
         pointerYRef.current = touch.clientY;
         dragStartPointerYRef.current = touch.clientY;
@@ -457,8 +531,6 @@ export function BoardView() {
     }
   }
 
-
-
   if (authLoading || isLoading) {
     return (
       <div className="grid min-h-[55vh] place-items-center rounded-[2rem] border border-white/10 bg-white/[0.035]">
@@ -471,249 +543,293 @@ export function BoardView() {
 
   return (
     <section className="space-y-5">
-      <div className="relative overflow-visible rounded-[1.8rem] border border-white/10 bg-white/[0.035] shadow-2xl shadow-black/25 ring-1 ring-white/[0.03]">
-        <div className="bg-gradient-to-r from-blue-500/10 via-transparent to-purple-500/10 p-4 md:p-5">
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="tb-board-eyebrow text-xs font-medium uppercase tracking-[0.28em] text-blue-300">
-                    {t("board.mainBoard")}
-                  </p>
-                  {mode === "supabase" ? (
-                    <>
-                      <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] text-zinc-400">
-                        {t("board.boardCount", { count: boards.length })}
-                      </span>
-                      <span
-                        className={
-                          realtimeStatus === "live"
-                            ? "rounded-full border border-emerald-400/20 bg-emerald-500/10 px-2 py-1 text-[11px] text-emerald-200"
-                            : realtimeStatus === "syncing" || realtimeStatus === "connecting"
-                              ? "rounded-full border border-blue-400/20 bg-blue-500/10 px-2 py-1 text-[11px] text-blue-200"
-                              : realtimeStatus === "error"
-                                ? "rounded-full border border-amber-400/20 bg-amber-500/10 px-2 py-1 text-[11px] text-amber-200"
-                                : "rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] text-zinc-400"
-                        }
-                        title={lastRealtimeUpdate ? `Realtime update: ${lastRealtimeUpdate}` : undefined}
-                      >
-                        {realtimeStatus === "live"
-                          ? "Live-Sync"
-                          : realtimeStatus === "syncing"
-                            ? "Synchronisiert …"
-                            : realtimeStatus === "connecting"
-                              ? "Verbinde …"
-                              : realtimeStatus === "error"
-                                ? "Sync prüfen"
-                                : "Manuell"}
-                      </span>
-                    </>
-                  ) : null}
-                  {mode === "supabase" && boards.length > 0 ? (
-                    <div className="flex max-w-full flex-wrap gap-1.5">
-                      {boards.map((item) => {
-                        const isActive = item.id === board?.id;
-                        return (
-                          <button
-                            key={item.id}
-                            type="button"
-                            onClick={() => switchBoard(item.id)}
+      {boardHeaderOpen || hasActiveFilters || filterOpen ? (
+        <div className="relative overflow-visible rounded-[1.8rem] border border-white/10 bg-white/[0.035] shadow-2xl shadow-black/25 ring-1 ring-white/[0.03]">
+          {boardHeaderOpen ? (
+            <div className="bg-gradient-to-r from-blue-500/10 via-transparent to-purple-500/10 p-4 md:p-5">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="tb-board-eyebrow text-xs font-medium uppercase tracking-[0.28em] text-blue-300">
+                        {t("board.mainBoard")}
+                      </p>
+                      {mode === "supabase" ? (
+                        <>
+                          <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] text-zinc-400">
+                            {t("board.boardCount", { count: boards.length })}
+                          </span>
+                          <span
                             className={
-                              isActive
-                                ? "tb-board-chip-active max-w-44 truncate rounded-full border border-blue-400/30 bg-blue-500/15 px-2.5 py-1 text-sm text-blue-100"
-                                : "tb-board-chip max-w-44 truncate rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1 text-sm text-zinc-400 hover:bg-white/[0.06] hover:text-white"
+                              realtimeStatus === "live"
+                                ? "rounded-full border border-emerald-400/20 bg-emerald-500/10 px-2 py-1 text-[11px] text-emerald-200"
+                                : realtimeStatus === "syncing" ||
+                                    realtimeStatus === "connecting"
+                                  ? "rounded-full border border-blue-400/20 bg-blue-500/10 px-2 py-1 text-[11px] text-blue-200"
+                                  : realtimeStatus === "error"
+                                    ? "rounded-full border border-amber-400/20 bg-amber-500/10 px-2 py-1 text-[11px] text-amber-200"
+                                    : "rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] text-zinc-400"
                             }
-                            title={item.title}
+                            title={
+                              lastRealtimeUpdate
+                                ? `Realtime update: ${lastRealtimeUpdate}`
+                                : undefined
+                            }
                           >
-                            {item.title}
+                            {realtimeStatus === "live"
+                              ? "Live-Sync"
+                              : realtimeStatus === "syncing"
+                                ? "Synchronisiert …"
+                                : realtimeStatus === "connecting"
+                                  ? "Verbinde …"
+                                  : realtimeStatus === "error"
+                                    ? "Sync prüfen"
+                                    : "Manuell"}
+                          </span>
+                        </>
+                      ) : null}
+                      {mode === "supabase" && boards.length > 0 ? (
+                        <div className="flex max-w-full flex-wrap gap-1.5">
+                          {boards.map((item) => {
+                            const isActive = item.id === board?.id;
+                            return (
+                              <button
+                                key={item.id}
+                                type="button"
+                                onClick={() => switchBoard(item.id)}
+                                className={
+                                  isActive
+                                    ? "tb-board-chip-active max-w-44 truncate rounded-full border border-blue-400/30 bg-blue-500/15 px-2.5 py-1 text-sm text-blue-100"
+                                    : "tb-board-chip max-w-44 truncate rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1 text-sm text-zinc-400 hover:bg-white/[0.06] hover:text-white"
+                                }
+                                title={item.title}
+                              >
+                                {item.title}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  {mode === "demo" || !isSupabaseConfigured ? (
+                    <p className="max-w-xl text-sm leading-6 text-zinc-500 lg:text-right">
+                      {isSupabaseConfigured
+                        ? t("board.loginDescription")
+                        : t("board.demoDescription")}
+                    </p>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => updateView("days")}
+                    className={
+                      view === "days"
+                        ? "inline-flex items-center gap-2 rounded-2xl bg-blue-500 px-4 py-2.5 text-sm font-medium text-white"
+                        : "inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-zinc-950/50 px-4 py-2.5 text-sm text-zinc-300 hover:bg-white/5"
+                    }
+                  >
+                    <CalendarDays className="h-4 w-4" /> {t("sidebar.dayLists")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => updateView("kanban")}
+                    className={
+                      view === "kanban"
+                        ? "inline-flex items-center gap-2 rounded-2xl bg-blue-500 px-4 py-2.5 text-sm font-medium text-white"
+                        : "inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-zinc-950/50 px-4 py-2.5 text-sm text-zinc-300 hover:bg-white/5"
+                    }
+                  >
+                    <LayoutGrid className="h-4 w-4" /> {t("sidebar.horizontal")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => runBoardAction("details")}
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-zinc-950/60 px-4 py-2.5 text-sm text-zinc-300 hover:bg-white/5"
+                  >
+                    <BarChart3 className="h-4 w-4" /> {t("board.details")}
+                    <ChevronDown
+                      className={`h-4 w-4 transition ${statsOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => runBoardAction("filter")}
+                    className={
+                      hasActiveFilters
+                        ? "inline-flex items-center justify-center gap-2 rounded-2xl border border-blue-400/30 bg-blue-500/10 px-4 py-2.5 text-sm text-blue-100 hover:bg-blue-500/15"
+                        : "inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-zinc-950/60 px-4 py-2.5 text-sm text-zinc-300 hover:bg-white/5"
+                    }
+                  >
+                    <SlidersHorizontal className="h-4 w-4" />{" "}
+                    {t("board.filter")}
+                  </button>
+                  {board ? (
+                    <div ref={boardMenuRef} className="relative z-40 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => runBoardAction("board")}
+                        className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-zinc-950/50 px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5"
+                      >
+                        <MoreVertical className="h-4 w-4" /> {t("board.menu")}
+                      </button>
+                      {boardMenuOpen ? (
+                        <div className="absolute left-0 z-50 mt-2 w-56 rounded-2xl border border-white/10 bg-zinc-950 p-2 text-sm shadow-2xl shadow-black/60 ring-1 ring-white/10 sm:left-auto sm:right-0">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setBoardMenuOpen(false);
+                              void handleRenameBoard();
+                            }}
+                            className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-zinc-300 hover:bg-white/5 hover:text-white"
+                          >
+                            <Pencil className="h-4 w-4" /> {t("board.rename")}
                           </button>
-                        );
-                      })}
+                          <button
+                            type="button"
+                            onClick={() => void handleDeleteBoard()}
+                            className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-red-200 hover:bg-red-500/10"
+                          >
+                            <Trash2 className="h-4 w-4" /> {t("board.archive")}
+                          </button>
+                        </div>
+                      ) : null}
                     </div>
                   ) : null}
                 </div>
               </div>
-
-              {mode === "demo" || !isSupabaseConfigured ? (
-                <p className="max-w-xl text-sm leading-6 text-zinc-500 lg:text-right">
-                  {isSupabaseConfigured ? t("board.loginDescription") : t("board.demoDescription")}
-                </p>
-              ) : null}
             </div>
+          ) : null}
 
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => updateView("days")}
-                className={
-                  view === "days"
-                    ? "inline-flex items-center gap-2 rounded-2xl bg-blue-500 px-4 py-2.5 text-sm font-medium text-white"
-                    : "inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-zinc-950/50 px-4 py-2.5 text-sm text-zinc-300 hover:bg-white/5"
-                }
-              >
-                <CalendarDays className="h-4 w-4" /> {t("sidebar.dayLists")}
-              </button>
-              <button
-                type="button"
-                onClick={() => updateView("kanban")}
-                className={
-                  view === "kanban"
-                    ? "inline-flex items-center gap-2 rounded-2xl bg-blue-500 px-4 py-2.5 text-sm font-medium text-white"
-                    : "inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-zinc-950/50 px-4 py-2.5 text-sm text-zinc-300 hover:bg-white/5"
-                }
-              >
-                <LayoutGrid className="h-4 w-4" /> {t("sidebar.horizontal")}
-              </button>
-              <button
-                type="button"
-                onClick={() => setStatsOpen((open) => !open)}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-zinc-950/60 px-4 py-2.5 text-sm text-zinc-300 hover:bg-white/5"
-              >
-                <BarChart3 className="h-4 w-4" /> {t("board.details")}
-                <ChevronDown className={`h-4 w-4 transition ${statsOpen ? "rotate-180" : ""}`} />
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilterOpen((open) => !open)}
-                className={
-                  hasActiveFilters
-                    ? "inline-flex items-center justify-center gap-2 rounded-2xl border border-blue-400/30 bg-blue-500/10 px-4 py-2.5 text-sm text-blue-100 hover:bg-blue-500/15"
-                    : "inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-zinc-950/60 px-4 py-2.5 text-sm text-zinc-300 hover:bg-white/5"
-                }
-              >
-                <SlidersHorizontal className="h-4 w-4" /> {t("board.filter")}
-              </button>
-              {board ? (
-                <div ref={boardMenuRef} className="relative z-40 shrink-0">
+          {hasActiveFilters || filterOpen ? (
+            <div className="space-y-4 border-t border-white/5 p-4 md:p-5">
+              {hasActiveFilters ? (
+                <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-400">
+                  <span>
+                    {filteredTasks.length} {t("filter.matches")}
+                  </span>
+                  {activeFilter === "today" ? (
+                    <span className="rounded-full border border-blue-400/20 bg-blue-500/10 px-2 py-1 text-blue-200">
+                      {t("filter.todayDue")}
+                    </span>
+                  ) : null}
+                  {selectedLabel ? (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2 py-1">
+                      <Tag className="h-3 w-3" /> {selectedLabel}
+                    </span>
+                  ) : null}
                   <button
                     type="button"
-                    onClick={() => setBoardMenuOpen((open) => !open)}
-                    className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-zinc-950/50 px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5"
+                    onClick={() => {
+                      updateBoardSearch("");
+                      setSelectedLabel(null);
+                      setPriorityFilter("all");
+                      setStatusFilter("open");
+                      if (activeFilter === "today")
+                        router.push(
+                          activeBoardId
+                            ? `/board?board=${activeBoardId}`
+                            : "/board",
+                        );
+                    }}
+                    className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-zinc-500 hover:bg-white/5 hover:text-white"
                   >
-                    <MoreVertical className="h-4 w-4" /> {t("board.menu")}
+                    <X className="h-3 w-3" /> {t("filter.reset")}
                   </button>
-                  {boardMenuOpen ? (
-                    <div className="absolute left-0 z-50 mt-2 w-56 rounded-2xl border border-white/10 bg-zinc-950 p-2 text-sm shadow-2xl shadow-black/60 ring-1 ring-white/10 sm:left-auto sm:right-0">
-                      <button
-                        type="button"
-                        onClick={() => { setBoardMenuOpen(false); void handleRenameBoard(); }}
-                        className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-zinc-300 hover:bg-white/5 hover:text-white"
-                      >
-                        <Pencil className="h-4 w-4" /> {t("board.rename")}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => void handleDeleteBoard()}
-                        className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-red-200 hover:bg-red-500/10"
-                      >
-                        <Trash2 className="h-4 w-4" /> {t("board.archive")}
-                      </button>
+                </div>
+              ) : null}
+
+              {filterOpen ? (
+                <div className="grid gap-4 rounded-3xl border border-white/10 bg-zinc-950/70 p-4 md:grid-cols-3">
+                  <label className="space-y-1.5 text-xs text-zinc-500">
+                    {t("filter.status")}
+                    <select
+                      value={statusFilter}
+                      onChange={(event) =>
+                        setStatusFilter(
+                          event.target.value as typeof statusFilter,
+                        )
+                      }
+                      className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 outline-none focus:border-blue-500"
+                    >
+                      <option value="open">{t("filter.open")}</option>
+                      <option value="done">{t("filter.done")}</option>
+                      <option value="all">{t("filter.all")}</option>
+                    </select>
+                  </label>
+
+                  <label className="space-y-1.5 text-xs text-zinc-500">
+                    {t("filter.priority")}
+                    <select
+                      value={priorityFilter}
+                      onChange={(event) =>
+                        setPriorityFilter(
+                          event.target.value as typeof priorityFilter,
+                        )
+                      }
+                      className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 outline-none focus:border-blue-500"
+                    >
+                      <option value="all">{t("filter.allPriorities")}</option>
+                      <option value="high">{t("task.priorityHigh")}</option>
+                      <option value="normal">{t("task.priorityNormal")}</option>
+                      <option value="low">{t("task.priorityLow")}</option>
+                    </select>
+                  </label>
+
+                  <label className="space-y-1.5 text-xs text-zinc-500">
+                    {t("filter.label")}
+                    <select
+                      value={selectedLabel ?? ""}
+                      onChange={(event) =>
+                        setSelectedLabel(event.target.value || null)
+                      }
+                      className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 outline-none focus:border-blue-500"
+                    >
+                      <option value="">{t("filter.allLabels")}</option>
+                      {availableLabels.map((label) => (
+                        <option key={label} value={label}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  {availableLabels.length > 0 ? (
+                    <div className="md:col-span-3">
+                      <p className="mb-2 text-xs text-zinc-500">
+                        {t("filter.quickLabels")}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {availableLabels.map((label) => (
+                          <button
+                            key={label}
+                            type="button"
+                            onClick={() =>
+                              setSelectedLabel((current) =>
+                                current === label ? null : label,
+                              )
+                            }
+                            className={
+                              selectedLabel === label
+                                ? "inline-flex items-center gap-1 rounded-full border border-blue-400/30 bg-blue-500/15 px-3 py-1.5 text-xs text-blue-100"
+                                : "inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-zinc-400 hover:bg-white/[0.06] hover:text-white"
+                            }
+                          >
+                            <Tag className="h-3 w-3" /> {label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   ) : null}
                 </div>
               ) : null}
             </div>
-          </div>
+          ) : null}
         </div>
-
-        {hasActiveFilters || filterOpen ? (
-          <div className="space-y-4 border-t border-white/5 p-4 md:p-5">
-          {hasActiveFilters ? (
-            <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-400">
-              <span>{filteredTasks.length} {t("filter.matches")}</span>
-              {activeFilter === "today" ? (
-                <span className="rounded-full border border-blue-400/20 bg-blue-500/10 px-2 py-1 text-blue-200">{t("filter.todayDue")}</span>
-              ) : null}
-              {selectedLabel ? (
-                <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2 py-1">
-                  <Tag className="h-3 w-3" /> {selectedLabel}
-                </span>
-              ) : null}
-              <button
-                type="button"
-                onClick={() => {
-                  updateBoardSearch("");
-                  setSelectedLabel(null);
-                  setPriorityFilter("all");
-                  setStatusFilter("open");
-                  if (activeFilter === "today") router.push(activeBoardId ? `/board?board=${activeBoardId}` : "/board");
-                }}
-                className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-zinc-500 hover:bg-white/5 hover:text-white"
-              >
-                <X className="h-3 w-3" /> {t("filter.reset")}
-              </button>
-            </div>
-          ) : null}
-
-          {filterOpen ? (
-            <div className="grid gap-4 rounded-3xl border border-white/10 bg-zinc-950/70 p-4 md:grid-cols-3">
-              <label className="space-y-1.5 text-xs text-zinc-500">
-                {t("filter.status")}
-                <select
-                  value={statusFilter}
-                  onChange={(event) => setStatusFilter(event.target.value as typeof statusFilter)}
-                  className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 outline-none focus:border-blue-500"
-                >
-                  <option value="open">{t("filter.open")}</option>
-                  <option value="done">{t("filter.done")}</option>
-                  <option value="all">{t("filter.all")}</option>
-                </select>
-              </label>
-
-              <label className="space-y-1.5 text-xs text-zinc-500">
-                {t("filter.priority")}
-                <select
-                  value={priorityFilter}
-                  onChange={(event) => setPriorityFilter(event.target.value as typeof priorityFilter)}
-                  className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 outline-none focus:border-blue-500"
-                >
-                  <option value="all">{t("filter.allPriorities")}</option>
-                  <option value="high">{t("task.priorityHigh")}</option>
-                  <option value="normal">{t("task.priorityNormal")}</option>
-                  <option value="low">{t("task.priorityLow")}</option>
-                </select>
-              </label>
-
-              <label className="space-y-1.5 text-xs text-zinc-500">
-                {t("filter.label")}
-                <select
-                  value={selectedLabel ?? ""}
-                  onChange={(event) => setSelectedLabel(event.target.value || null)}
-                  className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 outline-none focus:border-blue-500"
-                >
-                  <option value="">{t("filter.allLabels")}</option>
-                  {availableLabels.map((label) => (
-                    <option key={label} value={label}>{label}</option>
-                  ))}
-                </select>
-              </label>
-
-              {availableLabels.length > 0 ? (
-                <div className="md:col-span-3">
-                  <p className="mb-2 text-xs text-zinc-500">{t("filter.quickLabels")}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {availableLabels.map((label) => (
-                      <button
-                        key={label}
-                        type="button"
-                        onClick={() => setSelectedLabel((current) => current === label ? null : label)}
-                        className={
-                          selectedLabel === label
-                            ? "inline-flex items-center gap-1 rounded-full border border-blue-400/30 bg-blue-500/15 px-3 py-1.5 text-xs text-blue-100"
-                            : "inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-zinc-400 hover:bg-white/[0.06] hover:text-white"
-                        }
-                      >
-                        <Tag className="h-3 w-3" /> {label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-          </div>
-        ) : null}
-      </div>
+      ) : null}
 
       {error ? (
         <div className="rounded-3xl border border-red-400/20 bg-red-400/10 p-4 text-sm text-red-100">
@@ -734,7 +850,9 @@ export function BoardView() {
         </div>
       ) : null}
 
-      {statsOpen ? <BoardStats tasks={tasks} mode={mode} isSaving={isSaving} /> : null}
+      {statsOpen ? (
+        <BoardStats tasks={tasks} mode={mode} isSaving={isSaving} />
+      ) : null}
 
       {view === "days" ? (
         <DndContext
@@ -819,7 +937,9 @@ export function BoardView() {
                 <p className="font-semibold text-zinc-100">
                   {activeList.title}
                 </p>
-                <p className="mt-1 text-xs text-zinc-500">{t("board.moveList")}</p>
+                <p className="mt-1 text-xs text-zinc-500">
+                  {t("board.moveList")}
+                </p>
               </div>
             ) : null}
           </DragOverlay>
@@ -912,7 +1032,9 @@ export function BoardView() {
                 <p className="font-semibold text-zinc-100">
                   {activeList.title}
                 </p>
-                <p className="mt-1 text-xs text-zinc-500">{t("board.moveList")}</p>
+                <p className="mt-1 text-xs text-zinc-500">
+                  {t("board.moveList")}
+                </p>
               </div>
             ) : null}
           </DragOverlay>

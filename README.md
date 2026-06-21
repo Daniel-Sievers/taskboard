@@ -76,7 +76,7 @@ Implemented so far:
 - Drag & drop supports auto-scroll while moving lists.
 - Mobile touch drag uses long-press behavior so normal swipe scrolling stays usable.
 - Horizontal view uses swipeable list columns on mobile and wider screens.
-- Mobile touch drag now uses long-press behavior so normal touch scrolling stays usable.
+- Board controls are collapsible and mirrored in the hamburger/sidebar menu.
 - Realtime sync v1 was tested online across devices.
 - Search, filters, labels and a “due today” foundation are available.
 - Settings for theme, language, accent color, week start, default view, sound effects, delete confirmation and task counts are active.
@@ -97,6 +97,8 @@ Implemented so far:
 - Create, rename, delete and reorder lists
 - Multiple boards
 - Board switching through sidebar and header chips
+- Collapsible board control header for a cleaner default view
+- Hamburger/sidebar access to day lists, horizontal view, details, filters and board actions
 - Soft-delete behavior for tasks
 - Optional delete confirmation
 - Completed task counts
@@ -440,11 +442,12 @@ This reduces vendor lock-in and makes private data easier to move or back up man
 
 Planned improvements:
 
+- Portfolio polish: final README pass, architecture diagram, known limits and demo GIF/video
+- GitHub Actions build check for every push
+- Task creation/editing as a centered modal instead of inline editing
+- Automatic date recognition from manually named day lists
 - Realtime sync refinements and more detailed sync status
-- Improved horizontal / Kanban view
 - Offline sync with IndexedDB
-- Recurring tasks
-- Optional Google login
 - Optional custom SMTP for auth emails
 - Client-side encryption for sensitive tasks
 
@@ -461,10 +464,10 @@ This project helped me practice:
 - deploying through GitHub and Vercel
 - handling environment variables safely
 - designing around sync, backups, privacy and UX details
+- balancing compact mobile navigation with discoverable desktop controls
 - improving mobile touch interactions with delayed drag activation
-- pinning framework dependencies instead of using `latest` for reproducible local and Vercel builds
-- documenting an iterative development process
 - pinning framework dependencies instead of relying on `latest` for reproducible local and Vercel builds
+- documenting an iterative development process
 
 ---
 

@@ -5,13 +5,16 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   Archive,
   CalendarCheck,
+  BarChart3,
   CalendarDays,
   Database,
   Globe2,
   KanbanSquare,
   Loader2,
+  MoreVertical,
   Plus,
   Settings,
+  SlidersHorizontal,
   Sparkles,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -28,6 +31,16 @@ const viewItems = [
   { labelKey: "sidebar.todayDue", icon: CalendarCheck, key: "today" },
   { labelKey: "sidebar.settings", icon: Settings, key: "settings" },
 ] as const;
+
+const boardActionItems = [
+  { labelKey: "board.details", icon: BarChart3, action: "details" },
+  { labelKey: "board.filter", icon: SlidersHorizontal, action: "filter" },
+  { labelKey: "board.menu", icon: MoreVertical, action: "board" },
+] as const;
+
+type BoardUiAction = (typeof boardActionItems)[number]["action"];
+
+const pendingBoardActionKey = "taskboard:pending-board-action";
 
 function boardHref(boardId: string) {
   return `/board?board=${boardId}`;
@@ -96,10 +109,26 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
     }
     window.addEventListener("taskboard:boards-changed", handleBoardsChanged);
     return () => {
-      window.removeEventListener("taskboard:boards-changed", handleBoardsChanged);
+      window.removeEventListener(
+        "taskboard:boards-changed",
+        handleBoardsChanged,
+      );
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
+
+  function handleBoardAction(action: BoardUiAction) {
+    if (pathname === "/board") {
+      window.dispatchEvent(
+        new CustomEvent("taskboard:board-action", { detail: { action } }),
+      );
+    } else {
+      window.sessionStorage.setItem(pendingBoardActionKey, action);
+      router.push(activeBoardId ? boardHref(activeBoardId) : "/board");
+    }
+
+    onNavigate?.();
+  }
 
   async function handleAddBoard() {
     if (!user || authLoading) {
@@ -107,7 +136,12 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
       return;
     }
 
-    const title = window.prompt(preferences.language === "en" ? "Name of the new board" : "Name des neuen Boards", preferences.language === "en" ? "New board" : "Neues Board");
+    const title = window.prompt(
+      preferences.language === "en"
+        ? "Name of the new board"
+        : "Name des neuen Boards",
+      preferences.language === "en" ? "New board" : "Neues Board",
+    );
     if (!title?.trim()) return;
 
     setIsLoading(true);
@@ -139,7 +173,7 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
     <aside className={wrapperClassName}>
       <div className={innerClassName}>
         <nav className="rounded-3xl border border-white/10 bg-white/[0.035] p-3 shadow-2xl shadow-black/20">
-          {viewItems.map((item) => {
+          {viewItems.slice(0, 2).map((item) => {
             const Icon = item.icon;
             const isActive = activeView === item.key;
             return (
@@ -147,7 +181,45 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
                 key={item.key}
                 href={viewHref(item.key, activeBoardId)}
                 onClick={() => {
-                  if (item.key === "days" || item.key === "kanban") updatePreferences({ defaultView: item.key });
+                  if (item.key === "days" || item.key === "kanban")
+                    updatePreferences({ defaultView: item.key });
+                  onNavigate?.();
+                }}
+                className={
+                  isActive
+                    ? "flex items-center gap-3 rounded-2xl bg-blue-500 px-3 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-500/20"
+                    : "flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white"
+                }
+              >
+                <Icon className="h-4 w-4" />
+                {t(item.labelKey)}
+              </Link>
+            );
+          })}
+
+          {boardActionItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.action}
+                type="button"
+                onClick={() => handleBoardAction(item.action)}
+                className="flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left text-sm text-zinc-400 hover:bg-white/5 hover:text-white"
+              >
+                <Icon className="h-4 w-4" />
+                {t(item.labelKey)}
+              </button>
+            );
+          })}
+
+          {viewItems.slice(2).map((item) => {
+            const Icon = item.icon;
+            const isActive = activeView === item.key;
+            return (
+              <Link
+                key={item.key}
+                href={viewHref(item.key, activeBoardId)}
+                onClick={() => {
                   onNavigate?.();
                 }}
                 className={
@@ -166,7 +238,9 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
         <section className="rounded-3xl border border-white/10 bg-white/[0.035] p-3 text-sm text-zinc-400 shadow-2xl shadow-black/20">
           <div className="mb-2 flex items-center justify-between px-1 text-zinc-200">
             <span className="font-medium">{t("sidebar.boards")}</span>
-            {isLoading ? <Loader2 className="h-4 w-4 animate-spin text-zinc-500" /> : null}
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin text-zinc-500" />
+            ) : null}
           </div>
 
           <div className="space-y-1">
@@ -200,7 +274,9 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
             })}
           </div>
 
-          {error ? <p className="mt-2 px-3 text-xs text-red-300">{error}</p> : null}
+          {error ? (
+            <p className="mt-2 px-3 text-xs text-red-300">{error}</p>
+          ) : null}
 
           <button
             type="button"
@@ -218,20 +294,36 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
           </div>
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-3">
-              <span className="flex items-center gap-2"><Database className="h-4 w-4" /> Supabase</span>
-              <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-xs text-emerald-300">{t("status.active")}</span>
+              <span className="flex items-center gap-2">
+                <Database className="h-4 w-4" /> Supabase
+              </span>
+              <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-xs text-emerald-300">
+                {t("status.active")}
+              </span>
             </div>
             <div className="flex items-center justify-between gap-3">
-              <span className="flex items-center gap-2"><CalendarDays className="h-4 w-4" /> Boards</span>
-              <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-xs text-emerald-300">{t("status.active")}</span>
+              <span className="flex items-center gap-2">
+                <CalendarDays className="h-4 w-4" /> Boards
+              </span>
+              <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-xs text-emerald-300">
+                {t("status.active")}
+              </span>
             </div>
             <div className="flex items-center justify-between gap-3">
-              <span className="flex items-center gap-2"><Archive className="h-4 w-4" /> Backup</span>
-              <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-xs text-emerald-300">{t("status.manual")}</span>
+              <span className="flex items-center gap-2">
+                <Archive className="h-4 w-4" /> Backup
+              </span>
+              <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-xs text-emerald-300">
+                {t("status.manual")}
+              </span>
             </div>
             <div className="flex items-center justify-between gap-3">
-              <span className="flex items-center gap-2"><Globe2 className="h-4 w-4" /> Vercel</span>
-              <span className="rounded-full bg-zinc-800 px-2 py-1 text-xs text-zinc-400">{t("status.next")}</span>
+              <span className="flex items-center gap-2">
+                <Globe2 className="h-4 w-4" /> Vercel
+              </span>
+              <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-xs text-emerald-300">
+                {t("status.active")}
+              </span>
             </div>
           </div>
         </section>

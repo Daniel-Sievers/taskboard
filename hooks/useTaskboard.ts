@@ -21,7 +21,7 @@ import {
   updateTaskStatus,
 } from "@/lib/db/tasks";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase/client";
-import { toDateKey } from "@/lib/dates/calendar";
+import { isFutureDateKey, toDateKey } from "@/lib/dates/calendar";
 import { reorderById, withSequentialPositions } from "@/lib/dnd/reorder";
 import { initialDemoTasks } from "@/lib/demo-data";
 import type { Board, BoardList } from "@/types/board";
@@ -30,8 +30,7 @@ import type { User } from "@supabase/supabase-js";
 
 
 function isFutureLockedTask(task: Task) {
-  if (task.status !== "open" || !task.scheduledDate) return false;
-  return task.scheduledDate > toDateKey(new Date());
+  return task.status === "open" && isFutureDateKey(task.scheduledDate);
 }
 
 function reorderTasksForMove({

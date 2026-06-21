@@ -1,9 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Bell, Menu, Moon, RefreshCw, Search, Settings, Sun, X } from "lucide-react";
+import {
+  Bell,
+  Menu,
+  Moon,
+  RefreshCw,
+  Search,
+  Settings,
+  Sun,
+  X,
+} from "lucide-react";
 import { AuthStatus } from "./AuthStatus";
 import { AppIcon } from "./AppIcon";
 import { usePreferences } from "@/hooks/usePreferences";
@@ -58,12 +67,21 @@ export function TopBar({ onOpenSidebar }: TopBarProps) {
   }, []);
 
   function toggleTheme() {
-    updatePreferences({ theme: preferences.theme === "light" ? "dark" : "light" });
+    updatePreferences({
+      theme: preferences.theme === "light" ? "dark" : "light",
+    });
   }
 
   function handleRefresh() {
     window.dispatchEvent(new Event("taskboard:reload"));
     router.refresh();
+  }
+
+  function handleBrandClick(event: MouseEvent<HTMLAnchorElement>) {
+    if (pathname === "/board") {
+      event.preventDefault();
+      window.dispatchEvent(new Event("taskboard:toggle-board-header"));
+    }
   }
 
   function updateQuery(nextQuery: string) {
@@ -75,7 +93,9 @@ export function TopBar({ onOpenSidebar }: TopBarProps) {
     else params.delete("q");
 
     const nextPath = pathname === "/settings" ? "/board" : pathname;
-    const nextUrl = params.toString() ? `${nextPath}?${params.toString()}` : nextPath;
+    const nextUrl = params.toString()
+      ? `${nextPath}?${params.toString()}`
+      : nextPath;
     router.replace(nextUrl, { scroll: false });
   }
 
@@ -91,7 +111,14 @@ export function TopBar({ onOpenSidebar }: TopBarProps) {
           <Menu className="h-5 w-5" />
         </button>
 
-        <Link href="/board" className="flex items-center gap-3 font-semibold tracking-tight">
+        <Link
+          href="/board"
+          onClick={handleBrandClick}
+          className="flex items-center gap-3 rounded-2xl px-1.5 py-1 font-semibold tracking-tight transition hover:bg-white/5"
+          title={
+            pathname === "/board" ? t("board.toggleHeader") : t("app.name")
+          }
+        >
           <AppIcon />
           <span className="hidden sm:inline">Taskboard</span>
         </Link>
@@ -135,10 +162,22 @@ export function TopBar({ onOpenSidebar }: TopBarProps) {
             type="button"
             onClick={toggleTheme}
             className="rounded-2xl p-2.5 text-zinc-400 hover:bg-white/5 hover:text-white"
-            aria-label={preferences.theme === "light" ? t("theme.toDark") : t("theme.toLight")}
-            title={preferences.theme === "light" ? t("theme.toDark") : t("theme.toLight")}
+            aria-label={
+              preferences.theme === "light"
+                ? t("theme.toDark")
+                : t("theme.toLight")
+            }
+            title={
+              preferences.theme === "light"
+                ? t("theme.toDark")
+                : t("theme.toLight")
+            }
           >
-            {preferences.theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+            {preferences.theme === "light" ? (
+              <Moon className="h-4 w-4" />
+            ) : (
+              <Sun className="h-4 w-4" />
+            )}
           </button>
           <div ref={notificationRef} className="relative">
             <button
@@ -152,14 +191,20 @@ export function TopBar({ onOpenSidebar }: TopBarProps) {
             </button>
             {notificationsOpen ? (
               <div className="absolute right-0 z-40 mt-2 w-72 rounded-2xl border border-white/10 bg-zinc-950 p-3 text-sm shadow-2xl shadow-black/50">
-                <p className="font-medium text-zinc-100">{t("notifications.title")}</p>
+                <p className="font-medium text-zinc-100">
+                  {t("notifications.title")}
+                </p>
                 <p className="mt-1 text-xs leading-5 text-zinc-500">
                   {t("notifications.body")}
                 </p>
               </div>
             ) : null}
           </div>
-          <Link href="/settings" className="rounded-2xl p-2.5 text-zinc-400 hover:bg-white/5 hover:text-white" aria-label={t("settings.title")}>
+          <Link
+            href="/settings"
+            className="rounded-2xl p-2.5 text-zinc-400 hover:bg-white/5 hover:text-white"
+            aria-label={t("settings.title")}
+          >
             <Settings className="h-4 w-4" />
           </Link>
         </div>

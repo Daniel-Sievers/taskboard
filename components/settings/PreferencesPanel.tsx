@@ -21,6 +21,18 @@ export function PreferencesPanel() {
 
   const confirmDeleteLabel =
     language === "en" ? "Ask before deleting" : "Vor dem Löschen nachfragen";
+  const taskDoneSoundLabel =
+    language === "en" ? "Completion sound" : "Abhak-Sound";
+  const taskDeleteSoundLabel =
+    language === "en" ? "Delete sound" : "Löschsound";
+  const soundPreferences = preferences as AppPreferences & {
+    taskDoneSoundEffects?: boolean;
+    taskDeleteSoundEffects?: boolean;
+  };
+  const taskDoneSoundEnabled =
+    soundPreferences.taskDoneSoundEffects ?? preferences.soundEffects;
+  const taskDeleteSoundEnabled =
+    soundPreferences.taskDeleteSoundEffects ?? preferences.soundEffects;
 
   return (
     <section className="rounded-[2rem] border border-white/10 bg-zinc-950/70 p-5 shadow-2xl shadow-black/20">
@@ -144,12 +156,32 @@ export function PreferencesPanel() {
 
         <label className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">
           <span className="flex items-center gap-2">
-            <Volume2 className="h-4 w-4" /> {t("settings.soundEffects")}
+            <Volume2 className="h-4 w-4" /> {taskDoneSoundLabel}
           </span>
           <input
             type="checkbox"
-            checked={preferences.soundEffects}
-            onChange={(event) => updatePreferences({ soundEffects: event.target.checked })}
+            checked={taskDoneSoundEnabled}
+            onChange={(event) =>
+              updatePreferences({
+                taskDoneSoundEffects: event.target.checked,
+              } as Partial<AppPreferences>)
+            }
+            className="h-4 w-4 accent-blue-500"
+          />
+        </label>
+
+        <label className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">
+          <span className="flex items-center gap-2">
+            <Trash2 className="h-4 w-4" /> {taskDeleteSoundLabel}
+          </span>
+          <input
+            type="checkbox"
+            checked={taskDeleteSoundEnabled}
+            onChange={(event) =>
+              updatePreferences({
+                taskDeleteSoundEffects: event.target.checked,
+              } as Partial<AppPreferences>)
+            }
             className="h-4 w-4 accent-blue-500"
           />
         </label>

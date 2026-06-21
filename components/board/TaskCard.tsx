@@ -16,13 +16,11 @@ import { CSS } from "@dnd-kit/utilities";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { TaskEditor } from "./TaskEditor";
 import { usePreferences } from "@/hooks/usePreferences";
-import { playTaskDoneSound } from "@/lib/sound";
+import { playTaskDeleteSound, playTaskDoneSound } from "@/lib/sound";
 import { useI18n } from "@/hooks/useI18n";
+import { isFutureDateKey, isPastDateKey, isTodayDateKey } from "@/lib/dates/calendar";
 import type { Task, UpdateTaskInput } from "@/types/task";
 
-function todayKey() {
-  return new Date().toISOString().slice(0, 10);
-}
 
 function recurrenceLabel(task: Task, language: string) {
   if ((task.recurrenceType ?? "none") === "none") return null;
@@ -48,22 +46,17 @@ function dateClass(task: Task) {
     return "border-white/10 bg-white/[0.03] text-zinc-500";
   }
 
-  const today = todayKey();
-  if (task.scheduledDate === today) {
+  if (isTodayDateKey(task.scheduledDate)) {
     return "border-emerald-400/30 bg-emerald-500/15 text-emerald-200 tb-date-today";
   }
-  if (task.scheduledDate < today) {
+  if (isPastDateKey(task.scheduledDate)) {
     return "border-orange-400/30 bg-orange-500/15 text-orange-200 tb-date-overdue";
   }
   return "border-white/10 bg-white/[0.03] text-zinc-500";
 }
 
 function isFutureLockedTask(task: Task) {
-  return (
-    task.status === "open" &&
-    Boolean(task.scheduledDate) &&
-    task.scheduledDate > todayKey()
-  );
+  return task.status === "open" && isFutureDateKey(task.scheduledDate);
 }
 
 const priorityClass = {
@@ -91,14 +84,22 @@ export function TaskCard({
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState(task.title);
   const { preferences } = usePreferences();
+  const soundPreferences = preferences as typeof preferences & {
+    taskDoneSoundEffects?: boolean;
+    taskDeleteSoundEffects?: boolean;
+  };
   const { t } = useI18n();
   const isDone = task.status === "done";
   const isFutureLocked = isFutureLockedTask(task);
   const recurringLabel = recurrenceLabel(task, preferences.language);
+  const taskDoneSoundEnabled =
+    soundPreferences.taskDoneSoundEffects ?? preferences.soundEffects;
+  const taskDeleteSoundEnabled =
+    soundPreferences.taskDeleteSoundEffects ?? preferences.soundEffects;
 
   function handleToggle() {
     if (isFutureLocked) return;
-    if (!isDone && preferences.soundEffects) {
+    if (!isDone && taskDoneSoundEnabled) {
       playTaskDoneSound();
     }
     onToggle(task.id);
@@ -143,6 +144,9 @@ export function TaskCard({
     }
 
     setIsEditingTitle(false);
+    if (taskDeleteSoundEnabled) {
+      playTaskDeleteSound();
+    }
     onDelete(task.id);
   }
 
@@ -199,7 +203,7 @@ export function TaskCard({
           : isDragging
             ? "border-blue-400/20 bg-blue-500/5 opacity-35"
             : isFutureLocked
-              ? "border-white/5 bg-white/[0.012] opacity-45 hover:border-white/10 hover:bg-white/[0.025]"
+              ? "border-white/5 bg-white/[0.012] opacity-50 hover:border-white/10 hover:bg-white/[0.025]"
               : "border-transparent hover:border-white/5 hover:bg-white/[0.045]"
       }`}
     >
@@ -212,17 +216,27 @@ export function TaskCard({
       </span>
 
       <div
-        className={isFutureLocked ? "cursor-not-allowed opacity-45 grayscale" : ""}
+        className={isFutureLocked ? "cursor-not-allowed opacity-50 grayscale" : ""}
         title={isFutureLocked ? (preferences.language === "en" ? "Not due yet" : "Noch nicht fällig") : undefined}
         aria-disabled={isFutureLocked}
         onPointerDown={(event) => event.stopPropagation()}
-        onClickCapture={(event) => {
+        onClick={(event) => {
           if (!isFutureLocked) return;
           event.preventDefault();
           event.stopPropagation();
         }}
       >
-        <Checkbox checked={isDone} onChange={handleToggle} aria-label={t("task.toggle")} />
+        {isFutureLocked ? (
+          <span
+            className="grid h-5 w-5 place-items-center rounded-md border border-white/10 bg-white/[0.025] text-[10px] text-zinc-600"
+            aria-label={preferences.language === "en" ? "Not due yet" : "Noch nicht fällig"}
+            role="img"
+          >
+            —
+          </span>
+        ) : (
+          <Checkbox checked={isDone} onChange={handleToggle} aria-label={t("task.toggle")} />
+        )}
       </div>
 
       <div className="min-w-0 flex-1">

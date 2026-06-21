@@ -61,17 +61,19 @@ function addMonths(date: Date, months: number) {
 }
 
 function toDateKey(date: Date) {
-  return date.toISOString().slice(0, 10);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
-export function getNextRecurrenceDate(task: Task) {
+export function getNextRecurrenceDate(task: Task, completedAt = new Date()) {
   if ((task.recurrenceType ?? "none") === "none") return null;
 
-  const baseDate = task.scheduledDate || task.recurrenceAnchorDate;
-  if (!baseDate) return null;
-
   const interval = Math.max(1, task.recurrenceInterval || 1);
-  const base = new Date(`${baseDate}T00:00:00`);
+  const base = new Date(completedAt);
+  base.setHours(0, 0, 0, 0);
+
   if (Number.isNaN(base.getTime())) return null;
 
   if (task.recurrenceType === "daily") return toDateKey(addDays(base, interval));
