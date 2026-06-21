@@ -231,13 +231,20 @@ export function BoardView() {
 
   function runBoardAction(action: BoardUiAction) {
     if (action === "details") {
-      setStatsOpen((open) => !open);
+      setStatsOpen((open) => {
+        const nextOpen = !open;
+        if (nextOpen) setBoardHeaderOpen(true);
+        return nextOpen;
+      });
       return;
     }
 
     if (action === "filter") {
-      setBoardHeaderOpen(true);
-      setFilterOpen((open) => !open);
+      setFilterOpen((open) => {
+        const nextOpen = !open;
+        setBoardHeaderOpen(nextOpen);
+        return nextOpen;
+      });
       return;
     }
 
@@ -415,6 +422,27 @@ export function BoardView() {
     priorityFilter !== "all" ||
     statusFilter !== "open" ||
     query.trim().length > 0;
+
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent("taskboard:board-ui-state", {
+        detail: {
+          detailsOpen: statsOpen,
+          filterOpen,
+          filtersActive: hasActiveFilters,
+          boardMenuOpen,
+        },
+      }),
+    );
+  }, [boardMenuOpen, filterOpen, hasActiveFilters, statsOpen]);
+
+  const boardControlBase =
+    "inline-flex items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm transition";
+  const boardControlInactive =
+    "border-white/10 bg-zinc-950/60 text-zinc-300 hover:bg-white/5";
+  const boardControlActive =
+    "tb-board-chip-active border-blue-400/30 bg-blue-500/15 text-blue-100";
+  const filterButtonActive = filterOpen || hasActiveFilters;
 
   function handleDragStart(event: DragStartEvent) {
     lastDragOverKeyRef.current = null;
@@ -699,7 +727,10 @@ export function BoardView() {
                   <button
                     type="button"
                     onClick={() => runBoardAction("details")}
-                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-zinc-950/60 px-4 py-2.5 text-sm text-zinc-300 hover:bg-white/5"
+                    className={`${boardControlBase} ${
+                      statsOpen ? boardControlActive : boardControlInactive
+                    }`}
+                    aria-pressed={statsOpen}
                   >
                     <BarChart3 className="h-4 w-4" /> {t("board.details")}
                     <ChevronDown
@@ -709,11 +740,10 @@ export function BoardView() {
                   <button
                     type="button"
                     onClick={() => runBoardAction("filter")}
-                    className={
-                      hasActiveFilters
-                        ? "inline-flex items-center justify-center gap-2 rounded-2xl border border-blue-400/30 bg-blue-500/10 px-4 py-2.5 text-sm text-blue-100 hover:bg-blue-500/15"
-                        : "inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-zinc-950/60 px-4 py-2.5 text-sm text-zinc-300 hover:bg-white/5"
-                    }
+                    className={`${boardControlBase} ${
+                      filterButtonActive ? boardControlActive : boardControlInactive
+                    }`}
+                    aria-pressed={filterButtonActive}
                   >
                     <SlidersHorizontal className="h-4 w-4" />{" "}
                     {t("board.filter")}
@@ -723,7 +753,10 @@ export function BoardView() {
                       <button
                         type="button"
                         onClick={() => runBoardAction("board")}
-                        className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-zinc-950/50 px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5"
+                        className={`${boardControlBase} px-3 ${
+                          boardMenuOpen ? boardControlActive : boardControlInactive
+                        }`}
+                        aria-pressed={boardMenuOpen}
                       >
                         <MoreVertical className="h-4 w-4" /> {t("board.menu")}
                       </button>

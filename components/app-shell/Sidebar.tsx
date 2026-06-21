@@ -40,6 +40,12 @@ const boardActionItems = [
 ] as const;
 
 type BoardUiAction = (typeof boardActionItems)[number]["action"];
+type BoardUiState = {
+  detailsOpen: boolean;
+  filterOpen: boolean;
+  filtersActive: boolean;
+  boardMenuOpen: boolean;
+};
 
 const pendingBoardActionKey = "taskboard:pending-board-action";
 
@@ -72,6 +78,12 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
   const [boards, setBoards] = useState<Board[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [boardUiState, setBoardUiState] = useState<BoardUiState>({
+    detailsOpen: false,
+    filterOpen: false,
+    filtersActive: false,
+    boardMenuOpen: false,
+  });
   const { preferences, updatePreferences } = usePreferences();
   const { t } = useI18n();
 
@@ -120,6 +132,21 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
+
+  useEffect(() => {
+    function handleBoardUiState(event: Event) {
+      const detail = (event as CustomEvent<Partial<BoardUiState>>).detail;
+      setBoardUiState((current) => ({ ...current, ...detail }));
+    }
+
+    window.addEventListener("taskboard:board-ui-state", handleBoardUiState);
+    return () => {
+      window.removeEventListener(
+        "taskboard:board-ui-state",
+        handleBoardUiState,
+      );
+    };
+  }, []);
 
   function handleBoardAction(action: BoardUiAction) {
     if (pathname === "/board") {
@@ -173,6 +200,15 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
     : "hidden w-64 shrink-0 lg:block";
   const innerClassName = mobile ? "space-y-4" : "sticky top-20 space-y-4";
 
+  function isBoardActionActive(action: BoardUiAction) {
+    if (action === "details") return boardUiState.detailsOpen;
+    if (action === "filter") {
+      return boardUiState.filterOpen || boardUiState.filtersActive;
+    }
+    if (action === "board") return boardUiState.boardMenuOpen;
+    return false;
+  }
+
   return (
     <aside className={wrapperClassName}>
       <div className={innerClassName}>
@@ -203,12 +239,18 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
 
           {boardActionItems.map((item) => {
             const Icon = item.icon;
+            const isActive = isBoardActionActive(item.action);
             return (
               <button
                 key={item.action}
                 type="button"
                 onClick={() => handleBoardAction(item.action)}
-                className="flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left text-sm text-zinc-400 hover:bg-white/5 hover:text-white"
+                className={
+                  isActive
+                    ? "flex w-full items-center gap-3 rounded-2xl border border-blue-400/30 bg-blue-500/15 px-3 py-2.5 text-left text-sm font-medium text-blue-100"
+                    : "flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left text-sm text-zinc-400 hover:bg-white/5 hover:text-white"
+                }
+                aria-pressed={isActive}
               >
                 <Icon className="h-4 w-4" />
                 {t(item.labelKey)}
