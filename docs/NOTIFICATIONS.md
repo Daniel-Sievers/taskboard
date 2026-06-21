@@ -1,31 +1,29 @@
 # Notifications
 
-Taskboard now has a small notification preparation layer. This is intentionally not a full server-side push notification system yet.
+Taskboard currently implements notification preparation, not full push reminders.
 
-## Current behavior
+## Implemented
 
-- Notifications are off by default.
-- The settings page contains a notification switch under **App behavior**.
-- When the switch is enabled, Taskboard asks the browser for notification permission.
-- The permission state is stored and shown locally in the browser.
-- The bell icon in the top bar reflects whether notifications are disabled, prepared, blocked or unavailable.
+- Notification switch in settings
+- Browser notification permission request
+- Local preference storage
+- Top-bar bell status for disabled, prepared and blocked states
+- Documentation that distinguishes prepared permission handling from real push reminders
 
-## What is not implemented yet
+## Not implemented yet
 
-Taskboard does not yet send automatic push reminders in the background.
+Automatic reminders for due or overdue tasks are not sent yet.
 
-A complete push notification system still needs:
+A complete push notification system would require:
 
-1. Web Push subscription handling.
-2. Storage of push subscriptions per authenticated user.
-3. A server-side send path, for example a protected API route or scheduled backend job.
-4. Reminder rules, such as due today, overdue, recurring next instance or custom reminder time.
-5. Clear unsubscribe and privacy behavior.
+- Web Push subscription handling in the browser
+- Secure subscription storage per authenticated user
+- VAPID keys
+- Service worker `push` event handling
+- Server-side reminder rules
+- A scheduled job or background function
+- Unsubscribe and cleanup behavior
 
-## Why this is separated
+## Design reason
 
-The preparation step is useful because it makes the UI honest and avoids a misleading bell icon. Users can see that notifications are planned and can grant/revoke browser permission, but the app does not pretend to send reminders before the backend path exists.
-
-## Privacy note
-
-Notification permission is a browser-level permission. Taskboard stores the local app preference in `localStorage`. No push subscription is sent to Supabase yet.
+The current implementation makes the notification state honest. The UI can request browser permission and show a clear status, but it does not pretend to send reminders before the backend delivery path exists.

@@ -1,39 +1,23 @@
-# UI polish notes
+# UI polish
 
-This iteration focuses on making the app feel closer to the target TasksBoard workflow before deployment.
+Taskboard includes several smaller interface decisions that make the app feel calmer and more practical for daily use.
 
-## Compact board header
+## Collapsible board controls
 
-The board page now prioritizes the actual task lists. The duplicate search field inside the board header was removed because the top bar already contains the global search. Filters and stats remain available, but are tucked behind compact buttons.
+Board statistics, sync status, filters and actions are useful, but they do not need to dominate the first screen on every visit. The header groups these controls behind compact actions.
 
-## Details panel
+## Modal task editing
 
-Task stats, estimated storage size and sync status are useful, but they do not need to occupy the first screen on every visit. They are now shown through a collapsible Details control.
+Task creation and editing use a modal instead of inline expansion. Desktop receives a compact centered dialog; mobile uses a near-fullscreen app-like layout.
 
-## Menus
+## Sound feedback
 
-Board and list dropdown menus close when the user clicks elsewhere on the page. This matches common desktop-app behavior and avoids requiring a second click on the same trigger.
+Completion and delete actions can play short generated sounds using the Web Audio API. The app does not bundle proprietary sound files, and sounds can be disabled in settings.
 
-## Sound effects
+## Mobile drawer
 
-Checking off an open task can play a short generated chime using the Web Audio API. The app does not bundle or copy proprietary sounds from other products. Sound effects can be disabled in settings.
+Navigation and board actions are mirrored in the mobile drawer so the narrow layout keeps the main board focused.
 
-## Top-bar controls
+## Visual hierarchy
 
-- Refresh reloads the current board data.
-- Theme toggles between light and dark.
-- Notifications currently show a placeholder popover because push notifications are intentionally out of scope for the current version.
-- Settings opens the settings page.
-
-
-## Kompakter Board-Header
-
-Der Board-Header zeigt nun die Ansichtsbuttons, Details und Filter in einer gemeinsamen Aktionszeile. Dadurch entfällt der zusätzliche Hinweis-/Suchbereich unterhalb des Headers und die ersten Listen sind schneller sichtbar.
-
-## Icon-System
-
-Das Projekt verwendet ein eigenes Icon-Set in `public/icons/` sowie `public/favicon.ico`. Diese Assets werden vom Webmanifest, der Browser-Tab-Anzeige und der installierbaren PWA verwendet.
-
-## Ansichts-Synchronisierung
-
-Die Buttons „Tageslisten“ und „Horizontal“ aktualisieren nun dieselbe Einstellung wie die Standardansicht in den Settings. Dadurch ist die gewählte Ansicht konsistenter zwischen Board und Einstellungen.
+Future scheduled tasks are muted until due. Today and overdue states receive stronger visual treatment so the board remains scannable.

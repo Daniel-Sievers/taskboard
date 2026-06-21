@@ -1,48 +1,23 @@
-# Backup, Export und Datenverwaltung
+# Backup and export
 
-Dieses Projekt hat jetzt eine erste echte Datenverwaltungsseite unter `/settings`.
+Taskboard includes manual data-management tools so private task data is not locked into the UI.
 
-## Enthaltene Funktionen
+## JSON backup
 
-- JSON-Backup aller eigenen Boards, Listen, Aufgaben und Task-Versionen
-- CSV-Export der Aufgaben
-- JSON-Import als neues Board
-- Papierkorb leeren: soft-gelöschte Aufgaben endgültig löschen
-- archivierte Boards endgültig löschen
-- geschätzte Speicheranzeige anhand der exportierten JSON-Daten
+A JSON backup exports the current board data in a structured format that can later be imported again. This is the safest manual backup format because it preserves boards, lists, tasks and metadata.
 
-## JSON-Backup
+## JSON import
 
-Der JSON-Export ist der wichtigste Sicherheitsanker. Er enthält die Daten in einem strukturierten Format:
+JSON import restores data from a previous export. The import flow is intentionally separate from normal task editing so recovery remains explicit and reviewable.
 
-```txt
-boards
-lists
-tasks
-taskVersions
-```
+## CSV export
 
-Vor destruktiven Aktionen wie „Papierkorb leeren“ oder „archivierte Boards löschen“ sollte ein JSON-Backup exportiert werden.
+CSV export creates a flat task list that can be opened in spreadsheet tools. It is useful for review, reporting or migration, but it is not intended as a full-fidelity restore format.
 
-## CSV-Export
+## Trash and archives
 
-Der CSV-Export enthält Aufgaben in Tabellenform und ist für Excel, LibreOffice oder schnelle Kontrollen gedacht. Er ist kein vollständiger Restore-Ersatz.
+Deleted tasks first move into trash. Archived boards remain recoverable until permanently deleted. This design makes accidental deletion less risky while still allowing cleanup.
 
-## JSON-Import
+## Data ownership goal
 
-Der Import erzeugt aktuell ein neues Board mit dem Namen `Import ...`. Die ursprünglichen IDs werden nicht direkt wiederverwendet, damit es keine Konflikte mit bestehenden Daten gibt.
-
-Die Importlogik ist bewusst konservativ:
-
-- importiert das erste Board aus dem Backup als neues Board
-- erstellt dazugehörige Listen neu
-- erstellt dazugehörige Aufgaben neu
-- gelöschte Aufgaben werden nicht als gelöscht importiert
-
-## Noch offen
-
-- Wiederherstellen einzelner gelöschter Aufgaben
-- Detailansicht des Papierkorbs
-- Export pro Board
-- Export nur eines Zeitraums
-- Import-Mapping für mehrere Boards in einem Schritt
+The feature set reflects the main data-ownership goal of the project: authenticated data lives in Supabase, but the user-facing app still provides manual export and recovery paths.

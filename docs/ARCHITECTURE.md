@@ -1,6 +1,6 @@
 # Architecture
 
-Taskboard is a Next.js app backed by Supabase Auth, Supabase PostgreSQL and Supabase Realtime. Vercel hosts the frontend. The project is structured so UI, app state, database access and documentation stay separated.
+Taskboard is a Next.js App Router application backed by Supabase Auth, Supabase PostgreSQL and Supabase Realtime. Vercel hosts the frontend. The codebase separates routing, UI components, app state, database access, preferences and documentation.
 
 ## High-level overview
 
@@ -21,57 +21,17 @@ flowchart LR
 ## Main folders
 
 ```txt
-app/
-  board/
-  demo/
-  login/
-  settings/
-
-components/
-  app-shell/
-  board/
-  settings/
-  pwa/
-  ui/
-
-hooks/
-  useAuth.ts
-  useTaskboard.ts
-  usePreferences.ts
-  useI18n.ts
-
-lib/
-  db/
-  supabase/
-  dates/
-  preferences.ts
-  i18n.ts
-  notifications.ts
-  sound.ts
-
-supabase/
-  migrations/
-
-docs/
-  screenshots/
+app/            Route segments for board, demo, login and settings
+components/     App shell, board UI, settings, PWA and shared UI components
+hooks/          Auth, board state, preferences and i18n hooks
+lib/            Database access, Supabase client, dates, notifications and utilities
+supabase/       SQL migrations and seed data
+docs/           Architecture notes, feature docs and screenshots
 ```
 
-## Date automation
+## Data flow
 
-Date-like list titles are parsed in `lib/dates/list-dates.ts`. `useTaskboard` uses that helper to route open tasks into matching manual date lists and to move very old open tasks into an `Offen` list. Database writes remain centralized in `lib/db/lists.ts` and `lib/db/tasks.ts`.
-
-```txt
-components/board/TaskModal.tsx
-  -> hooks/useTaskboard.ts
-    -> lib/dates/list-dates.ts
-    -> lib/db/tasks.ts / lib/db/lists.ts
-```
-
-## Data access principle
-
-UI components should not directly contain Supabase query logic. Database operations are grouped in `lib/db/`.
-
-Example flow:
+UI components call React hooks. Persistent changes are handled through `lib/db/*` modules, which use the Supabase client from `lib/supabase/client.ts`. This keeps Supabase query logic out of presentation components.
 
 ```txt
 components/board/TaskCard.tsx
@@ -81,63 +41,26 @@ components/board/TaskCard.tsx
         -> Supabase
 ```
 
-This makes the app easier to maintain and keeps UI code focused on interaction and presentation.
+## Demo mode
+
+The public `/demo` route redirects to `/board?demo=1`. In this mode, `useTaskboard` uses local anonymized demo data instead of Supabase persistence. This keeps the portfolio demo frictionless while the authenticated app remains private.
+
+## Date automation
+
+Date-like list titles are parsed in `lib/dates/list-dates.ts`. `useTaskboard` uses that helper to route open dated tasks into matching manual date lists and to move older open tasks into an `Offen` list.
 
 ## State and sync
 
-The public `/demo` route redirects to `/board?demo=1`, which forces `useTaskboard` into local demo mode with anonymized sample data.
-
-The board page receives data through `useTaskboard`. Local UI state handles view mode, filters, active drag state and board controls. Persistent data changes go through Supabase.
-
-Realtime v1 subscribes to relevant table changes and refreshes board data when remote updates arrive.
+The board page receives persistent data through `useTaskboard`. Local UI state handles view mode, filters, active drag state and collapsed controls. Realtime v1 subscribes to relevant table changes and refreshes board data when remote updates arrive.
 
 ## Authentication and privacy
 
-Supabase Auth handles login. Row Level Security protects board data so users can only access their own records. The frontend only uses public Supabase client keys. Secret/service-role keys must never be exposed in the app or committed to the repository.
-
+Supabase Auth handles login. Row Level Security protects board data so each authenticated user can only access their own records. The frontend uses public Supabase client keys only; service-role keys are not part of the app bundle.
 
 ## Notification preparation
 
-Notification state is intentionally separated from the task data model. `lib/notifications.ts` reads and requests the browser notification permission, while `lib/preferences.ts` stores the local app preference. No push subscription is sent to Supabase yet.
+Notification settings are implemented in the UI and browser-permission layer. A full push-reminder system would require subscriptions, secure storage, VAPID keys, a server-side send path and scheduled reminder logic.
 
-```txt
-components/settings/PreferencesPanel.tsx
-  -> lib/notifications.ts
-  -> lib/preferences.ts / localStorage
+## Deployment model
 
-components/app-shell/TopBar.tsx
-  -> lib/notifications.ts
-  -> local permission/status display
-```
-
-Real Web Push reminders would require a backend send path, subscription storage and reminder rules.
-
-## Deployment
-
-GitHub is the source repository. Vercel deploys from the `main` branch. Supabase stores data separately from Vercel. The GitHub About website link is repository metadata and should be set manually to the public demo URL (`/demo`).
-
-```txt
-GitHub push
-  -> Vercel build
-    -> Next.js app deployment
-      -> Supabase for auth/data/realtime
-```
-
-## Future architecture work
-
-- IndexedDB cache for offline sync
-- mutation queue for offline edits
-- stronger realtime diff handling
-- real push-notification send path
-- optional client-side encryption for sensitive tasks
-
-
-## PWA shell
-
-The installable-app layer is intentionally small:
-
-- `public/manifest.webmanifest` and `public/manifest.json` describe the app, icons, start URL and shortcuts.
-- `/board` remains the PWA start URL for private daily use.
-- `/demo` is available as a shortcut and as the recommended GitHub portfolio link.
-- `public/sw.js` caches the offline page, manifest and icon assets.
-- `public/offline.html` is a fallback page, not full offline task editing.
+GitHub stores the source code. Vercel builds and hosts the frontend. Supabase stores authenticated data independently from Vercel.

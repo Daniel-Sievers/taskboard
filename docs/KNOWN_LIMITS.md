@@ -1,74 +1,31 @@
-# Known Limits
+# Known limits
 
-This document lists current limitations intentionally left visible for portfolio transparency. The project is usable, but it is still evolving.
+Taskboard documents its current boundaries explicitly. The goal is to present a realistic project scope rather than imply that every product edge case is already solved.
 
 ## Authentication
 
-- Magic Link email delivery can hit provider or free-plan rate limits during heavy testing.
-- Google Login is not required and is intentionally not the default because the project focuses on privacy and minimal third-party identity dependencies.
-- Custom SMTP is planned as a possible improvement for more reliable Magic Link delivery.
+Magic Link delivery depends on the configured email provider and can hit free-plan or provider rate limits during heavy testing. A custom SMTP setup would make delivery behavior more predictable.
 
-## Offline behavior
+## Offline sync
 
-- Offline sync is not implemented yet.
-- The PWA foundation exists, but task mutations currently expect an online Supabase connection.
-- Planned approach: IndexedDB cache, offline mutation queue and a simple conflict strategy.
-
-## Realtime sync
-
-- Realtime sync v1 refreshes board data when Supabase sends events.
-- The app does not yet apply every remote event locally in a fine-grained way.
-- Reconnect status and last-synced timestamps could be improved.
-
-## Recurring tasks
-
-- Recurring tasks v1 supports basic recurrence rules.
-- Series management is still limited.
-- More advanced options such as specific weekdays, stop dates or "complete anyway" actions can be added later.
-
-## Mobile UX
-
-- Mobile horizontal view and long-press drag behavior have been improved.
-- Further polish is still planned for carousel-like list navigation.
-
-## Automatic date recognition
-
-- Date automation focuses on simple list-title formats such as `26.05.2026`, `26.05.` and `YYYY-MM-DD`.
-- Taskboard does not create a new dated list for every task date. Date lists remain manual.
-- Open tasks older than seven days are moved into `Offen`; the threshold is not configurable yet.
-- There is no UI toggle yet to disable automatic date routing.
+The PWA foundation exists, but full offline sync is not implemented yet. A complete version would need local persistence, an offline mutation queue, reconnect sync and conflict handling.
 
 ## Notifications
 
-- Notification settings and browser permission status are prepared.
-- Taskboard does not yet send automatic server-side push reminders.
-- A full implementation still needs Web Push subscriptions, secure subscription storage and reminder rules.
+Browser-notification permission and UI status are prepared. Automatic server-side push reminders are not implemented yet. A full version would need Web Push subscriptions, secure subscription storage, VAPID keys, scheduled reminder rules and a server-side send path.
 
-## Browser/PWA behavior
+## Realtime sync
 
-- App icon behavior can differ between Chrome, Edge, Firefox and mobile launchers.
-- The manifest and icons are configured, but some browser-specific behavior cannot be fully controlled from the app.
-- The GitHub About website link cannot be set from a repository file; it must be set manually in the GitHub UI.
+Realtime v1 refreshes board data after remote changes. It does not yet apply every remote event through a granular local reducer. Reconnect indicators and last-sync metadata remain future improvements.
 
-## Privacy and screenshots
+## Recurring tasks
 
-- The app is built for private task data.
-- Any public screenshots, videos or GIFs should use demo/anonymized data only.
-- `.env.local`, Supabase secret keys and service-role keys must never be committed.
+Recurring tasks support daily, weekly, monthly and custom interval rules. Advanced series controls such as selected weekdays, end dates, occurrence counts or bulk editing remain future work.
 
-## Public demo mode
+## PWA behavior
 
-- Demo mode is intentionally local and does not persist changes to Supabase.
-- Demo data can reset after reload or a new browser session.
-- The demo is for portfolio testing, not a shared production workspace.
+Install prompts, icons and shortcut behavior can differ between Chrome, Edge, Firefox, Android and iOS. The manifest and icons are configured, but browsers still control parts of the final install experience.
 
-## Recurring task limits after polish
+## Public demo
 
-Wiederholende Aufgaben sind für einfache tägliche, wöchentliche, monatliche und Intervall-Aufgaben nutzbar. Es gibt aber noch keine vollständige Kalender-Serienlogik.
-
-Das bedeutet:
-
-- Bereits existierende Kopien bleiben eigenständige Aufgaben.
-- Das Beenden einer Wiederholung stoppt die aktuelle Aufgabe, löscht aber keine vorhandenen Kopien.
-- Bulk-Bearbeitung einer ganzen Serie ist noch nicht implementiert.
-- Erinnerungen für Wiederholungen sind vorbereitet, aber noch nicht als echte serverseitige Push-Erinnerung aktiv.
+The public demo uses anonymized local data and does not persist changes to Supabase. This is intentional so the project can be tested without login or private data access.

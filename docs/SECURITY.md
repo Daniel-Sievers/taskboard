@@ -1,19 +1,23 @@
 # Security
 
-## Grundschutz
+Taskboard is designed around authenticated private data and public frontend deployment.
 
-- App ist öffentlich erreichbar
-- Inhalte sind nur nach Login sichtbar
-- Supabase Row Level Security schützt Datensätze pro Nutzer
+## Frontend keys
 
-## Public Keys
+The frontend uses public Supabase client keys only. Supabase service-role keys are not used in the app bundle and are not part of the repository.
 
-Der Supabase Anon Key darf im Frontend verwendet werden.  
-Sicherheit entsteht durch Row Level Security, nicht dadurch, dass der Key geheim bleibt.
+## Row Level Security
 
-## Optionale Verschlüsselung
+Private task data is protected through Supabase Row Level Security. Policies restrict access to records owned by the authenticated user.
 
-Einzelne Tasks können später clientseitig verschlüsselt werden.  
-Dann speichert Supabase nur `encrypted_payload`, aber nicht den Klartext.
+## Local secrets
 
-Wichtig: Wenn das Verschlüsselungspasswort verloren geht, können diese Tasks nicht wiederhergestellt werden.
+Local environment values belong in `.env.local`, which is ignored by Git. The repository contains `.env.example` as a template only.
+
+## Public demo
+
+The public demo uses anonymized local data and does not write to Supabase. This keeps portfolio testing separate from private authenticated data.
+
+## Known security boundaries
+
+Optional client-side encryption for sensitive tasks is future work. Current protection relies on Supabase Auth, RLS and safe environment-variable handling.

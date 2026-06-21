@@ -1,364 +1,75 @@
-# Development Log
+# Development log
 
-Dieses Projekt wird bewusst in nachvollziehbaren Ausbaustufen entwickelt. Der Log ist als Story für GitHub/Bewerbungen gedacht: Er zeigt nicht nur das Ergebnis, sondern auch die Entscheidungen, Probleme und Verbesserungen auf dem Weg.
+This document records the main implementation packages behind Taskboard. It is written as a project history rather than a setup guide.
 
-## 0. Starter-Projekt
+## 1. Project foundation
 
-**Archiv:** `taskboard-starter.zip`
+The project started as a Next.js, TypeScript and Tailwind app with a simple board layout. The early focus was a clean private productivity interface instead of a generic todo tutorial.
 
-- Next.js/TypeScript-Grundstruktur
-- erste Ordnerstruktur mit `app/`, `components/`, `lib/`, `hooks/`, `types/`, `docs/`
-- Dokumentationsgrundlage
+## 2. Supabase authentication and persistence
 
-## 1. UI Preview
+Supabase Auth added Magic Link login. Supabase PostgreSQL became the persistence layer for boards, lists and tasks. Row Level Security was added so authenticated users only access their own data.
 
-**Archiv:** `taskboard-ui-preview.zip`
+## 3. Boards, lists and tasks
 
-- dunkle TasksBoard-inspirierte Oberfläche
-- Demo-Tageslisten und Demo-Aufgaben
-- erste lokale Interaktion
+The core data model grew from a single board into multiple boards with manual lists and tasks. Tasks gained notes, dates, priorities, completion state, ordering and soft-delete behavior.
 
-## 2. Supabase Auth
+## 4. Drag and drop
 
-**Archiv:** `taskboard-auth-ready.zip`
+Drag and drop was implemented with `@dnd-kit`. Tasks can be reordered inside lists, moved between lists and saved back to Supabase. List drag support was added later with custom autoscroll handling.
 
-- Magic-Link-Login vorbereitet
-- Google-Login vorbereitet
-- Demo-Modus, wenn Supabase nicht verbunden ist
+## 5. Responsive navigation
 
-## 3. Supabase-Daten
+The layout was refined for desktop and mobile. Desktop uses a sidebar and compact controls. Mobile uses a drawer/hamburger pattern so the board stays usable in narrow viewports.
 
-**Archiv:** `taskboard-supabase-data.zip`
+## 6. Search, filters and labels
 
-- Datenbanktabellen vorbereitet
-- RLS-Policies ergänzt
-- echte Tasks werden online gespeichert
-- Aufgaben bleiben nach Reload erhalten
+Search and filters were added to make larger boards manageable. Labels are stored as task tags for now, keeping the database simple while still supporting practical filtering.
 
-## 4. Datenverwaltung
+## 7. PWA support
 
-**Archiv:** `taskboard-data-management.zip`
+The app received a web manifest, icons, service-worker foundation and installable-app behavior. The private board remains the primary start URL, while `/demo` is available as a public demo entry point.
 
-- Listen erstellen, umbenennen, einklappen und löschen
-- Tasks bearbeiten, abhaken und soft-deleten
-- Notizen, Datum, Priorität, Tags und sensible Markierung vorbereitet
+## 8. Backup, export and import
 
-## 5. Drag & Drop Iterationen
+Manual JSON backup/import and CSV export were added to support data ownership. Trash and archive views later improved recovery before permanent deletion.
 
-**Archive:**
+## 9. Settings
 
-- `taskboard-drag-and-drop.zip`
-- `taskboard-dndkit-upgrade.zip`
-- `taskboard-dndkit-stability.zip`
-- `taskboard-dndkit-scroll-and-sort-fix.zip`
-- `taskboard-dndkit-list-autoscroll-fix.zip`
-- `taskboard-dndkit-autoscroll-final.zip`
-- `taskboard-dnd-polish-delete-lists.zip`
-- `taskboard-dnd-autoscroll-direction-fix.zip`
+Settings grew to include theme, accent color, language foundation, week start, default view, sound effects, delete confirmation, task counts and notification preparation.
 
-Ergebnis:
+## 10. Realtime sync
 
-- `@dnd-kit` statt nativer Browser-Drag-Events
-- Tasks innerhalb und zwischen Listen verschieben
-- Listen verschieben
-- Auto-Scroll beim Listen-Drag
-- Reihenfolge bleibt nach Reload erhalten
+Supabase Realtime subscriptions were added for boards, lists and tasks. The first version refreshes board data after remote changes rather than applying every event locally in a granular reducer.
 
-Wichtige Lernpunkte:
+## 11. Mobile touch and horizontal view
 
-- State während Drag-Over nicht zu oft mutieren, sonst entstehen React-Render-Loops.
-- Auto-Scroll muss die echte Pointer-Position während des Draggings kennen.
-- Für gutes UX-Gefühl sind DragOverlay, Sortable-Kontexte und Scroll-Verhalten entscheidend.
+Mobile drag behavior was adjusted to use long-press activation so scrolling remains natural. A horizontal list view was added for a more app-like mobile board experience.
 
-## 6. Mehrere Boards
+## 12. Trash and archive management
 
-**Archiv:** `taskboard-boards.zip`
+Soft-deleted tasks can be restored or permanently deleted. Archived boards can be restored or permanently deleted. Bulk cleanup remains available but is no longer the only recovery path.
 
-- mehrere Boards aus Supabase laden
-- Board in der Sidebar wechseln
-- neues Board erstellen
-- aktives Board in der URL speichern
-- Board umbenennen
-- Board archivieren
+## 13. Recurring tasks
 
-## Nächste geplante Schritte
+Recurring tasks were added as a pragmatic list-based feature. Completing a recurring task creates the next open copy, avoids duplicate next copies and keeps future copies visually quieter until due.
 
-- Suche, Filter, Labels, Heute-fällig-Ansicht
-- Einstellungen: Dark/Light/System, Sprache, Wochenstart
-- PWA-Installierbarkeit
-- GitHub/Vercel Deployment
-- Export/Backup/Datenverwaltung
-- Realtime, Offline-Sync und optionale Verschlüsselung
+## 14. Board UI polish
 
-## 7. Responsive Sidebar
+Board controls were collapsed into a cleaner header. Advanced actions remain available through details, filters and sidebar controls without taking over the first screen on every visit.
 
-**Archiv:** `taskboard-responsive-sidebar.zip`
+## 15. Public demo
 
-- Hamburger-Menü für kleinere Fenster ergänzt
-- Sidebar öffnet als Drawer über dem Board
-- Boards, Ansichten und Projektstatus sind auch bei halber Bildschirmbreite erreichbar
-- Drawer schließt automatisch nach Auswahl eines Boards oder einer Ansicht
+The `/demo` route was added so the project can be evaluated without Magic Link login. Demo mode uses anonymized local data and does not write to Supabase.
 
-Lernpunkt:
+## 16. Date automation
 
-- Desktop-Sidebar und mobile Navigation sollten dieselben Daten verwenden, aber unterschiedliche Layouts bekommen. Dadurch bleibt die App auf Laptop, halbem Fenster und später Handy bedienbar.
+Manual date lists became smarter. The app recognizes common date formats in list titles and routes open dated tasks into matching lists when possible.
 
-## Search, filters and labels
+## 17. Notification preparation
 
-After boards and the responsive sidebar were working, the next feature block focused on finding tasks quickly. The board now supports text search over titles, notes and labels, plus structured filters for status, priority and labels. The "Heute fällig" sidebar item now opens a real filtered view for today's open tasks. A small Next.js warning about global smooth scrolling was also fixed by marking the root HTML element with `data-scroll-behavior="smooth"`.
+Browser-notification permission handling and UI status were added. The implementation clearly separates prepared notification settings from a future full Web Push reminder system.
 
-## 9. Topbar-Suche und Settings-Basis
+## 18. Portfolio documentation
 
-**Archiv:** `taskboard.zip`
-
-- Die Suche in der Topbar ist jetzt aktiv und nutzt denselben Suchfilter wie die Board-Suche.
-- Der Suchbegriff wird in der URL als `q` gespeichert, damit Links und Reloads nachvollziehbar bleiben.
-- `/` fokussiert das globale Suchfeld.
-- Die Einstellungen haben nun eine erste App-Verhalten-Sektion für Design, Sprache, Wochenstart, Standardansicht und Aufgabenanzahl.
-
-Lernpunkt:
-
-- Globale UI-Elemente wie die Topbar sollten ihren Zustand über URL-Parameter oder zentralen State mit der eigentlichen Board-Ansicht teilen. Sonst entstehen zwei getrennte Suchfelder, die sich widersprechen können.
-
-## PWA-Basis
-
-Die App wurde als installierbare PWA vorbereitet: Manifest, Icons, Service Worker-Fallback, Start-URL `/board` und Installationshinweis in den Einstellungen. Echter Offline-Sync bleibt ein separater späterer Schritt.
-
-## Schritt: Backup und Datenverwaltung
-
-Die Einstellungen wurden um eine echte Datenverwaltungssektion erweitert. Nutzer können JSON-Backups herunterladen, Aufgaben als CSV exportieren, ein JSON-Backup als neues Board importieren und alte gelöschte Daten endgültig entfernen. Damit wird Vendor-Lock-in reduziert und die App wird sicherer für die tägliche Nutzung.
-
-## Schritt: aktive Einstellungen
-
-Die bisher nur vorbereiteten App-Einstellungen wurden verdrahtet. Dark/Light/System wirkt nun direkt, die Topbar hat einen Schnellumschalter und die gewählte Standardansicht wird beim Öffnen des Boards berücksichtigt. Außerdem kann die Aufgabenanzahl in Listen ein- und ausgeblendet werden.
-
-Lernpunkt:
-
-- Für eine spätere GitHub-Präsentation ist sichtbar, dass Einstellungen nicht nur UI-Dekoration sind, sondern wirklich App-Zustand beeinflussen. Der aktuelle Light Mode nutzt noch globale CSS-Overrides; ein saubereres Design-Token-System wäre ein möglicher späterer Refactor.
-
-
-## Paket: Vercel/GitHub-Vorbereitung
-
-Nach PWA, Backup/Export und aktiven Einstellungen wurde das Projekt für den nächsten Veröffentlichungsschritt vorbereitet. Vercel wird als Hosting-Ziel dokumentiert, GitHub als Portfolio-Basis beschrieben und die Projektstatus-Anzeige wurde angepasst: Backup ist aktuell manuell über JSON/CSV möglich, während Vercel der nächste Deployment-Schritt ist.
-
-## UI polish before deployment
-
-Before deploying, the board UI was tightened to behave more like the reference TasksBoard workflow. The duplicate search field inside the large hero area was removed in favor of the global search field in the top bar. Statistics were moved behind a collapsible Details button so that day lists are visible sooner after opening the app. Dropdown menus now close when clicking outside of them, and the top-bar icons gained clearer behavior: refresh reloads board data, notifications open a small explanatory popover, and settings links to the settings page. A generated local completion chime was added for checking off tasks; no external/proprietary sound asset is bundled.
-
-## UI Polish: Header, Icon und Ansichts-Sync
-
-- Details- und Filter-Buttons wurden direkt neben die Ansichtsumschaltung verschoben.
-- Der doppelte Such-/Hinweisbereich im Board-Header wurde entfernt, damit die Listen schneller sichtbar sind.
-- Die Board-Ansichtsbuttons und die Einstellung „Standardansicht“ verwenden jetzt denselben Wert.
-- Der Erledigt-Sound wurde lauter gestellt.
-- Das neue originale Taskboard-App-Icon wurde als Favicon, PWA-Icon, Windows/Handy-Icon und In-App-Logo eingebunden.
-
-
-
-## Internationalisierung und Wochenstart
-
-- UI-Übersetzungsschicht für Deutsch/Englisch ergänzt.
-- Task-/Board-/Listen-Inhalte bleiben unverändert und werden nicht automatisch übersetzt.
-- Wochentag-Auswahl für „Woche beginnt am“ auf alle sieben Tage erweitert.
-- Neue Doku: `docs/I18N.md`.
-
-### UI polish: board switcher and compact editing
-
-- Moved the active board name and board switcher into the compact header.
-- Removed the large static marketing title from the board view.
-- Added quick title editing by clicking a task title.
-- Added remaining backup/PWA texts to i18n.
-
-### UI micro polish: board header and quick editor
-
-After testing the board switcher and inline title editing, the header was tightened further: the duplicate large board title was removed, the board action menu was moved to the right side of the header, and menu overflow was fixed so archive/rename actions remain fully visible. The task quick-edit flow was also adjusted so the full editor can be opened directly from the pencil icon while a title field is active.
-
-### Light mode contrast and color modes
-
-The light theme received another contrast pass, especially around the signed-in account pill and disabled cleanup actions. A new accent-theme setting was added so the interface can be styled in several palettes while keeping the same layout and task data.
-
-### UI drawer/menu and light contrast polish
-- Moved the Board menu next to Filter again for a more compact header.
-- Raised the mobile drawer layer so underlying board controls cannot appear above it.
-- Improved light-mode contrast for board labels and active board chips.
-
-
-## Realtime Sync
-
-- Added Supabase Realtime subscription for boards, lists and tasks.
-- Added a Live-Sync status pill to the board header.
-- Added `supabase/migrations/0004_enable_realtime.sql`.
-- Added `docs/REALTIME_SYNC.md`.
-
-
-## Realtime Sync v1: online getestet
-
-Realtime wurde lokal und online getestet: Änderungen auf dem Handy erscheinen unmittelbar auf dem Laptop und umgekehrt. Die erste Version lädt bei relevanten Supabase-Realtime-Events das aktive Board neu. Das ist bewusst robust und einfach gehalten; spätere Optimierungen können gezieltere Updates einzelner Tasks oder Listen ergänzen.
-
-## Mobile Touch UX
-
-Auf Touch-Geräten war Drag & Drop zunächst zu aggressiv: Beim normalen Wischen über einem Task wurde der Task sofort gezogen. Die DnD-Sensoren wurden deshalb getrennt:
-
-- `MouseSensor` für Desktop mit kurzer Bewegungsdistanz
-- `TouchSensor` für Handy/Tablet mit Long-Press-Delay und Toleranz
-- `KeyboardSensor` bleibt für Tastaturbedienung erhalten
-
-Dadurch bedeutet kurzes Wischen auf dem Handy wieder Scrollen, während längeres Halten Drag & Drop startet.
-
-## Dependency-Versionierung
-
-Ein wichtiges Deployment-Learning war, dass `latest` bei Framework-Abhängigkeiten unvorhersehbare Builds verursachen kann. Ein Next.js-Upgrade auf eine neuere Major-Version erzeugte lokal/Vercel unterschiedliche Build-Probleme. Das Projekt pinnt deshalb zentrale Versionen und committet `package-lock.json`, damit lokale Builds und Vercel-Deployments reproduzierbarer bleiben.
-
-
-## Mobile Touch UX und horizontale Ansicht
-
-Nach dem erfolgreichen Realtime-Test auf Handy und Desktop wurde die mobile Bedienung verbessert. Auf Touch-Geräten startet Drag & Drop nun erst nach kurzem Halten, während normales Wischen über Tasks zum Scrollen genutzt werden kann. Dafür wurde der DnD-Sensor-Aufbau von einem allgemeinen PointerSensor auf getrennte Mouse- und Touch-Sensoren umgestellt.
-
-Die horizontale Ansicht wurde ebenfalls näher an das TasksBoard-Gefühl gebracht: Listen werden als seitlich swipebare Spalten dargestellt, die auf dem Handy per horizontalem Scroll-Snap durchgeblättert werden können. Außerdem wurde die PWA-Manifest-Ausrichtung auf Portrait gesetzt, damit die installierte App nicht ungewollt ins Querformat kippt.
-
-Lernpunkte:
-
-- Desktop-Mausverhalten und Mobile-Touchverhalten sollten getrennt gedacht werden.
-- `touch-action: none` kann auf Touch-Geräten normales Scrollen blockieren.
-- Ein Long-Press-Delay verhindert, dass jeder Scrollversuch sofort als Drag erkannt wird.
-- Für reproduzierbare Deployments sind gepinnte Dependency-Versionen besser als `"latest"`.
-
-
-
-## Trash and Archive Management
-
-The data management area was expanded from simple bulk cleanup actions into a real recovery interface.
-
-Added:
-
-- deleted tasks are now visible in a dedicated trash section
-- individual deleted tasks can be restored
-- individual deleted tasks can be permanently deleted
-- the full trash can still be emptied in one action
-- archived boards are listed in the settings
-- archived boards can be restored
-- archived boards can be permanently deleted
-- dangerous permanent deletion actions always ask for confirmation
-
-Learning point:
-
-- Soft delete and archive states are more useful when the user can inspect and recover items before permanently deleting them. Bulk cleanup is still useful, but it should not be the only management option.
-
-## Recurring tasks v1
-
-Recurring tasks were added as a focused productivity feature. The app does not generate a full calendar. Instead, a recurring task stays inside its list and creates the next open copy when completed. Future copies are visible but muted and cannot be checked off before their scheduled date. Today and overdue due dates are visually highlighted with green and orange chips.
-
-Lernpunkt:
-
-- Recurrence can be useful without building a full calendar. For this app, list-based recurrence fits better than pre-generating months or years of tasks.
-
-## Header collapse and hamburger actions
-
-The board control area was made collapsible so the app opens with more task content visible. On the board page, clicking the Taskboard brand in the top bar now toggles the board controls. From other pages, the same brand link still navigates back to the board as expected.
-
-The main board actions are now also available from the hamburger/sidebar menu: day lists, horizontal view, details, filter and board actions. This makes the mobile layout more compact and keeps the core controls reachable even when the board header is collapsed. The project status card was also updated so Vercel is marked as active instead of a future step.
-
-Learning point:
-
-- A portfolio app benefits from a clean default view. Advanced controls should stay available, but they do not need to consume screen space on every page load.
-
-## Portfolio documentation polish
-
-The README and portfolio documentation were rewritten to present the project more clearly for GitHub and job applications. The new documentation highlights the live demo, motivation, screenshots, architecture, tech stack, build checks, roadmap, known limits and key learnings.
-
-Learning point:
-
-- A portfolio project should not only show features. It should also show why the project exists, what trade-offs were made, how it can be run locally, where the limits are, and how future work is planned.
-
-## GitHub Actions build check
-
-A small CI workflow was added in `.github/workflows/ci.yml`. It runs on pushes to `main`, pull requests into `main` and manual workflow dispatches.
-
-The workflow installs dependencies with `npm install`, runs `npm run typecheck` and then runs `npm run build`. This gives the repository a visible build signal for portfolio use and helps catch dependency, TypeScript or production-build issues before they become deployment problems.
-
-Learning point:
-
-- A portfolio project is stronger when it can be built from a clean checkout. GitHub Actions makes the build status visible and reinforces the dependency-management lesson from the earlier Vercel/Next.js versioning issue.
-
-## Public demo access
-
-- Added `/demo`, which redirects to `/board?demo=1`.
-- Added a public demo path for GitHub visitors so the app can be tested without Magic Link login.
-- Demo mode now uses anonymized sample board/list/task data.
-- Demo changes stay local and are not saved to Supabase.
-- Login and landing pages now include clearer demo CTAs.
-- README and portfolio notes now point to the public demo URL.
-
-## Task modal
-
-Task creation and full editing now open in a modal instead of expanding inline inside a list. On desktop the editor is a compact centered dialog; on mobile it behaves more like a near-fullscreen app dialog.
-
-The modal keeps the title as the required core field and lets the user show or hide optional fields with chips: date, note, priority, recurrence, labels and sensitive marker. This keeps quick task creation fast while still making the full task data model reachable.
-
-Learning point:
-
-- Task editing is easier to understand when create and edit use the same pattern. A modal also prevents long inline forms from pushing the list layout around, especially on mobile.
-
-## Task modal overlay fix
-
-After testing, the first modal version still behaved too much like an inline list element because it was rendered from inside each list/task component. This made the background remain visually and interactively active, and it allowed multiple task editors to be opened at the same time.
-
-The modal handling was moved up to the board level and the dialog itself now renders through a portal into `document.body`. There is only one active task modal at a time, the full app background is dimmed and locked, and the dialog gets its own scrollable content area so fields are not cut off on smaller screens.
-
-Learning point:
-
-- Real modals should not be rendered inside transformed drag-and-drop list containers. A board-level modal state plus a portal avoids z-index/positioning problems and makes the interaction easier to reason about.
-
-## 24. Automatic date recognition
-
-**Archiv:** `taskboard-date-automation.zip`
-
-- manuelle Listentitel wie `Dienstag, 26.05.2026`, `26.05.2026`, `26.05.` und `YYYY-MM-DD` werden erkannt
-- neue oder umbenannte Listen speichern erkannte Datumswerte, wenn möglich
-- offene Aufgaben mit passendem Fälligkeitsdatum werden automatisch in existierende passende Tageslisten verschoben
-- offene Aufgaben, die mehr als sieben Tage überfällig sind, werden in eine Liste `Offen` verschoben
-- falls `Offen` noch nicht existiert, wird die Liste automatisch erstellt
-- Drag & Drop nutzt erkannte Datumslisten ebenfalls für das Aufgabendatum
-- `docs/DATE_AUTOMATION.md` dokumentiert Verhalten, Formate und Grenzen
-
-## 25. PWA and GitHub demo-link polish
-
-**Archiv:** `taskboard-pwa-github-polish.zip`
-
-- Manifest-Dateien `public/manifest.webmanifest` und `public/manifest.json` wurden vereinheitlicht
-- App-Start bleibt auf `/board`, weil das für die private Nutzung sinnvoll ist
-- ein zusätzlicher Manifest-Shortcut führt direkt zur öffentlichen Demo unter `/demo`
-- Maskable Icons, Apple Touch Icon und Favicons sind in Manifest, Metadaten und Service Worker klarer abgebildet
-- `public/sw.js` cachet die wichtigsten PWA-Dateien und Icons robuster
-- `public/offline.html` wurde optisch und inhaltlich poliert
-- `app/layout.tsx` enthält klarere App-/OpenGraph-/PWA-Metadaten
-- `docs/PWA_INSTALLATION.md` erklärt Installation, Browser-Unterschiede und Demo-vs.-App-Verhalten
-- `docs/GITHUB_REPOSITORY_SETTINGS.md` dokumentiert, dass der GitHub-About-Website-Link manuell auf `/demo` gesetzt werden muss
-
-Learning point:
-
-- Der GitHub-About-Link ist Repository-Metadatum und wird nicht automatisch aus dem Code gelesen. Für Bewerbungen sollte er manuell auf die Demo zeigen, während die installierte PWA weiter direkt ins private Board starten darf.
-
-## 26. Notification settings preparation
-
-**Archiv:** `taskboard-notification-prep.zip`
-
-- Einstellungen enthalten jetzt einen eigenen Benachrichtigungsbereich
-- Aktivieren fragt die Browser Notification Permission an
-- der Status zeigt ehrlich: deaktiviert, vorbereitet, vom Browser blockiert oder nicht verfügbar
-- die Glocke in der Topbar zeigt den aktuellen Benachrichtigungsstatus und erklärt die Grenze
-- echte serverseitige Push-Erinnerungen sind weiterhin ein geplanter Ausbauschritt
-- `docs/NOTIFICATIONS.md` dokumentiert den aktuellen Stand und die nötigen nächsten Schritte für echte Web Push Notifications
-
-Learning point:
-
-- Bei Features wie Push Notifications ist eine ehrliche Zwischenstufe besser als ein irreführender Schalter. Die UI kann Bereitschaft und Browser-Berechtigung zeigen, ohne so zu tun, als gäbe es bereits geplante Server-Erinnerungen.
-
-## Paket 10 – recurring task polish
-
-- Wiederholende Aufgaben zeigen jetzt klarere Statushinweise direkt auf der Aufgabenkarte.
-- Zukünftige Wiederholungen zeigen `noch nicht fällig bis …` statt nur einen gesperrten Zustand.
-- Das Aufgabenmodal zeigt bei wiederholenden Aufgaben einen eigenen Wiederholungsbereich.
-- Eine Wiederholung kann im Modal bewusst beendet werden; bestehende Kopien bleiben als Einzelaufgaben erhalten.
-- Beim erneuten Abhaken einer wieder geöffneten Wiederholungsaufgabe werden doppelte Folgekopien vermieden.
-- Die Wiederholungsdokumentation wurde aktualisiert.
+The README and docs were refined to present the project as a finished portfolio piece: purpose, architecture, demo, stack, limitations, roadmap and learning outcomes are all documented.

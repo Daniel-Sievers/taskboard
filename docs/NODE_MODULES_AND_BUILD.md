@@ -1,14 +1,21 @@
-# Node modules, build output and app size
+# Node modules and build output
 
-`node_modules/` is only needed during development and while building the app.
-It contains all downloaded npm packages such as Next.js, React, Supabase and dnd-kit.
+`node_modules/` and `.next/` are local/generated folders. They are not part of the source repository.
 
-Important points:
+## Repository boundary
 
-- `node_modules/` is not committed to GitHub.
-- `node_modules/` is not uploaded to Vercel as part of the app bundle.
-- Vercel installs dependencies on its build server from `package.json` and `package-lock.json`.
-- The browser only receives the optimized build output, not the entire `node_modules` folder.
-- When packaging a ZIP for sharing, delete `node_modules/`, `.next/` and `.env.local` first.
+The repository stores source code, configuration, migrations, docs and lockfiles. Dependencies are restored with `npm ci`; build output is recreated with `npm run build`.
 
-The final deployed app should be much smaller than the local development folder.
+## Ignored local files
+
+```txt
+node_modules/
+.next/
+.vercel/
+.env.local
+*.tsbuildinfo
+```
+
+## Build reproducibility
+
+`package-lock.json` is committed so clean installs use the same resolved dependency versions locally, in GitHub Actions and on Vercel.

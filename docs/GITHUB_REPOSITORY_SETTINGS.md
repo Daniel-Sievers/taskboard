@@ -1,62 +1,40 @@
-# GitHub Repository Settings
+# Repository presentation
 
-Diese Datei erklärt, welche GitHub-Einstellungen nicht automatisch aus dem Code übernommen werden.
+This document records the public repository presentation choices for Taskboard.
 
-## About-/Website-Link
+## Repository name
 
-Der Link im rechten GitHub-About-Bereich wird **nicht** automatisch aus `README.md`, `package.json` oder einer Datei im Projektordner gelesen.
+```txt
+taskboard
+```
 
-Er ist eine Repository-Metadaten-Einstellung und muss in GitHub manuell gesetzt werden.
+## Description
 
-Empfohlener Website-Link für Bewerbungen:
+```txt
+Private installable taskboard app with Supabase Auth, realtime sync, drag & drop, recurring tasks and PWA support.
+```
 
-```text
+## Website link
+
+```txt
 https://taskboard-ten-steel.vercel.app/demo
 ```
 
-Warum der Demo-Link besser ist als die normale App-URL:
+The demo link is the best public entry point because it opens without Magic Link login and uses anonymized local data.
 
-- Bewerbungsleser landen direkt in einer testbaren Demo.
-- Es ist kein Magic-Link-Login nötig.
-- Es werden keine privaten Daten angezeigt.
-- Die echte private App bleibt weiter unter der normalen URL erreichbar.
+## Suggested topics
 
-## So setzt du den Link in GitHub
-
-1. GitHub-Repository öffnen.
-2. Rechts im Bereich **About** auf das Zahnrad klicken.
-3. Bei **Website** eintragen:
-
-   ```text
-   https://taskboard-ten-steel.vercel.app/demo
-   ```
-
-4. Optional bei **Description** eintragen:
-
-   ```text
-   Personal taskboard app built with Next.js, Supabase and Vercel. Public demo available without login.
-   ```
-
-5. Speichern.
-
-## Optional: Topics
-
-Sinnvolle GitHub Topics:
-
-```text
+```txt
 nextjs
-react
 typescript
 supabase
 vercel
 pwa
 taskboard
-portfolio-project
+drag-and-drop
+portfolio
 ```
 
-## Wichtig
+## Public presentation goal
 
-Der README-Link bleibt trotzdem wichtig. Die README sollte weiterhin beide URLs nennen:
-
-- Public Demo: `/demo`
-- Live App: normale App mit Login
+The repository should make the project easy to evaluate quickly: demo link first, screenshots near the top, clear feature list, concise setup instructions and honest limitations.

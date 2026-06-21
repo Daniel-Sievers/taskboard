@@ -1,25 +1,19 @@
-# Search, Filters and Labels
+# Search, filters and labels
 
-This block adds the first real productivity layer on top of boards, lists and tasks.
+Search and filters make larger boards easier to scan.
 
-## Implemented
+## Search
 
-- Search over task title, notes and labels.
-- Filter by status: open, done, all.
-- Filter by priority: high, normal, low, all.
-- Filter by label/tag.
-- Quick label chips generated from existing task labels.
-- Sidebar link for `Heute fällig` using `?filter=today`.
-- Active filters show a compact summary and can be reset.
+Tasks can be searched by title, notes and labels.
 
-## Notes
+## Filters
 
-Labels are currently stored on each task as the existing `tags` array. This keeps the database simple and avoids a migration. Later this can be normalized into separate `labels` and `task_labels` tables if we need label colors, sorting or cross-board label management.
+The board supports filtering by status, priority and label. Active filters show a compact summary and can be reset quickly.
 
-## Next improvements
+## Labels
 
-- Dedicated filter drawer design closer to TasksBoard.
-- Saved filters.
-- Cross-board search.
-- Overdue view.
-- Label colors and icons.
+Labels are stored on each task as the existing `tags` array. This keeps the database simple and avoids an extra label schema for the current version.
+
+## Future label model
+
+A larger version could normalize labels into separate `labels` and `task_labels` tables. That would make label colors, sorting and cross-board label management easier.

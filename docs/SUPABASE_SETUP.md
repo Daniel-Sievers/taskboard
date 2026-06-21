@@ -1,80 +1,44 @@
-# Supabase Setup
+# Supabase setup
 
-Diese App nutzt Supabase für Login, Datenbank und später Synchronisierung zwischen Geräten.
+Taskboard uses Supabase for authentication, PostgreSQL persistence and realtime updates.
 
-## 1. Environment-Datei anlegen
-
-Kopiere `.env.example` zu `.env.local` und trage deine Projektwerte ein:
+## Environment variables
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-publishable-or-anon-key
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
-Der `NEXT_PUBLIC_SUPABASE_ANON_KEY` darf der neue `sb_publishable_...` Key von Supabase sein.
-
-Nicht verwenden:
+Older Supabase projects can also use:
 
 ```env
-SUPABASE_SERVICE_ROLE_KEY=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-Der Service-Role/Secret-Key gehört niemals ins Frontend und niemals auf GitHub.
+Service-role keys are not used in the frontend.
 
-## 2. Migrationen ausführen
+## Database setup
 
-Im Supabase Dashboard:
+The schema is stored as migrations in `supabase/migrations/`.
+
+Migration scope:
+
+- initial schema
+- RLS policies
+- auth/profile helpers
+- realtime setup
+- recurring-task fields
+
+## Auth configuration
+
+For local development and deployment, Supabase Auth redirect URLs include the local app and the Vercel deployment:
 
 ```txt
-SQL Editor → New query
+http://localhost:3000/**
+https://taskboard-ten-steel.vercel.app/**
 ```
 
-Dann diese Dateien nacheinander kopieren und ausführen:
+## Demo mode
 
-```txt
-supabase/migrations/0001_initial_schema.sql
-supabase/migrations/0002_rls_policies.sql
-supabase/migrations/0003_auth_helpers.sql
-```
-
-Danach existieren:
-
-```txt
-profiles
-boards
-lists
-tasks
-task_versions
-```
-
-RLS ist aktiv, sodass eingeloggte Nutzer nur ihre eigenen Daten sehen und ändern können.
-
-## 3. Lokal neu starten
-
-Nach Änderungen an `.env.local`:
-
-```bash
-npm run dev
-```
-
-Falls der Server schon läuft: mit `Strg + C` stoppen und neu starten.
-
-## 4. Login testen
-
-Öffne:
-
-```txt
-http://localhost:3000/login
-```
-
-Magic Link per E-Mail senden, Link öffnen und dann `/board` testen.
-
-## 5. Was die App jetzt macht
-
-Nach Login erstellt die App bei Bedarf automatisch:
-
-- dein `Hauptboard`
-- Tageslisten für die nächsten Tage
-- echte Tasks in Supabase, wenn du Aufgaben hinzufügst
-
-Wenn keine Supabase-Werte gesetzt sind oder du nicht eingeloggt bist, läuft die App im Demo-Modus.
+The public `/demo` route does not require Supabase persistence. It uses local anonymized data while the authenticated app uses Supabase.

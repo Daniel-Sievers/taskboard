@@ -1,16 +1,18 @@
-# Offline Sync
+# Offline sync
 
-## Ziel
+Offline sync is planned as later product work. The current PWA foundation supports installability, but authenticated task data still depends on Supabase connectivity.
 
-Die App soll kurzfristig offline funktionieren.
+## Future architecture
 
-## Geplanter Ansatz
+A complete offline version would need:
 
-- Tasks lokal in IndexedDB speichern
-- Änderungen offline in eine Sync Queue legen
-- bei Wiederverbindung synchronisieren
-- Konfliktregel: Last-write-wins
+- IndexedDB storage for boards, lists and tasks
+- An offline mutation queue
+- Reconnect detection
+- Sync replay after reconnect
+- Conflict handling for edits made on multiple devices
+- UI states for offline, syncing and conflict resolution
 
-## Status
+## Scope decision
 
-Noch nicht implementiert.
+Offline sync is intentionally separate from the current portfolio release because it changes the data model and sync strategy significantly.

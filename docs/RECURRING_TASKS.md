@@ -1,77 +1,31 @@
-# Recurring Tasks
+# Recurring tasks
 
-Taskboard supports a practical first version of recurring tasks. The goal is to keep daily planning lightweight without building a full calendar system.
+Taskboard implements recurring tasks as a list-based productivity feature rather than a full calendar system.
 
-## Supported repeat rules
+## Supported rules
 
-A task can repeat:
+- No recurrence
+- Daily
+- Weekly
+- Monthly
+- Every X days
 
-- daily
-- weekly
-- monthly
-- every X days
+## Completion behavior
 
-The rule is edited in the task modal under **Wiederholung / Repeat**.
+When a recurring task is completed, Taskboard creates the next open instance. Duplicate next instances are avoided so repeated clicks or sync refreshes do not create extra copies.
 
-## What happens when a recurring task is completed?
+## Future tasks
 
-When a recurring task is checked off, Taskboard keeps the completed instance and creates the next open copy.
+Future dated open tasks stay visible in the board, but they are visually quieter and cannot be checked off before their due date. This keeps upcoming work visible without making it look immediately actionable.
 
-The next copy receives a future due date based on the selected rule. The calculation starts from the day the task is completed. For example, completing a daily task today creates the next copy for tomorrow.
+## Editing recurrence
 
-Taskboard now also avoids duplicate next copies. If a recurring task is reopened and completed again, an already existing next copy with the same rule, list and due date is reused instead of creating a second duplicate.
+The task modal shows recurrence details and can change or stop the repeat rule. Stopping recurrence turns the current task into a normal task; existing copies remain independent tasks.
 
-## Visibility and locking
+## Date-list routing
 
-Future dated open tasks stay visible in the board, but they are visually muted and cannot be checked off before their due date.
+If a future copy has a due date and a matching manual date list already exists, the task can be routed into that list.
 
-The task card shows clearer recurrence status text, for example:
+## Known boundaries
 
-- `noch nicht fällig bis 27.05.2026`
-- `Wiederholung heute fällig`
-- `Überfällige Wiederholung seit 25.05.2026`
-- `Erledigte Wiederholungsinstanz`
-
-This keeps planned future repetitions visible without letting them accidentally be completed too early.
-
-## Editing and stopping a repeat
-
-Opening a recurring task in the task modal now shows a recurrence summary panel. From there the repeat rule can be changed or stopped.
-
-Stopping a repeat turns the current task into a normal task when it is saved. Existing copies remain independent tasks and can be edited or deleted individually.
-
-This is intentional for now: Taskboard does not yet have a hidden `series_id` object that would allow bulk-editing every future instance as one calendar series.
-
-## Due-date colors
-
-- Today: green date chip
-- Overdue: orange date chip
-- Future task: muted task row and `noch nicht fällig` chip
-- Recurring task: cyan repeat chip plus a short status line
-
-## Database
-
-Recurring task metadata is stored directly on the `tasks` table:
-
-- `recurrence_type`
-- `recurrence_interval`
-- `recurrence_anchor_date`
-
-Run the migration:
-
-```txt
-supabase/migrations/0005_recurring_tasks.sql
-```
-
-## Current limits
-
-This is still intentionally smaller than a full calendar system.
-
-Not implemented yet:
-
-- weekdays only
-- selected weekdays
-- repeat until date
-- repeat a fixed number of times
-- real series-wide bulk editing of all future instances
-- server-side reminder delivery for recurring tasks
+The current version does not include selected weekdays, end dates, occurrence counts or bulk editing of an entire recurring series. Those features are planned as optional future improvements.

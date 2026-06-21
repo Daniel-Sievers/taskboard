@@ -1,14 +1,17 @@
 # Color modes
 
-Taskboard supports a separate color-mode setting in addition to dark/light/system appearance.
+Taskboard supports multiple visual modes through theme and accent preferences.
 
-Available accent modes:
+## Theme modes
 
-- Cobalt / original
-- Violet
-- Emerald
-- Graphite
+- Dark
+- Light
+- System
 
-The color mode changes the main accent layer: primary buttons, active view buttons, board chips, focus states and related highlights. It does not change user content or task data.
+## Accent modes
 
-The setting is stored locally in the browser as part of the app preferences.
+Accent color is stored as a user preference and applied through shared UI styling. This keeps the layout stable while allowing the interface to feel more personal.
+
+## Design goal
+
+The color system is intentionally simple: readable contrast, a calm default dark interface and small accent variations without changing task data or layout behavior.

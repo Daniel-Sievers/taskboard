@@ -1,32 +1,23 @@
-# Drag & Drop
+# Drag and drop
 
-Die Tageslisten-Ansicht nutzt `@dnd-kit` für Drag & Drop.
+Taskboard uses `@dnd-kit` for task and list movement.
 
-## Aktueller Stand
+## Task dragging
 
-- Aufgaben können innerhalb einer Liste sortiert werden.
-- Aufgaben können zwischen Listen verschoben werden.
-- Listen können über den Listenkopf vertikal verschoben werden.
-- Die Reihenfolge wird nach dem Loslassen in Supabase gespeichert.
-- Beim Ziehen an den oberen oder unteren Fensterrand wird automatisch gescrollt.
+Tasks can be reordered within a list and moved between lists. The saved order is persisted in Supabase so the board keeps its structure across sessions.
 
-## UX-Regeln
+## List dragging
 
-- Aufgaben werden über die ganze Aufgabenzeile gezogen.
-- Checkbox, Bearbeiten und Löschen starten kein Dragging.
-- Listen werden über den Listenkopf gezogen, nicht über den Aufgabenbereich.
-- Das Drag-Overlay ist bewusst hervorgehoben und darf visuell über den Fensterrand hinauslaufen.
+Lists can be reordered horizontally. A custom autoscroll loop tracks pointer position during drag operations so long boards remain usable while dragging.
 
-## Stabilität
+## Mobile behavior
 
-Die App verändert die React-State-Reihenfolge nicht mehr bei jedem Hover-Event. Dadurch wird vermieden, dass bei längeren Boards Render-Schleifen entstehen. Die finale Reihenfolge wird beim Drop berechnet und gespeichert.
+Touch devices use long-press activation for drag. This avoids conflicts between dragging and normal scrolling.
 
-## Noch offen
+## Keyboard support
 
-- Drop-Linien zwischen Listen könnten die Zielposition später noch eindeutiger machen.
-- Touch-Optimierung für Handy/Tablet kommt später.
+The board includes keyboard sensor support through `@dnd-kit`, giving the implementation a more complete interaction foundation.
 
+## Design goal
 
-### Autoscroll direction fix
-
-The board uses a custom autoscroll loop while dragging lists. Pointer position is tracked globally during drag operations so the direction can switch repeatedly without dropping the list first.
+Drag and drop is treated as a core planning interaction, not just a visual effect. Every successful move updates the persisted order.

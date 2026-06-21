@@ -1,73 +1,41 @@
-# Next Steps
+# Next steps
 
-## Done recently
+Taskboard is in a portfolio-ready finalization phase. The remaining work is focused on polish, validation and optional future product depth rather than large pre-release feature additions.
 
-- Supabase auth and persistent task storage
+## Recently completed
+
+- Supabase authentication and persistent task storage
 - Boards, lists and tasks
-- Drag and drop with autoscroll
-- Responsive sidebar
+- Drag and drop with saved order
+- Responsive sidebar and mobile drawer
 - Search, filters and labels
-- PWA installation basics
+- PWA foundation and app icons
 - Backup/export/import and data management
-- Active settings for theme, language, default view, sound effects and task count display
+- Theme, color, language, sound and view settings
 - Realtime sync v1
-- Mobile touch and horizontal view polish
+- Mobile touch behavior and horizontal list view
 - Trash and archive management
 - Recurring tasks v1
-- Collapsible board header and hamburger/sidebar board actions
-- Portfolio README and documentation polish
-- GitHub Actions build check
+- Collapsible board controls and sidebar actions
 - Public demo access without login
-- Task create/edit modal with centered overlay and optional fields
 - Automatic date recognition for manual list titles
-- PWA manifest/icon polish
-- GitHub About/demo-link documentation
 - Notification settings preparation
+- GitHub Actions build check and Vercel deployment
 
-## Recommended next packages
+## Final release polish
 
-1. **Set GitHub About demo link**
-   - Manually set the repository website field to `https://taskboard-ten-steel.vercel.app/demo`
-   - GitHub does not take this value from a project file automatically
-   - See `docs/GITHUB_REPOSITORY_SETTINGS.md`
+- Replace screenshots with anonymized demo screenshots
+- Confirm the public demo route works after deployment
+- Confirm the login page is connected to Supabase
+- Confirm GitHub Actions is green
+- Confirm no local files such as `.env.local`, `.next`, `node_modules` or `.vercel` are committed
+- Keep README and docs aligned with the final deployment URL
 
-2. **Real push notifications**
-   - Add Web Push subscription handling
-   - Store subscriptions per authenticated user
-   - Define reminder rules for due and overdue tasks
-   - Add a secure server-side send path
+## Future product work
 
-3. **Realtime sync robustness**
-   - More precise sync status
-   - Debounced refreshes for bursts of realtime events
-   - Reconnect indicator
-   - Last synced timestamp
-
-4. **Auth and offline improvements**
-   - Optional custom SMTP for Magic Links
-   - Offline sync with IndexedDB
-   - Optional client-side encryption
-
-5. **Optional demo video or GIF**
-   - Only needed if the GitHub README should show a quick preview without opening the app
-   - Use demo/anonymized data only
-   - Keep it short: task creation, edit modal, drag and drop, recurring task, settings
-
-## Portfolio checklist
-
-- [ ] Confirm the live demo link works: `https://taskboard-ten-steel.vercel.app/demo`.
-- [ ] Set the GitHub About website field to the demo link.
-- [ ] Confirm screenshots are anonymized.
-- [ ] Confirm GitHub Actions build check passes after the latest push.
-- [ ] Confirm `.env.local`, `.next`, `node_modules` and `.vercel` are not committed.
-- [ ] Review README before making the repository public.
-- [ ] Optional: add or record a short demo video/GIF.
-
-## Nach Paket 10
-
-Empfohlene nächste Pakete:
-
-1. Mobile Tageslisten / Swipe / Floating Plus Button
-2. Auth-/SMTP-Polish für Magic-Link-Limits
-3. Bewerbungs-Finalcheck nach aktualisierten Screenshots
-4. Später: Offline-Sync und echte Push-Erinnerungen
+- Full Web Push reminder implementation
+- More robust realtime reconnect/status handling
+- Optional custom SMTP setup for Magic Links
+- Offline sync with IndexedDB
+- Optional client-side encryption for sensitive tasks
+- More advanced recurring-series controls

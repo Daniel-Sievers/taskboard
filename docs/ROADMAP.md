@@ -1,87 +1,67 @@
 # Roadmap
 
-This roadmap is grouped into practical product packages.
+The current project phase is final portfolio polish. The main product foundation is implemented; future work is grouped by product depth.
 
-## Done
+## Completed foundation
 
 - Next.js / TypeScript / Tailwind setup
 - Supabase Auth with Magic Link
-- Supabase data persistence
+- Supabase data persistence and RLS
 - Boards, lists and tasks
 - Drag & drop with `@dnd-kit`
 - Responsive sidebar and mobile drawer
 - Search, filters and labels
-- PWA basics
+- PWA foundation
 - Backup/export/import
-- Active settings
+- Settings and preferences
 - Realtime sync v1
 - Mobile touch and horizontal view polish
 - Trash and archive management
 - Recurring tasks v1
-- Collapsible board controls and sidebar actions
-- GitHub/Vercel deployment
-- Portfolio README polish
 - Public demo access without login
-- Task create/edit modal with centered overlay and optional fields
 - Automatic date recognition for manual list titles
-- PWA and GitHub demo-link polish
 - Notification settings preparation
+- GitHub Actions and Vercel deployment
 
-## Next
+## Final portfolio polish
 
-### 1. GitHub portfolio final check
+- Replace screenshots with anonymized demo screenshots
+- Confirm the public demo and login deployment
+- Confirm GitHub Actions build status
+- Keep README, docs and deployment URL aligned
 
-- Set the GitHub About website link to `/demo` manually
-- Replace/anonymize screenshots
-- Confirm GitHub Actions is green
-- Confirm Vercel demo and login app both work
+## Future product improvements
 
-### 2. Real push notifications
+### Push reminders
 
-- Add Web Push subscription handling
-- Persist push subscriptions per authenticated user
-- Define reminder rules for due/overdue tasks
-- Add a secure server-side send path
-- Keep unsubscribe/privacy behavior visible
+- Web Push subscriptions
+- Secure subscription storage
+- Reminder rules for due/overdue tasks
+- Server-side send path and scheduler
+- Unsubscribe/cleanup behavior
 
-### 3. Realtime robustness
+### Realtime robustness
 
-- More precise sync status
-- Debounced refreshes for bursts of realtime events
+- More detailed sync status
 - Reconnect indicator
 - Last synced timestamp
+- Debounced refreshes during event bursts
 
-### 4. Auth improvements
+### Auth polish
 
-- Evaluate custom SMTP for Magic Links
-- Keep Google Login optional, not required
-- Improve login copy and mobile auth flow
+- Optional custom SMTP for Magic Links
+- More resilient login copy and error handling
+- Optional Google Login, while keeping Supabase as the data backend
 
-### 5. Offline sync
+### Offline sync
 
 - IndexedDB cache
 - Offline mutation queue
 - Reconnect sync
-- Simple conflict strategy
+- Conflict handling
 
-### 6. Security and privacy
+### Privacy and advanced task behavior
 
 - Optional client-side encryption for sensitive tasks
-- Stronger backup/restore safety
-
-### Optional demo assets
-
-- Record short demo video/GIF if the README should show a preview without opening the live demo
-- Use anonymized demo data only
-- Keep the clip short and focused on task creation, editing, drag & drop and settings
-
-## Recurring task polish done
-
-Wiederholende Aufgaben sind jetzt verständlicher sichtbar: Taskkarten zeigen Regel und Status, das Modal kann Wiederholungen stoppen, und doppelte Folgekopien werden vermieden.
-
-Weitere mögliche Wiederholungs-Ausbaustufen bleiben bewusst Roadmap-Themen:
-
-- bestimmte Wochentage
-- Enddatum / Anzahl Wiederholungen
-- echte Serien-ID für Bulk-Bearbeitung
-- Erinnerungen pro Wiederholung
+- Advanced recurring-series controls
+- Stronger backup/restore safety checks
