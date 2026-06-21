@@ -19,6 +19,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { AddTaskButton } from "./AddTaskButton";
 import { useI18n } from "@/hooks/useI18n";
+import { getListDateKey } from "@/lib/dates/list-dates";
 import { TaskCard } from "./TaskCard";
 import type { BoardList } from "@/types/board";
 import type { Task } from "@/types/task";
@@ -77,6 +78,7 @@ export function DayList({
   const visibleOpenTasks = visibleStatus === "done" ? [] : openTasks;
   const allCount = openTasks.length + completedTasks.length;
   const isCompletedVisible = showCompleted || visibleStatus === "done";
+  const recognizedDateKey = getListDateKey(list);
 
   useEffect(() => {
     function handlePointerDown(event: PointerEvent) {
@@ -265,7 +267,7 @@ export function DayList({
               onRequestAddTask({
                 listId: list.id,
                 listTitle: list.title,
-                defaultScheduledDate: list.date,
+                defaultScheduledDate: recognizedDateKey,
               })
             }
           />

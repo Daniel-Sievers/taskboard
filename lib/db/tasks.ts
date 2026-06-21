@@ -181,6 +181,8 @@ export async function updateTask(taskId: string, input: UpdateTaskInput): Promis
   if (input.title !== undefined) patch.title = input.title;
   if (input.notes !== undefined) patch.notes = input.notes;
   if (input.scheduledDate !== undefined) patch.scheduled_date = input.scheduledDate || null;
+  if (input.listId !== undefined) patch.list_id = input.listId;
+  if (input.position !== undefined) patch.position = input.position;
   if (input.priority !== undefined) patch.priority = priorityToDb(input.priority);
   if (input.tags !== undefined) patch.tags = input.tags;
   if (input.isEncrypted !== undefined) patch.is_encrypted = input.isEncrypted;

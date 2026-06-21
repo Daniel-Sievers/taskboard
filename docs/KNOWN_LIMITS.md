@@ -31,6 +31,13 @@ This document lists current limitations intentionally left visible for portfolio
 - Mobile horizontal view and long-press drag behavior have been improved.
 - Further polish is still planned for carousel-like list navigation.
 
+## Automatic date recognition
+
+- Date automation focuses on simple list-title formats such as `26.05.2026`, `26.05.` and `YYYY-MM-DD`.
+- Taskboard does not create a new dated list for every task date. Date lists remain manual.
+- Open tasks older than seven days are moved into `Offen`; the threshold is not configurable yet.
+- There is no UI toggle yet to disable automatic date routing.
+
 ## Browser/PWA behavior
 
 - App icon behavior can differ between Chrome, Edge, Firefox and mobile launchers.

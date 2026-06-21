@@ -23,37 +23,31 @@ This roadmap is grouped into practical product packages.
 - Portfolio README polish
 - Public demo access without login
 - Task create/edit modal with centered overlay and optional fields
+- Automatic date recognition for manual list titles
 
 ## Next
 
-### 1. Automatic date recognition
-
-- Detect manual list titles such as `Dienstag, 26.05.2026`
-- Route tasks with matching dates into existing manual lists
-- Move very old open tasks into an `Offen` list if needed
-- Add format hints in settings/documentation
-
-### 2. Realtime robustness
+### 1. Realtime robustness
 
 - More precise sync status
 - Debounced refreshes for bursts of realtime events
 - Reconnect indicator
 - Last synced timestamp
 
-### 3. Auth improvements
+### 2. Auth improvements
 
 - Evaluate custom SMTP for Magic Links
 - Keep Google Login optional, not required
 - Improve login copy and mobile auth flow
 
-### 4. Offline sync
+### 3. Offline sync
 
 - IndexedDB cache
 - Offline mutation queue
 - Reconnect sync
 - Simple conflict strategy
 
-### 5. Security and privacy
+### 4. Security and privacy
 
 - Optional client-side encryption for sensitive tasks
 - Stronger backup/restore safety

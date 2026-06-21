@@ -95,6 +95,7 @@ Implemented so far:
 - Boards, lists and tasks are stored in Supabase.
 - Multiple boards can be created, switched, renamed, archived and restored.
 - Lists can be created, renamed, deleted and reordered.
+- Date-like list titles are recognized automatically for date-based task routing.
 - Tasks can be created, edited, completed, soft-deleted, restored and reordered.
 - Drag & drop is implemented with `@dnd-kit`.
 - Mobile touch drag uses long-press behavior so normal scrolling stays usable.
@@ -125,6 +126,9 @@ The app is still under active development.
 - Mobile: app-like near-fullscreen editor dialog
 - Optional field chips for notes, date, priority, recurrence, labels and sensitive marking
 - Create, rename, delete and reorder lists
+- Recognize date lists from titles like `Dienstag, 26.05.2026` or `26.05.2026`
+- Automatically route dated open tasks into matching manual date lists when they exist
+- Move open tasks older than seven days into an `Offen` list
 - Multiple boards
 - Board switching through sidebar and header chips
 - Collapsible board control header for a cleaner default view
@@ -162,6 +166,7 @@ The app is still under active development.
 - Every X days
 - Next task instance is created when a recurring task is completed
 - Future scheduled tasks can be edited/deleted but are visually less prominent until due
+- Next scheduled copies can be routed into matching date lists when those lists exist
 
 ### Search, filters and labels
 
@@ -294,6 +299,7 @@ docs/DATABASE.md
 docs/SECURITY.md
 docs/REALTIME_SYNC.md
 docs/CI.md
+docs/DATE_AUTOMATION.md
 ```
 
 ---
@@ -476,6 +482,7 @@ Additional implementation notes are stored in `docs/`:
 - `docs/ARCHITECTURE.md`
 - `docs/CI.md`
 - `docs/DATABASE.md`
+- `docs/DATE_AUTOMATION.md`
 - `docs/DEVELOPMENT_LOG.md`
 - `docs/DRAG_AND_DROP.md`
 - `docs/GITHUB_PORTFOLIO.md`
@@ -514,6 +521,7 @@ This project was built iteratively in focused packages:
 16. Collapsible board controls and sidebar actions
 17. Portfolio README and documentation polish
 18. Public demo access without login
+19. Automatic date recognition for manual list titles
 
 Detailed log:
 
@@ -547,7 +555,7 @@ docs/KNOWN_LIMITS.md
 
 Planned improvements:
 
-- Automatic date recognition from manual list titles
+- Date automation UI hints and additional date formats
 - More complete mobile carousel behavior
 - More robust realtime sync status and reconnect behavior
 - Push notification planning

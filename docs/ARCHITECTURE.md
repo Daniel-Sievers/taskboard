@@ -54,6 +54,17 @@ docs/
   screenshots/
 ```
 
+## Date automation
+
+Date-like list titles are parsed in `lib/dates/list-dates.ts`. `useTaskboard` uses that helper to route open tasks into matching manual date lists and to move very old open tasks into an `Offen` list. Database writes remain centralized in `lib/db/lists.ts` and `lib/db/tasks.ts`.
+
+```txt
+components/board/TaskModal.tsx
+  -> hooks/useTaskboard.ts
+    -> lib/dates/list-dates.ts
+    -> lib/db/tasks.ts / lib/db/lists.ts
+```
+
 ## Data access principle
 
 UI components should not directly contain Supabase query logic. Database operations are grouped in `lib/db/`.

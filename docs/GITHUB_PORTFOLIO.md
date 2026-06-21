@@ -32,6 +32,7 @@ Private installable taskboard app with Supabase Auth, realtime sync, drag & drop
 - Supabase Realtime
 - Drag & drop with `@dnd-kit`
 - Modal-based task creation/editing UX
+- Automatic date recognition from manual list titles
 - Mobile touch UX
 - PWA setup
 - JSON/CSV backup and import/export

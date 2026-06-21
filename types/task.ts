@@ -43,6 +43,8 @@ export type UpdateTaskInput = {
   title?: string;
   notes?: string;
   scheduledDate?: string | null;
+  listId?: string | null;
+  position?: number;
   priority?: TaskPriority;
   tags?: string[];
   isEncrypted?: boolean;

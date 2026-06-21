@@ -46,6 +46,7 @@ import { useTaskboard } from "@/hooks/useTaskboard";
 import { usePreferences } from "@/hooks/usePreferences";
 import { useI18n } from "@/hooks/useI18n";
 import { toDateKey } from "@/lib/dates/calendar";
+import { getListDateKey } from "@/lib/dates/list-dates";
 import type { Task } from "@/types/task";
 
 type ActiveDrag = { type: "list" | "task"; id: string } | null;
@@ -956,8 +957,8 @@ export function BoardView() {
                     (task) =>
                       task.listId === list.id ||
                       (!task.listId &&
-                        list.date &&
-                        toDateKey(task.scheduledDate) === list.date),
+                        getListDateKey(list) &&
+                        toDateKey(task.scheduledDate) === getListDateKey(list)),
                   )
                   .sort((a, b) => a.position - b.position);
                 return (
@@ -1045,8 +1046,8 @@ export function BoardView() {
                     (task) =>
                       task.listId === list.id ||
                       (!task.listId &&
-                        list.date &&
-                        toDateKey(task.scheduledDate) === list.date),
+                        getListDateKey(list) &&
+                        toDateKey(task.scheduledDate) === getListDateKey(list)),
                   )
                   .sort((a, b) => a.position - b.position);
 

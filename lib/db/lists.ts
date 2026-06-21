@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { supabase } from "@/lib/supabase/client";
+import { parseListDateFromTitle } from "@/lib/dates/list-dates";
 import type { BoardList } from "@/types/board";
 import { mapList } from "./mappers";
 
@@ -56,11 +57,13 @@ export async function createCustomList(input: {
     ? Number(maxPositionData[0].position) + 1
     : 1;
 
+  const title = input.title?.trim() || "Neue Liste";
+
   return createList({
     userId: input.userId,
     boardId: input.boardId,
-    title: input.title?.trim() || "Neue Liste",
-    date: null,
+    title,
+    date: parseListDateFromTitle(title),
     position: nextPosition,
   });
 }
@@ -77,7 +80,11 @@ export async function updateListTitle(
 ): Promise<BoardList> {
   const { data, error } = await supabase
     .from("lists")
-    .update({ title, updated_at: new Date().toISOString() })
+    .update({
+      title,
+      date: parseListDateFromTitle(title),
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", listId)
     .select("*")
     .single();

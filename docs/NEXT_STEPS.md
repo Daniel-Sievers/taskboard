@@ -19,27 +19,22 @@
 - GitHub Actions build check
 - Public demo access without login
 - Task create/edit modal with centered overlay and optional fields
+- Automatic date recognition for manual list titles
 
 ## Recommended next packages
 
-1. **Automatic date recognition for day lists**
-   - Detect titles such as `Dienstag, 26.05.2026`
-   - Route tasks with matching dates into existing manual lists
-   - Move very old open tasks into an `Offen` list if needed
-   - Add a settings hint for supported date formats
-
-2. **Realtime sync robustness**
+1. **Realtime sync robustness**
    - More precise sync status
    - Debounced refreshes for bursts of realtime events
    - Reconnect indicator
    - Last synced timestamp
 
-3. **Auth and offline improvements**
+2. **Auth and offline improvements**
    - Optional custom SMTP for Magic Links
    - Offline sync with IndexedDB
    - Optional client-side encryption
 
-4. **Optional demo video or GIF**
+3. **Optional demo video or GIF**
    - Only needed if the GitHub README should show a quick preview without opening the app
    - Use demo/anonymized data only
    - Keep it short: task creation, edit modal, drag and drop, recurring task, settings

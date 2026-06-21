@@ -22,6 +22,13 @@ import {
 } from "@/lib/db/tasks";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase/client";
 import { isFutureDateKey, toDateKey } from "@/lib/dates/calendar";
+import {
+  findMatchingDateList,
+  findOpenList,
+  getListDateKey,
+  isDateKeyOlderThanDays,
+  parseListDateFromTitle,
+} from "@/lib/dates/list-dates";
 import { reorderById, withSequentialPositions } from "@/lib/dnd/reorder";
 import { createDemoBoard, createInitialDemoLists, createInitialDemoTasks, initialDemoLists, initialDemoTasks } from "@/lib/demo-data";
 import type { Board, BoardList } from "@/types/board";
@@ -31,6 +38,115 @@ import type { User } from "@supabase/supabase-js";
 
 function isFutureLockedTask(task: Task) {
   return task.status === "open" && isFutureDateKey(task.scheduledDate);
+}
+
+function createDemoList({
+  title,
+  boardId = "demo-board",
+  position,
+}: {
+  title: string;
+  boardId?: string;
+  position: number;
+}): BoardList {
+  const now = new Date().toISOString();
+
+  return {
+    id: crypto.randomUUID(),
+    userId: "demo",
+    boardId,
+    title,
+    date: parseListDateFromTitle(title),
+    position,
+    collapsed: false,
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+function taskRoutingSignature(lists: BoardList[], tasks: Task[]) {
+  const listPart = lists
+    .map((list) => `${list.id}:${list.title}:${list.date ?? ""}`)
+    .sort()
+    .join("|");
+  const taskPart = tasks
+    .filter((task) => task.status === "open")
+    .map(
+      (task) =>
+        `${task.id}:${task.listId ?? ""}:${task.scheduledDate}:${task.position}`,
+    )
+    .sort()
+    .join("|");
+
+  return `${listPart}::${taskPart}`;
+}
+
+function getNextPositionForList(
+  currentTasks: Task[],
+  listId: string | null | undefined,
+  excludeTaskId?: string,
+) {
+  const positions = currentTasks
+    .filter((task) => task.id !== excludeTaskId && task.listId === listId)
+    .map((task) => task.position);
+
+  return positions.length > 0 ? Math.max(...positions) + 1 : 1;
+}
+
+function getAutoTargetList(task: Task, currentLists: BoardList[]) {
+  if (task.status !== "open") return null;
+
+  const dateKey = task.scheduledDate ? toDateKey(task.scheduledDate) : "";
+  if (!dateKey) return null;
+
+  if (isDateKeyOlderThanDays(dateKey, 7)) {
+    return findOpenList(currentLists);
+  }
+
+  return findMatchingDateList(currentLists, dateKey);
+}
+
+function routeOpenTasksToLists(currentLists: BoardList[], currentTasks: Task[]) {
+  const moves = currentTasks
+    .map((task) => {
+      const targetList = getAutoTargetList(task, currentLists);
+      if (!targetList || targetList.id === task.listId) return null;
+      return { task, targetListId: targetList.id };
+    })
+    .filter(Boolean) as Array<{ task: Task; targetListId: string }>;
+
+  if (moves.length === 0) return null;
+
+  const now = new Date().toISOString();
+  const movedTaskIds = new Set(moves.map((move) => move.task.id));
+  const affectedListIds = new Set<string>();
+
+  moves.forEach((move) => {
+    if (move.task.listId) affectedListIds.add(move.task.listId);
+    affectedListIds.add(move.targetListId);
+  });
+
+  const remainingTasks = currentTasks.filter((task) => !movedTaskIds.has(task.id));
+  const nextTasks: Task[] = remainingTasks.filter(
+    (task) => !affectedListIds.has(task.listId ?? ""),
+  );
+
+  affectedListIds.forEach((listId) => {
+    const existingTasks = remainingTasks
+      .filter((task) => task.listId === listId)
+      .sort((a, b) => a.position - b.position);
+    const incomingTasks = moves
+      .filter((move) => move.targetListId === listId)
+      .map((move) => ({
+        ...move.task,
+        listId,
+        updatedAt: now,
+      }));
+
+    nextTasks.push(...withSequentialPositions<Task>([...existingTasks, ...incomingTasks]));
+  });
+
+  return nextTasks;
 }
 
 function reorderTasksForMove({
@@ -52,7 +168,7 @@ function reorderTasksForMove({
 
   const sourceListId = movingTask.listId ?? null;
   const remainingTasks = currentTasks.filter((task) => task.id !== taskId);
-  const nextScheduledDate = targetList.date ?? movingTask.scheduledDate;
+  const nextScheduledDate = getListDateKey(targetList) ?? movingTask.scheduledDate;
   const movedTask: Task = {
     ...movingTask,
     listId: targetListId,
@@ -104,6 +220,9 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
   const listsRef = useRef<BoardList[]>(initialDemoLists);
   const tasksRef = useRef<Task[]>(initialDemoTasks);
   const realtimeRefreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoRoutingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoRoutingInFlightRef = useRef(false);
+  const autoRoutingLastSignatureRef = useRef<string | null>(null);
 
   useEffect(() => {
     listsRef.current = lists;
@@ -240,23 +359,143 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
     };
   }, [board, load, mode, user]);
 
+  useEffect(() => {
+    if (!board || isLoading) return;
+
+    const signature = taskRoutingSignature(lists, tasks);
+    if (autoRoutingLastSignatureRef.current === signature) return;
+    autoRoutingLastSignatureRef.current = signature;
+
+    if (autoRoutingTimerRef.current) {
+      clearTimeout(autoRoutingTimerRef.current);
+    }
+
+    autoRoutingTimerRef.current = setTimeout(() => {
+      void applyAutomaticDateRouting();
+    }, 250);
+
+    return () => {
+      if (autoRoutingTimerRef.current) {
+        clearTimeout(autoRoutingTimerRef.current);
+        autoRoutingTimerRef.current = null;
+      }
+    };
+  }, [board, isLoading, lists, tasks]);
+
+
+  async function ensureOpenListForAutomaticRouting(currentLists: BoardList[]) {
+    const existingOpenList = findOpenList(currentLists);
+    if (existingOpenList) return { lists: currentLists, list: existingOpenList };
+
+    if (!user || !board || mode === "demo") {
+      const created = createDemoList({
+        title: "Offen",
+        boardId: board?.id ?? "demo-board",
+        position: currentLists.length + 1,
+      });
+      const nextLists = [...currentLists, created];
+      listsRef.current = nextLists;
+      setLists(nextLists);
+      return { lists: nextLists, list: created };
+    }
+
+    const created = await createCustomList({
+      userId: user.id,
+      boardId: board.id,
+      title: "Offen",
+    });
+    const nextLists = [...currentLists, created].sort(
+      (a, b) => a.position - b.position,
+    );
+    listsRef.current = nextLists;
+    setLists(nextLists);
+    return { lists: nextLists, list: created };
+  }
+
+  async function resolveTaskTargetList(input: {
+    currentListId: string;
+    scheduledDate?: string | null;
+    status?: Task["status"];
+  }) {
+    const dateKey = input.scheduledDate ? toDateKey(input.scheduledDate) : "";
+    let currentLists = listsRef.current;
+
+    if ((input.status ?? "open") === "open" && isDateKeyOlderThanDays(dateKey, 7)) {
+      const ensured = await ensureOpenListForAutomaticRouting(currentLists);
+      currentLists = ensured.lists;
+      return { listId: ensured.list.id, scheduledDate: dateKey };
+    }
+
+    const matchingDateList = findMatchingDateList(currentLists, dateKey);
+    if (matchingDateList) {
+      return { listId: matchingDateList.id, scheduledDate: dateKey };
+    }
+
+    return { listId: input.currentListId, scheduledDate: dateKey };
+  }
+
+  async function applyAutomaticDateRouting() {
+    if (autoRoutingInFlightRef.current) return;
+
+    const currentTasks = tasksRef.current;
+    let currentLists = listsRef.current;
+    const hasOverdueOpenTasks = currentTasks.some(
+      (task) =>
+        task.status === "open" &&
+        isDateKeyOlderThanDays(toDateKey(task.scheduledDate), 7),
+    );
+
+    try {
+      autoRoutingInFlightRef.current = true;
+
+      if (hasOverdueOpenTasks && !findOpenList(currentLists)) {
+        const ensured = await ensureOpenListForAutomaticRouting(currentLists);
+        currentLists = ensured.lists;
+      }
+
+      const nextTasks = routeOpenTasksToLists(currentLists, currentTasks);
+      if (!nextTasks) return;
+
+      tasksRef.current = nextTasks;
+      setTasks(nextTasks);
+
+      if (mode === "demo") return;
+
+      setIsSaving(true);
+      setError(null);
+      await updateTaskOrder(
+        nextTasks.map((task) => ({
+          id: task.id,
+          listId: task.listId ?? null,
+          position: task.position,
+          scheduledDate: task.scheduledDate,
+        })),
+      );
+    } catch (nextError) {
+      setError(
+        nextError instanceof Error
+          ? nextError.message
+          : "Automatische Datumssortierung konnte nicht gespeichert werden.",
+      );
+    } finally {
+      setIsSaving(false);
+      autoRoutingInFlightRef.current = false;
+    }
+  }
+
 
   async function addList(title = "Neue Liste") {
     const now = new Date().toISOString();
 
     if (!user || !board || mode === "demo") {
-      const created: BoardList = {
-        id: crypto.randomUUID(),
-        userId: "demo",
-        boardId: "demo-board",
+      const created = createDemoList({
         title,
-        date: null,
-        position: lists.length + 1,
-        collapsed: false,
-        createdAt: now,
-        updatedAt: now,
-      };
-      setLists((current) => [...current, created]);
+        boardId: board?.id ?? "demo-board",
+        position: listsRef.current.length + 1,
+      });
+      const nextLists = [...listsRef.current, created];
+      listsRef.current = nextLists;
+      setLists(nextLists);
       return created;
     }
 
@@ -268,9 +507,11 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
         boardId: board.id,
         title,
       });
-      setLists((current) =>
-        [...current, created].sort((a, b) => a.position - b.position),
+      const nextLists = [...listsRef.current, created].sort(
+        (a, b) => a.position - b.position,
       );
+      listsRef.current = nextLists;
+      setLists(nextLists);
       return created;
     } catch (nextError) {
       setError(
@@ -285,32 +526,38 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
   }
 
   async function addTask(input: Omit<CreateTaskInput, "boardId">) {
+    const routing = await resolveTaskTargetList({
+      currentListId: input.listId,
+      scheduledDate: input.scheduledDate,
+    });
+    const scheduledDate = routing.scheduledDate || toDateKey(new Date());
+    const recurrenceType = input.recurrenceType ?? "none";
+
     if (!user || !board || mode === "demo") {
       const now = new Date().toISOString();
-      setTasks((current) => [
-        ...current,
-        {
-          id: crypto.randomUUID(),
-          title: input.title,
-          notes: input.notes ?? "",
-          status: "open",
-          scheduledDate: input.scheduledDate ?? toDateKey(new Date()),
-          listId: input.listId,
-          position:
-            current.filter((task) => task.listId === input.listId).length + 1,
-          priority: input.priority ?? "normal",
-          tags: input.tags ?? [],
-          isEncrypted: input.isEncrypted ?? false,
-          recurrenceType: input.recurrenceType ?? "none",
-          recurrenceInterval: Math.max(1, input.recurrenceInterval ?? 1),
-          recurrenceAnchorDate:
-            (input.recurrenceType ?? "none") === "none"
-              ? null
-              : input.recurrenceAnchorDate ?? input.scheduledDate ?? toDateKey(new Date()),
-          createdAt: now,
-          updatedAt: now,
-        },
-      ]);
+      const created: Task = {
+        id: crypto.randomUUID(),
+        title: input.title,
+        notes: input.notes ?? "",
+        status: "open",
+        scheduledDate,
+        listId: routing.listId,
+        position: getNextPositionForList(tasksRef.current, routing.listId),
+        priority: input.priority ?? "normal",
+        tags: input.tags ?? [],
+        isEncrypted: input.isEncrypted ?? false,
+        recurrenceType,
+        recurrenceInterval: Math.max(1, input.recurrenceInterval ?? 1),
+        recurrenceAnchorDate:
+          recurrenceType === "none"
+            ? null
+            : input.recurrenceAnchorDate ?? scheduledDate,
+        createdAt: now,
+        updatedAt: now,
+      };
+      const nextTasks = [...tasksRef.current, created];
+      tasksRef.current = nextTasks;
+      setTasks(nextTasks);
       return;
     }
 
@@ -320,10 +567,18 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
       const created = await createTask(user.id, {
         ...input,
         boardId: board.id,
+        listId: routing.listId,
+        scheduledDate,
+        recurrenceAnchorDate:
+          recurrenceType === "none"
+            ? null
+            : input.recurrenceAnchorDate ?? scheduledDate,
       });
-      setTasks((current) =>
-        [...current, created].sort((a, b) => a.position - b.position),
+      const nextTasks = [...tasksRef.current, created].sort(
+        (a, b) => a.position - b.position,
       );
+      tasksRef.current = nextTasks;
+      setTasks(nextTasks);
     } catch (nextError) {
       setError(
         nextError instanceof Error
@@ -406,17 +661,36 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
   }
 
   async function editTask(taskId: string, input: UpdateTaskInput) {
-    const previousTask = tasks.find((item) => item.id === taskId);
+    const previousTask = tasksRef.current.find((item) => item.id === taskId);
     if (!previousTask) return;
+
+    const nextScheduledDate =
+      input.scheduledDate === undefined
+        ? previousTask.scheduledDate
+        : (input.scheduledDate ?? "");
+    const routing = await resolveTaskTargetList({
+      currentListId: previousTask.listId ?? input.listId ?? "",
+      scheduledDate: nextScheduledDate,
+      status: previousTask.status,
+    });
+    const movedToAnotherList = routing.listId !== previousTask.listId;
+    const nextPosition = movedToAnotherList
+      ? getNextPositionForList(tasksRef.current, routing.listId, taskId)
+      : previousTask.position;
+    const patch: UpdateTaskInput = {
+      ...input,
+      scheduledDate: routing.scheduledDate || null,
+      listId: routing.listId,
+      position: nextPosition,
+    };
 
     const optimistic: Task = {
       ...previousTask,
       title: input.title ?? previousTask.title,
       notes: input.notes ?? previousTask.notes,
-      scheduledDate:
-        input.scheduledDate === undefined
-          ? previousTask.scheduledDate
-          : (input.scheduledDate ?? ""),
+      scheduledDate: routing.scheduledDate,
+      listId: routing.listId,
+      position: nextPosition,
       priority: input.priority ?? previousTask.priority,
       tags: input.tags ?? previousTask.tags,
       isEncrypted: input.isEncrypted ?? previousTask.isEncrypted,
@@ -429,23 +703,29 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
       updatedAt: new Date().toISOString(),
     };
 
-    setTasks((current) =>
-      current.map((item) => (item.id === taskId ? optimistic : item)),
+    const optimisticTasks = tasksRef.current.map((item) =>
+      item.id === taskId ? optimistic : item,
     );
+    tasksRef.current = optimisticTasks;
+    setTasks(optimisticTasks);
 
     if (mode === "demo") return;
 
     setIsSaving(true);
     setError(null);
     try {
-      const updated = await updateTask(taskId, input);
-      setTasks((current) =>
-        current.map((item) => (item.id === taskId ? updated : item)),
+      const updated = await updateTask(taskId, patch);
+      const nextTasks = tasksRef.current.map((item) =>
+        item.id === taskId ? updated : item,
       );
+      tasksRef.current = nextTasks;
+      setTasks(nextTasks);
     } catch (nextError) {
-      setTasks((current) =>
-        current.map((item) => (item.id === taskId ? previousTask : item)),
+      const revertedTasks = tasksRef.current.map((item) =>
+        item.id === taskId ? previousTask : item,
       );
+      tasksRef.current = revertedTasks;
+      setTasks(revertedTasks);
       setError(
         nextError instanceof Error
           ? nextError.message
@@ -528,10 +808,19 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
   }
 
   async function renameList(listId: string, title: string) {
-    const previous = lists;
-    setLists((current) =>
-      current.map((list) => (list.id === listId ? { ...list, title } : list)),
+    const previous = listsRef.current;
+    const optimisticLists = previous.map((list) =>
+      list.id === listId
+        ? {
+            ...list,
+            title,
+            date: parseListDateFromTitle(title),
+            updatedAt: new Date().toISOString(),
+          }
+        : list,
     );
+    listsRef.current = optimisticLists;
+    setLists(optimisticLists);
 
     if (mode === "demo") return;
 
@@ -539,10 +828,13 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
     setError(null);
     try {
       const updated = await updateListTitle(listId, title);
-      setLists((current) =>
-        current.map((list) => (list.id === listId ? updated : list)),
+      const nextLists = listsRef.current.map((list) =>
+        list.id === listId ? updated : list,
       );
+      listsRef.current = nextLists;
+      setLists(nextLists);
     } catch (nextError) {
+      listsRef.current = previous;
       setLists(previous);
       setError(
         nextError instanceof Error

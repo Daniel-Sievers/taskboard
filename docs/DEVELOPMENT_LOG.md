@@ -308,3 +308,15 @@ The modal handling was moved up to the board level and the dialog itself now ren
 Learning point:
 
 - Real modals should not be rendered inside transformed drag-and-drop list containers. A board-level modal state plus a portal avoids z-index/positioning problems and makes the interaction easier to reason about.
+
+## 24. Automatic date recognition
+
+**Archiv:** `taskboard-date-automation.zip`
+
+- manuelle Listentitel wie `Dienstag, 26.05.2026`, `26.05.2026`, `26.05.` und `YYYY-MM-DD` werden erkannt
+- neue oder umbenannte Listen speichern erkannte Datumswerte, wenn möglich
+- offene Aufgaben mit passendem Fälligkeitsdatum werden automatisch in existierende passende Tageslisten verschoben
+- offene Aufgaben, die mehr als sieben Tage überfällig sind, werden in eine Liste `Offen` verschoben
+- falls `Offen` noch nicht existiert, wird die Liste automatisch erstellt
+- Drag & Drop nutzt erkannte Datumslisten ebenfalls für das Aufgabendatum
+- `docs/DATE_AUTOMATION.md` dokumentiert Verhalten, Formate und Grenzen
