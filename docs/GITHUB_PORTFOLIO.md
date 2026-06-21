@@ -35,6 +35,7 @@ Private installable taskboard app with Supabase Auth, realtime sync, drag & drop
 - Automatic date recognition from manual list titles
 - Mobile touch UX
 - PWA setup
+- Notification-preparation UX with honest limitation handling
 - JSON/CSV backup and import/export
 - GitHub + Vercel deployment workflow
 - GitHub Actions build check
@@ -99,6 +100,7 @@ Before making the repository public:
 - [x] README explains that the public demo works without login and private data requires login.
 - [ ] README contains setup instructions.
 - [x] Known limits are documented.
+- [x] Notification state is shown honestly as prepared, not as full push reminders.
 - [x] Roadmap is clear and realistic.
 - [ ] GitHub Actions build check passes after the latest push.
 

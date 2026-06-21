@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
+  Bell,
   CalendarDays,
   Languages,
   LayoutDashboard,
@@ -14,10 +16,21 @@ import { usePreferences } from "@/hooks/usePreferences";
 import type { AppPreferences } from "@/lib/preferences";
 import { useI18n } from "@/hooks/useI18n";
 import { weekStartsOnOptions } from "@/lib/i18n";
+import {
+  getBrowserNotificationPermission,
+  requestBrowserNotificationPermission,
+  type BrowserNotificationPermission,
+} from "@/lib/notifications";
 
 export function PreferencesPanel() {
   const { preferences, updatePreferences } = usePreferences();
   const { t, language } = useI18n();
+  const [notificationPermission, setNotificationPermission] =
+    useState<BrowserNotificationPermission>("default");
+
+  useEffect(() => {
+    setNotificationPermission(getBrowserNotificationPermission());
+  }, []);
 
   const confirmDeleteLabel =
     language === "en" ? "Ask before deleting" : "Vor dem Löschen nachfragen";
@@ -33,6 +46,34 @@ export function PreferencesPanel() {
     soundPreferences.taskDoneSoundEffects ?? preferences.soundEffects;
   const taskDeleteSoundEnabled =
     soundPreferences.taskDeleteSoundEffects ?? preferences.soundEffects;
+  const notificationsEnabled =
+    preferences.notificationsEnabled && notificationPermission === "granted";
+  const notificationStatusText = getNotificationStatusText(
+    notificationPermission,
+    notificationsEnabled,
+  );
+
+  async function handleNotificationToggle(enabled: boolean) {
+    if (!enabled) {
+      updatePreferences({ notificationsEnabled: false });
+      setNotificationPermission(getBrowserNotificationPermission());
+      return;
+    }
+
+    const nextPermission = await requestBrowserNotificationPermission();
+    setNotificationPermission(nextPermission);
+    updatePreferences({ notificationsEnabled: nextPermission === "granted" });
+  }
+
+  function getNotificationStatusText(
+    permission: BrowserNotificationPermission,
+    enabled: boolean,
+  ) {
+    if (permission === "unsupported") return t("settings.notificationsUnsupported");
+    if (permission === "denied") return t("settings.notificationsDenied");
+    if (enabled) return t("settings.notificationsPrepared");
+    return t("settings.notificationsDisabled");
+  }
 
   return (
     <section className="rounded-[2rem] border border-white/10 bg-zinc-950/70 p-5 shadow-2xl shadow-black/20">
@@ -153,6 +194,32 @@ export function PreferencesPanel() {
             className="h-4 w-4 accent-blue-500"
           />
         </label>
+
+        <article className="md:col-span-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <p className="flex items-center gap-2 text-sm font-medium text-zinc-200">
+                <Bell className="h-4 w-4 text-blue-300" />
+                {t("settings.notificationsTitle")}
+              </p>
+              <p className="mt-1 text-xs leading-5 text-zinc-500">
+                {t("settings.notificationsBody")}
+              </p>
+              <p className="mt-2 inline-flex rounded-full border border-white/10 bg-zinc-950/60 px-2.5 py-1 text-[11px] text-zinc-400">
+                {notificationStatusText}
+              </p>
+            </div>
+            <label className="flex shrink-0 items-center justify-between gap-3 rounded-2xl border border-white/10 bg-zinc-950/50 px-4 py-3 text-sm text-zinc-300 sm:min-w-52">
+              {t("settings.notificationsToggle")}
+              <input
+                type="checkbox"
+                checked={notificationsEnabled}
+                onChange={(event) => handleNotificationToggle(event.target.checked)}
+                className="h-4 w-4 accent-blue-500"
+              />
+            </label>
+          </div>
+        </article>
 
         <label className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">
           <span className="flex items-center gap-2">

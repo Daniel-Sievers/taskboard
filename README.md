@@ -107,7 +107,7 @@ Implemented so far:
 - Recurring tasks v1 can create the next scheduled instance after completion.
 - Future scheduled tasks are visually quieter until their due date.
 - Search, filters, labels and a today-focused view foundation are available.
-- Settings include theme, language, accent color, week start, default view, sound effects, delete confirmation and task counts.
+- Settings include theme, language, accent color, week start, default view, sound effects, delete confirmation, task counts and notification preparation.
 - PWA basics are implemented: manifest, icons, start URL, demo shortcut and installable app mode.
 - JSON backup, JSON import, CSV export, trash recovery and archive management are available.
 - GitHub and Vercel deployment are set up.
@@ -204,6 +204,13 @@ The app is still under active development.
 - Restore archived boards
 - Permanently delete archived boards
 - Approximate storage usage display
+
+### Notifications
+
+- Notification switch in settings
+- Browser notification permission request
+- Top-bar bell shows disabled/prepared/blocked status
+- No automatic server-side push reminders yet
 
 ### PWA
 
@@ -492,6 +499,7 @@ Additional implementation notes are stored in `docs/`:
 - `docs/GITHUB_PORTFOLIO.md`
 - `docs/GITHUB_REPOSITORY_SETTINGS.md`
 - `docs/NEXT_STEPS.md`
+- `docs/NOTIFICATIONS.md`
 - `docs/ROADMAP.md`
 - `docs/KNOWN_LIMITS.md`
 - `docs/PWA_INSTALLATION.md`
@@ -528,6 +536,7 @@ This project was built iteratively in focused packages:
 18. Public demo access without login
 19. Automatic date recognition for manual list titles
 20. PWA and GitHub demo-link polish
+21. Notification settings preparation
 
 Detailed log:
 
@@ -543,7 +552,7 @@ The project is intentionally still evolving. Current known limits include:
 
 - Magic Link email delivery can hit provider/free-plan rate limits during heavy testing.
 - Offline sync is not implemented yet.
-- Push notifications are not implemented yet.
+- Browser notification permission and settings are prepared; automatic server-side push reminders are not implemented yet.
 - Realtime sync v1 refreshes board data rather than applying every remote event locally in a granular way.
 - Recurring tasks are implemented as a first version and may need more series-management controls later.
 - Browser/PWA icon behavior can differ between Chrome, Edge, Firefox and mobile platforms.
@@ -564,7 +573,7 @@ Planned improvements:
 - Date automation UI hints and additional date formats
 - More complete mobile carousel behavior
 - More robust realtime sync status and reconnect behavior
-- Push notification planning
+- Real push notification implementation after the preparation step
 - Optional custom SMTP for Magic Links
 - Offline sync with IndexedDB
 - Optional client-side encryption for sensitive tasks

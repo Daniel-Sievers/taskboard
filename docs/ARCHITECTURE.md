@@ -46,6 +46,7 @@ lib/
   dates/
   preferences.ts
   i18n.ts
+  notifications.ts
   sound.ts
 
 supabase/
@@ -94,6 +95,23 @@ Realtime v1 subscribes to relevant table changes and refreshes board data when r
 
 Supabase Auth handles login. Row Level Security protects board data so users can only access their own records. The frontend only uses public Supabase client keys. Secret/service-role keys must never be exposed in the app or committed to the repository.
 
+
+## Notification preparation
+
+Notification state is intentionally separated from the task data model. `lib/notifications.ts` reads and requests the browser notification permission, while `lib/preferences.ts` stores the local app preference. No push subscription is sent to Supabase yet.
+
+```txt
+components/settings/PreferencesPanel.tsx
+  -> lib/notifications.ts
+  -> lib/preferences.ts / localStorage
+
+components/app-shell/TopBar.tsx
+  -> lib/notifications.ts
+  -> local permission/status display
+```
+
+Real Web Push reminders would require a backend send path, subscription storage and reminder rules.
+
 ## Deployment
 
 GitHub is the source repository. Vercel deploys from the `main` branch. Supabase stores data separately from Vercel. The GitHub About website link is repository metadata and should be set manually to the public demo URL (`/demo`).
@@ -110,6 +128,7 @@ GitHub push
 - IndexedDB cache for offline sync
 - mutation queue for offline edits
 - stronger realtime diff handling
+- real push-notification send path
 - optional client-side encryption for sensitive tasks
 
 

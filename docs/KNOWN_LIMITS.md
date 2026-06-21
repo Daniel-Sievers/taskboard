@@ -38,6 +38,12 @@ This document lists current limitations intentionally left visible for portfolio
 - Open tasks older than seven days are moved into `Offen`; the threshold is not configurable yet.
 - There is no UI toggle yet to disable automatic date routing.
 
+## Notifications
+
+- Notification settings and browser permission status are prepared.
+- Taskboard does not yet send automatic server-side push reminders.
+- A full implementation still needs Web Push subscriptions, secure subscription storage and reminder rules.
+
 ## Browser/PWA behavior
 
 - App icon behavior can differ between Chrome, Edge, Firefox and mobile launchers.

@@ -338,3 +338,18 @@ Learning point:
 Learning point:
 
 - Der GitHub-About-Link ist Repository-Metadatum und wird nicht automatisch aus dem Code gelesen. Für Bewerbungen sollte er manuell auf die Demo zeigen, während die installierte PWA weiter direkt ins private Board starten darf.
+
+## 26. Notification settings preparation
+
+**Archiv:** `taskboard-notification-prep.zip`
+
+- Einstellungen enthalten jetzt einen eigenen Benachrichtigungsbereich
+- Aktivieren fragt die Browser Notification Permission an
+- der Status zeigt ehrlich: deaktiviert, vorbereitet, vom Browser blockiert oder nicht verfügbar
+- die Glocke in der Topbar zeigt den aktuellen Benachrichtigungsstatus und erklärt die Grenze
+- echte serverseitige Push-Erinnerungen sind weiterhin ein geplanter Ausbauschritt
+- `docs/NOTIFICATIONS.md` dokumentiert den aktuellen Stand und die nötigen nächsten Schritte für echte Web Push Notifications
+
+Learning point:
+
+- Bei Features wie Push Notifications ist eine ehrliche Zwischenstufe besser als ein irreführender Schalter. Die UI kann Bereitschaft und Browser-Berechtigung zeigen, ohne so zu tun, als gäbe es bereits geplante Server-Erinnerungen.

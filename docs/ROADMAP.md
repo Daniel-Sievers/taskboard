@@ -25,6 +25,7 @@ This roadmap is grouped into practical product packages.
 - Task create/edit modal with centered overlay and optional fields
 - Automatic date recognition for manual list titles
 - PWA and GitHub demo-link polish
+- Notification settings preparation
 
 ## Next
 
@@ -35,27 +36,35 @@ This roadmap is grouped into practical product packages.
 - Confirm GitHub Actions is green
 - Confirm Vercel demo and login app both work
 
-### 2. Realtime robustness
+### 2. Real push notifications
+
+- Add Web Push subscription handling
+- Persist push subscriptions per authenticated user
+- Define reminder rules for due/overdue tasks
+- Add a secure server-side send path
+- Keep unsubscribe/privacy behavior visible
+
+### 3. Realtime robustness
 
 - More precise sync status
 - Debounced refreshes for bursts of realtime events
 - Reconnect indicator
 - Last synced timestamp
 
-### 3. Auth improvements
+### 4. Auth improvements
 
 - Evaluate custom SMTP for Magic Links
 - Keep Google Login optional, not required
 - Improve login copy and mobile auth flow
 
-### 4. Offline sync
+### 5. Offline sync
 
 - IndexedDB cache
 - Offline mutation queue
 - Reconnect sync
 - Simple conflict strategy
 
-### 5. Security and privacy
+### 6. Security and privacy
 
 - Optional client-side encryption for sensitive tasks
 - Stronger backup/restore safety

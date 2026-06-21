@@ -20,6 +20,7 @@ export type AppPreferences = {
   showTaskCounts: boolean;
   soundEffects: boolean;
   confirmBeforeDelete: boolean;
+  notificationsEnabled: boolean;
 };
 
 export const preferencesStorageKey = "taskboard:preferences";
@@ -34,6 +35,7 @@ export const defaultPreferences: AppPreferences = {
   showTaskCounts: true,
   soundEffects: true,
   confirmBeforeDelete: true,
+  notificationsEnabled: false,
 };
 
 export function readPreferences(): AppPreferences {

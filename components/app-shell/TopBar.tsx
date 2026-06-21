@@ -17,6 +17,10 @@ import { AuthStatus } from "./AuthStatus";
 import { AppIcon } from "./AppIcon";
 import { usePreferences } from "@/hooks/usePreferences";
 import { useI18n } from "@/hooks/useI18n";
+import {
+  getBrowserNotificationPermission,
+  type BrowserNotificationPermission,
+} from "@/lib/notifications";
 
 type TopBarProps = {
   onOpenSidebar?: () => void;
@@ -30,12 +34,27 @@ export function TopBar({ onOpenSidebar }: TopBarProps) {
   const notificationRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notificationPermission, setNotificationPermission] =
+    useState<BrowserNotificationPermission>("default");
   const { preferences, updatePreferences } = usePreferences();
   const { t } = useI18n();
 
   useEffect(() => {
     setQuery(searchParams.get("q") ?? "");
   }, [searchParams]);
+
+  useEffect(() => {
+    setNotificationPermission(getBrowserNotificationPermission());
+
+    function handleVisibilityChange() {
+      if (!document.hidden) {
+        setNotificationPermission(getBrowserNotificationPermission());
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -76,6 +95,29 @@ export function TopBar({ onOpenSidebar }: TopBarProps) {
     window.dispatchEvent(new Event("taskboard:reload"));
     router.refresh();
   }
+
+  function getNotificationBody() {
+    if (notificationPermission === "unsupported") {
+      return t("notifications.bodyUnsupported");
+    }
+
+    if (notificationPermission === "denied") {
+      return t("notifications.bodyDenied");
+    }
+
+    if (preferences.notificationsEnabled && notificationPermission === "granted") {
+      return t("notifications.bodyPrepared");
+    }
+
+    return t("notifications.bodyDisabled");
+  }
+
+  const notificationStatusClass =
+    preferences.notificationsEnabled && notificationPermission === "granted"
+      ? "bg-emerald-400"
+      : notificationPermission === "denied"
+        ? "bg-amber-400"
+        : "bg-zinc-500";
 
   function handleBrandClick(event: MouseEvent<HTMLAnchorElement>) {
     if (pathname === "/board") {
@@ -187,15 +229,23 @@ export function TopBar({ onOpenSidebar }: TopBarProps) {
               aria-label={t("notifications.title")}
               title={t("notifications.title")}
             >
-              <Bell className="h-4 w-4" />
+              <span className="relative inline-flex">
+                <Bell className="h-4 w-4" />
+                <span
+                  className={`absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full ${notificationStatusClass}`}
+                />
+              </span>
             </button>
             {notificationsOpen ? (
-              <div className="absolute right-0 z-40 mt-2 w-72 rounded-2xl border border-white/10 bg-zinc-950 p-3 text-sm shadow-2xl shadow-black/50">
+              <div className="absolute right-0 z-40 mt-2 w-80 rounded-2xl border border-white/10 bg-zinc-950 p-3 text-sm shadow-2xl shadow-black/50">
                 <p className="font-medium text-zinc-100">
                   {t("notifications.title")}
                 </p>
                 <p className="mt-1 text-xs leading-5 text-zinc-500">
-                  {t("notifications.body")}
+                  {getNotificationBody()}
+                </p>
+                <p className="mt-3 rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-2 text-[11px] leading-5 text-zinc-500">
+                  {t("notifications.settingsHint")}
                 </p>
               </div>
             ) : null}

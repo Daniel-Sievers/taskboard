@@ -22,6 +22,7 @@
 - Automatic date recognition for manual list titles
 - PWA manifest/icon polish
 - GitHub About/demo-link documentation
+- Notification settings preparation
 
 ## Recommended next packages
 
@@ -30,18 +31,24 @@
    - GitHub does not take this value from a project file automatically
    - See `docs/GITHUB_REPOSITORY_SETTINGS.md`
 
-2. **Realtime sync robustness**
+2. **Real push notifications**
+   - Add Web Push subscription handling
+   - Store subscriptions per authenticated user
+   - Define reminder rules for due and overdue tasks
+   - Add a secure server-side send path
+
+3. **Realtime sync robustness**
    - More precise sync status
    - Debounced refreshes for bursts of realtime events
    - Reconnect indicator
    - Last synced timestamp
 
-3. **Auth and offline improvements**
+4. **Auth and offline improvements**
    - Optional custom SMTP for Magic Links
    - Offline sync with IndexedDB
    - Optional client-side encryption
 
-4. **Optional demo video or GIF**
+5. **Optional demo video or GIF**
    - Only needed if the GitHub README should show a quick preview without opening the app
    - Use demo/anonymized data only
    - Keep it short: task creation, edit modal, drag and drop, recurring task, settings
