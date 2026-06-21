@@ -309,8 +309,8 @@ export function TaskCard({
               {recurringStatus ? (
                 <p className={
                   isFutureLocked
-                    ? "mt-1 inline-flex items-center gap-1.5 rounded-full border border-cyan-400/10 bg-cyan-500/[0.04] px-2 py-0.5 text-[11px] text-cyan-100/45"
-                    : "mt-1 inline-flex items-center gap-1.5 rounded-full border border-cyan-400/15 bg-cyan-500/[0.06] px-2 py-0.5 text-[11px] text-cyan-100/70"
+                    ? "tb-recurrence-status tb-recurrence-status-muted mt-1 inline-flex items-center gap-1.5 rounded-full border border-cyan-400/10 bg-cyan-500/[0.04] px-2 py-0.5 text-[11px] text-cyan-100/45"
+                    : "tb-recurrence-status mt-1 inline-flex items-center gap-1.5 rounded-full border border-cyan-400/15 bg-cyan-500/[0.06] px-2 py-0.5 text-[11px] text-cyan-100/70"
                 }>
                   <Repeat2 className="h-3 w-3" />
                   {recurringStatus}

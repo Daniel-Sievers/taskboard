@@ -205,7 +205,7 @@ export function PreferencesPanel() {
               <p className="mt-1 text-xs leading-5 text-zinc-500">
                 {t("settings.notificationsBody")}
               </p>
-              <p className="mt-2 inline-flex rounded-full border border-white/10 bg-zinc-950/60 px-2.5 py-1 text-[11px] text-zinc-400">
+              <p className="tb-notification-status mt-2 inline-flex rounded-full border border-white/10 bg-zinc-950/60 px-2.5 py-1 text-[11px] text-zinc-400">
                 {notificationStatusText}
               </p>
             </div>
