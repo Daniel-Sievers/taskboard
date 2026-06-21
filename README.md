@@ -1,5 +1,7 @@
 # Taskboard
 
+[![Build Check](https://github.com/Daniel-Sievers/taskboard/actions/workflows/ci.yml/badge.svg)](https://github.com/Daniel-Sievers/taskboard/actions/workflows/ci.yml)
+
 A private, installable taskboard app for daily lists, multiple boards, drag & drop planning, realtime sync and manual data ownership.
 
 **Live app:** https://taskboard-ten-steel.vercel.app  
@@ -287,6 +289,7 @@ docs/ARCHITECTURE.md
 docs/DATABASE.md
 docs/SECURITY.md
 docs/REALTIME_SYNC.md
+docs/CI.md
 ```
 
 ---
@@ -467,6 +470,7 @@ A key dependency-management learning from this project: do not use `latest` blin
 Additional implementation notes are stored in `docs/`:
 
 - `docs/ARCHITECTURE.md`
+- `docs/CI.md`
 - `docs/DATABASE.md`
 - `docs/DEVELOPMENT_LOG.md`
 - `docs/DRAG_AND_DROP.md`

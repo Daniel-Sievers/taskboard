@@ -269,3 +269,13 @@ The README and portfolio documentation were rewritten to present the project mor
 Learning point:
 
 - A portfolio project should not only show features. It should also show why the project exists, what trade-offs were made, how it can be run locally, where the limits are, and how future work is planned.
+
+## GitHub Actions build check
+
+A small CI workflow was added in `.github/workflows/ci.yml`. It runs on pushes to `main`, pull requests into `main` and manual workflow dispatches.
+
+The workflow installs dependencies with `npm ci`, runs `npm run typecheck` and then runs `npm run build`. This gives the repository a visible build signal for portfolio use and helps catch dependency, TypeScript or production-build issues before they become deployment problems.
+
+Learning point:
+
+- A portfolio project is stronger when it can be built from a clean checkout. GitHub Actions makes the build status visible and reinforces the dependency-management lesson from the earlier Vercel/Next.js versioning issue.

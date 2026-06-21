@@ -35,6 +35,7 @@ Private installable taskboard app with Supabase Auth, realtime sync, drag & drop
 - PWA setup
 - JSON/CSV backup and import/export
 - GitHub + Vercel deployment workflow
+- GitHub Actions build check
 - Dependency pinning and build reproducibility
 - Iterative product development and documentation
 
@@ -85,4 +86,4 @@ Before making the repository public:
 - [ ] README contains setup instructions.
 - [ ] Known limits are documented.
 - [ ] Roadmap is clear and realistic.
-- [ ] GitHub Actions build check passes.
+- [ ] GitHub Actions build check passes after the latest push.

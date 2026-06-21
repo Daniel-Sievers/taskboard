@@ -16,6 +16,7 @@
 - Recurring tasks v1
 - Collapsible board header and hamburger/sidebar board actions
 - Portfolio README and documentation polish
+- GitHub Actions build check
 
 ## Recommended next packages
 
@@ -54,6 +55,6 @@
 - [ ] Confirm the live app link works.
 - [ ] Confirm screenshots are anonymized.
 - [ ] Add or record a short demo video/GIF.
-- [ ] Confirm GitHub Actions build check passes.
+- [ ] Confirm GitHub Actions build check passes after the latest push.
 - [ ] Confirm `.env.local`, `.next`, `node_modules` and `.vercel` are not committed.
 - [ ] Review README before making the repository public.
