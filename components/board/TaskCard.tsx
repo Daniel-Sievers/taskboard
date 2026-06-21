@@ -1,6 +1,6 @@
 "use client";
 
-import { CSSProperties, useState } from "react";
+import { CSSProperties } from "react";
 import {
   CalendarClock,
   GripVertical,
@@ -14,12 +14,11 @@ import {
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Checkbox } from "@/components/ui/Checkbox";
-import { TaskModal } from "./TaskModal";
 import { usePreferences } from "@/hooks/usePreferences";
 import { playTaskDeleteSound, playTaskDoneSound } from "@/lib/sound";
 import { useI18n } from "@/hooks/useI18n";
 import { isFutureDateKey, isPastDateKey, isTodayDateKey } from "@/lib/dates/calendar";
-import type { Task, UpdateTaskInput } from "@/types/task";
+import type { Task } from "@/types/task";
 
 function recurrenceLabel(task: Task, language: string) {
   if ((task.recurrenceType ?? "none") === "none") return null;
@@ -67,19 +66,18 @@ const priorityClass = {
 export function TaskCard({
   task,
   onToggle,
-  onEdit,
   onDelete,
+  onRequestEdit,
   sortable = true,
   overlay = false,
 }: {
   task: Task;
   onToggle: (taskId: string) => void;
-  onEdit: (taskId: string, input: UpdateTaskInput) => void;
   onDelete: (taskId: string) => void;
+  onRequestEdit?: (task: Task) => void;
   sortable?: boolean;
   overlay?: boolean;
 }) {
-  const [isEditorOpen, setIsEditorOpen] = useState(false);
   const { preferences } = usePreferences();
   const soundPreferences = preferences as typeof preferences & {
     taskDoneSoundEffects?: boolean;
@@ -104,7 +102,7 @@ export function TaskCard({
 
   function openEditor() {
     if (overlay) return;
-    setIsEditorOpen(true);
+    onRequestEdit?.(task);
   }
 
   function handleDeleteTask() {
@@ -131,7 +129,7 @@ export function TaskCard({
       taskId: task.id,
       listId: task.listId ?? null,
     },
-    disabled: !sortable || isEditorOpen || overlay,
+    disabled: !sortable || overlay,
   });
 
   const style: CSSProperties = {
@@ -332,27 +330,6 @@ export function TaskCard({
         </div>
       </article>
 
-      {isEditorOpen && !overlay ? (
-        <TaskModal
-          mode="edit"
-          task={task}
-          onCancel={() => setIsEditorOpen(false)}
-          onSave={(input) => {
-            onEdit(task.id, {
-              title: input.title,
-              notes: input.notes,
-              scheduledDate: input.scheduledDate ?? null,
-              priority: input.priority,
-              tags: input.tags,
-              isEncrypted: input.isEncrypted,
-              recurrenceType: input.recurrenceType,
-              recurrenceInterval: input.recurrenceInterval,
-              recurrenceAnchorDate: input.recurrenceAnchorDate,
-            });
-            setIsEditorOpen(false);
-          }}
-        />
-      ) : null}
     </>
   );
 }

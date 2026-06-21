@@ -18,7 +18,7 @@
 - Portfolio README and documentation polish
 - GitHub Actions build check
 - Public demo access without login
-- Task create/edit modal with optional fields
+- Task create/edit modal with centered overlay and optional fields
 
 ## Recommended next packages
 

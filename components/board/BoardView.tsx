@@ -40,14 +40,28 @@ import {
 import { BoardStats } from "./BoardStats";
 import { DayList } from "./DayList";
 import { TaskCard } from "./TaskCard";
+import { TaskModal, type TaskModalInput } from "./TaskModal";
 import { useAuth } from "@/hooks/useAuth";
 import { useTaskboard } from "@/hooks/useTaskboard";
 import { usePreferences } from "@/hooks/usePreferences";
 import { useI18n } from "@/hooks/useI18n";
 import { toDateKey } from "@/lib/dates/calendar";
+import type { Task } from "@/types/task";
 
 type ActiveDrag = { type: "list" | "task"; id: string } | null;
 type BoardUiAction = "details" | "filter" | "board";
+type TaskModalState =
+  | {
+      mode: "create";
+      listId: string;
+      listTitle: string;
+      defaultScheduledDate?: string | null;
+    }
+  | {
+      mode: "edit";
+      task: Task;
+      listTitle?: string;
+    };
 
 const pendingBoardActionKey = "taskboard:pending-board-action";
 
@@ -112,6 +126,7 @@ export function BoardView() {
   const [boardMenuOpen, setBoardMenuOpen] = useState(false);
   const [statsOpen, setStatsOpen] = useState(false);
   const [boardHeaderOpen, setBoardHeaderOpen] = useState(false);
+  const [taskModal, setTaskModal] = useState<TaskModalState | null>(null);
   const boardMenuRef = useRef<HTMLDivElement>(null);
 
   const activeFilter = searchParams.get("filter");
@@ -489,6 +504,62 @@ export function BoardView() {
     lastDragOverKeyRef.current = null;
     setActiveDrag(null);
     void reload();
+  }
+
+  function openCreateTaskModal(input: {
+    listId: string;
+    listTitle: string;
+    defaultScheduledDate?: string | null;
+  }) {
+    setTaskModal({
+      mode: "create",
+      listId: input.listId,
+      listTitle: input.listTitle,
+      defaultScheduledDate: input.defaultScheduledDate,
+    });
+  }
+
+  function openEditTaskModal(task: Task) {
+    const taskList = boardLists.find((list) => list.id === task.listId);
+    setTaskModal({
+      mode: "edit",
+      task,
+      listTitle: taskList?.title,
+    });
+  }
+
+  async function handleSaveTaskModal(input: TaskModalInput) {
+    const currentModal = taskModal;
+    if (!currentModal) return;
+
+    if (currentModal.mode === "create") {
+      await addTask({
+        listId: currentModal.listId,
+        title: input.title,
+        notes: input.notes,
+        scheduledDate: input.scheduledDate,
+        priority: input.priority,
+        tags: input.tags,
+        isEncrypted: input.isEncrypted,
+        recurrenceType: input.recurrenceType,
+        recurrenceInterval: input.recurrenceInterval,
+        recurrenceAnchorDate: input.recurrenceAnchorDate,
+      });
+    } else {
+      await editTask(currentModal.task.id, {
+        title: input.title,
+        notes: input.notes,
+        scheduledDate: input.scheduledDate ?? null,
+        priority: input.priority,
+        tags: input.tags,
+        isEncrypted: input.isEncrypted,
+        recurrenceType: input.recurrenceType,
+        recurrenceInterval: input.recurrenceInterval,
+        recurrenceAnchorDate: input.recurrenceAnchorDate,
+      });
+    }
+
+    setTaskModal(null);
   }
 
   async function handleRenameBoard() {
@@ -895,8 +966,8 @@ export function BoardView() {
                     list={list}
                     tasks={tasksForList}
                     onToggleTask={toggleTask}
-                    onAddTask={addTask}
-                    onEditTask={editTask}
+                    onRequestAddTask={openCreateTaskModal}
+                    onRequestEditTask={openEditTaskModal}
                     onDeleteTask={deleteTask}
                     onDeleteList={deleteList}
                     onRenameList={renameList}
@@ -926,7 +997,6 @@ export function BoardView() {
               <TaskCard
                 task={activeTask}
                 onToggle={() => undefined}
-                onEdit={() => undefined}
                 onDelete={() => undefined}
                 sortable={false}
                 overlay
@@ -989,8 +1059,8 @@ export function BoardView() {
                       list={list}
                       tasks={tasksForList}
                       onToggleTask={toggleTask}
-                      onAddTask={addTask}
-                      onEditTask={editTask}
+                      onRequestAddTask={openCreateTaskModal}
+                      onRequestEditTask={openEditTaskModal}
                       onDeleteTask={deleteTask}
                       onDeleteList={deleteList}
                       onRenameList={renameList}
@@ -1021,7 +1091,6 @@ export function BoardView() {
               <TaskCard
                 task={activeTask}
                 onToggle={() => undefined}
-                onEdit={() => undefined}
                 onDelete={() => undefined}
                 sortable={false}
                 overlay
@@ -1039,6 +1108,19 @@ export function BoardView() {
           </DragOverlay>
         </DndContext>
       )}
+
+      {taskModal ? (
+        <TaskModal
+          mode={taskModal.mode}
+          task={taskModal.mode === "edit" ? taskModal.task : undefined}
+          defaultScheduledDate={
+            taskModal.mode === "create" ? taskModal.defaultScheduledDate : undefined
+          }
+          listTitle={taskModal.listTitle}
+          onCancel={() => setTaskModal(null)}
+          onSave={handleSaveTaskModal}
+        />
+      ) : null}
     </section>
   );
 }

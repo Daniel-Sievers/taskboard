@@ -22,7 +22,7 @@ This roadmap is grouped into practical product packages.
 - GitHub/Vercel deployment
 - Portfolio README polish
 - Public demo access without login
-- Task create/edit modal with optional fields
+- Task create/edit modal with centered overlay and optional fields
 
 ## Next
 

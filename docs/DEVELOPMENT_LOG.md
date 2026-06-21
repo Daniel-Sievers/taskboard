@@ -298,3 +298,13 @@ The modal keeps the title as the required core field and lets the user show or h
 Learning point:
 
 - Task editing is easier to understand when create and edit use the same pattern. A modal also prevents long inline forms from pushing the list layout around, especially on mobile.
+
+## Task modal overlay fix
+
+After testing, the first modal version still behaved too much like an inline list element because it was rendered from inside each list/task component. This made the background remain visually and interactively active, and it allowed multiple task editors to be opened at the same time.
+
+The modal handling was moved up to the board level and the dialog itself now renders through a portal into `document.body`. There is only one active task modal at a time, the full app background is dimmed and locked, and the dialog gets its own scrollable content area so fields are not cut off on smaller screens.
+
+Learning point:
+
+- Real modals should not be rendered inside transformed drag-and-drop list containers. A board-level modal state plus a portal avoids z-index/positioning problems and makes the interaction easier to reason about.

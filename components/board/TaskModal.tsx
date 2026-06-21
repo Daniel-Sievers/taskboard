@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { CalendarDays, Flag, Lock, Repeat2, Save, StickyNote, Tag, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -9,7 +10,7 @@ import { usePreferences } from "@/hooks/usePreferences";
 import { useI18n } from "@/hooks/useI18n";
 import type { Task, TaskPriority, TaskRecurrenceType } from "@/types/task";
 
-type TaskModalInput = {
+export type TaskModalInput = {
   title: string;
   notes: string;
   scheduledDate?: string;
@@ -104,6 +105,7 @@ export function TaskModal({
     defaultVisibleFields(),
   );
   const [titleTouched, setTitleTouched] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const options = useMemo(
     () => recurrenceOptions(preferences.language),
@@ -113,8 +115,14 @@ export function TaskModal({
   const titleError = titleTouched && title.trim().length === 0;
 
   useEffect(() => {
-    const previousOverflow = document.body.style.overflow;
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") onCancel();
@@ -122,7 +130,8 @@ export function TaskModal({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.body.style.overflow = previousOverflow;
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [onCancel]);
@@ -169,9 +178,9 @@ export function TaskModal({
     { key: "sensitive", label: t("task.fieldSensitive"), icon: Lock },
   ];
 
-  return (
+  const modal = (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-zinc-950/80 px-3 py-3 backdrop-blur sm:items-center sm:p-6"
+      className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-zinc-950/60 px-3 py-4 backdrop-blur-[2px] sm:px-6 sm:py-8"
       role="dialog"
       aria-modal="true"
       aria-labelledby="task-modal-title"
@@ -181,7 +190,7 @@ export function TaskModal({
     >
       <form
         onSubmit={submit}
-        className="flex max-h-[calc(100dvh-1.5rem)] min-h-[78dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-[2rem] border border-white/10 bg-[#101114] shadow-2xl shadow-black/60 ring-1 ring-white/[0.03] sm:min-h-0 sm:rounded-[2rem]"
+        className="flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[#101114]/98 shadow-2xl shadow-black/70 ring-1 ring-white/[0.04] sm:max-h-[min(88dvh,52rem)]"
       >
         <div className="border-b border-white/10 bg-gradient-to-r from-blue-500/10 via-transparent to-purple-500/10 px-4 py-4 sm:px-5">
           <div className="flex items-start justify-between gap-3">
@@ -372,4 +381,8 @@ export function TaskModal({
       </form>
     </div>
   );
+
+  if (!isMounted) return null;
+
+  return createPortal(modal, document.body);
 }

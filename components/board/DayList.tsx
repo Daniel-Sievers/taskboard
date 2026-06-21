@@ -21,14 +21,14 @@ import { AddTaskButton } from "./AddTaskButton";
 import { useI18n } from "@/hooks/useI18n";
 import { TaskCard } from "./TaskCard";
 import type { BoardList } from "@/types/board";
-import type { Task, TaskPriority, TaskRecurrenceType, UpdateTaskInput } from "@/types/task";
+import type { Task } from "@/types/task";
 
 export function DayList({
   list,
   tasks,
   onToggleTask,
-  onAddTask,
-  onEditTask,
+  onRequestAddTask,
+  onRequestEditTask,
   onDeleteTask,
   onDeleteList,
   onRenameList,
@@ -40,19 +40,12 @@ export function DayList({
   list: BoardList;
   tasks: Task[];
   onToggleTask: (taskId: string) => void;
-  onAddTask: (input: {
+  onRequestAddTask: (input: {
     listId: string;
-    title: string;
-    notes: string;
-    scheduledDate?: string;
-    priority: TaskPriority;
-    tags: string[];
-    isEncrypted: boolean;
-    recurrenceType?: TaskRecurrenceType;
-    recurrenceInterval?: number;
-    recurrenceAnchorDate?: string | null;
+    listTitle: string;
+    defaultScheduledDate?: string | null;
   }) => void;
-  onEditTask: (taskId: string, input: UpdateTaskInput) => void;
+  onRequestEditTask: (task: Task) => void;
   onDeleteTask: (taskId: string) => void;
   onDeleteList: (listId: string) => void;
   onRenameList: (listId: string, title: string) => void;
@@ -268,10 +261,13 @@ export function DayList({
       {!list.collapsed ? (
         <>
           <AddTaskButton
-            listId={list.id}
-            dateKey={list.date}
-            listTitle={list.title}
-            onAddTask={onAddTask}
+            onClick={() =>
+              onRequestAddTask({
+                listId: list.id,
+                listTitle: list.title,
+                defaultScheduledDate: list.date,
+              })
+            }
           />
 
           <div
@@ -292,8 +288,8 @@ export function DayList({
                     key={task.id}
                     task={task}
                     onToggle={onToggleTask}
-                    onEdit={onEditTask}
                     onDelete={onDeleteTask}
+                    onRequestEdit={onRequestEditTask}
                   />
                 ))
               )}
@@ -325,8 +321,8 @@ export function DayList({
                       key={task.id}
                       task={task}
                       onToggle={onToggleTask}
-                      onEdit={onEditTask}
                       onDelete={onDeleteTask}
+                      onRequestEdit={onRequestEditTask}
                       sortable={false}
                     />
                   ))
