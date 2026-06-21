@@ -1,7 +1,7 @@
 {
   "name": "Taskboard",
   "short_name": "Taskboard",
-  "description": "Private synchronisierte Taskboard-App mit Tageslisten, Boards und Supabase-Sync.",
+  "description": "Private installierbare Taskboard-App mit Tageslisten, Boards, Demo-Modus und Supabase-Sync.",
   "id": "/board",
   "start_url": "/board",
   "scope": "/",
@@ -11,6 +11,8 @@
   "background_color": "#0b0b0f",
   "theme_color": "#0b0b0f",
   "categories": ["productivity", "utilities"],
+  "lang": "de",
+  "dir": "ltr",
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -35,22 +37,35 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "/icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
   "shortcuts": [
     {
+      "name": "Demo öffnen",
+      "short_name": "Demo",
+      "description": "Öffentliche Demo ohne Login starten",
+      "url": "/demo",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
       "name": "Board öffnen",
       "short_name": "Board",
-      "description": "Direkt zum Hauptboard springen",
+      "description": "Direkt zum privaten Board springen",
       "url": "/board",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "Einstellungen",
       "short_name": "Settings",
       "description": "Taskboard-Einstellungen öffnen",
       "url": "/settings",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }

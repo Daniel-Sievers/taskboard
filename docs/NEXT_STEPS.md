@@ -20,21 +20,28 @@
 - Public demo access without login
 - Task create/edit modal with centered overlay and optional fields
 - Automatic date recognition for manual list titles
+- PWA manifest/icon polish
+- GitHub About/demo-link documentation
 
 ## Recommended next packages
 
-1. **Realtime sync robustness**
+1. **Set GitHub About demo link**
+   - Manually set the repository website field to `https://taskboard-ten-steel.vercel.app/demo`
+   - GitHub does not take this value from a project file automatically
+   - See `docs/GITHUB_REPOSITORY_SETTINGS.md`
+
+2. **Realtime sync robustness**
    - More precise sync status
    - Debounced refreshes for bursts of realtime events
    - Reconnect indicator
    - Last synced timestamp
 
-2. **Auth and offline improvements**
+3. **Auth and offline improvements**
    - Optional custom SMTP for Magic Links
    - Offline sync with IndexedDB
    - Optional client-side encryption
 
-3. **Optional demo video or GIF**
+4. **Optional demo video or GIF**
    - Only needed if the GitHub README should show a quick preview without opening the app
    - Use demo/anonymized data only
    - Keep it short: task creation, edit modal, drag and drop, recurring task, settings
@@ -42,6 +49,7 @@
 ## Portfolio checklist
 
 - [ ] Confirm the live demo link works: `https://taskboard-ten-steel.vercel.app/demo`.
+- [ ] Set the GitHub About website field to the demo link.
 - [ ] Confirm screenshots are anonymized.
 - [ ] Confirm GitHub Actions build check passes after the latest push.
 - [ ] Confirm `.env.local`, `.next`, `node_modules` and `.vercel` are not committed.

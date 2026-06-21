@@ -15,6 +15,7 @@ flowchart LR
   Realtime --> Hooks
   GitHub[GitHub] --> Vercel[Vercel]
   Vercel --> App
+  App --> PWA[PWA manifest + service worker]
 ```
 
 ## Main folders
@@ -95,7 +96,7 @@ Supabase Auth handles login. Row Level Security protects board data so users can
 
 ## Deployment
 
-GitHub is the source repository. Vercel deploys from the `main` branch. Supabase stores data separately from Vercel.
+GitHub is the source repository. Vercel deploys from the `main` branch. Supabase stores data separately from Vercel. The GitHub About website link is repository metadata and should be set manually to the public demo URL (`/demo`).
 
 ```txt
 GitHub push
@@ -110,3 +111,14 @@ GitHub push
 - mutation queue for offline edits
 - stronger realtime diff handling
 - optional client-side encryption for sensitive tasks
+
+
+## PWA shell
+
+The installable-app layer is intentionally small:
+
+- `public/manifest.webmanifest` and `public/manifest.json` describe the app, icons, start URL and shortcuts.
+- `/board` remains the PWA start URL for private daily use.
+- `/demo` is available as a shortcut and as the recommended GitHub portfolio link.
+- `public/sw.js` caches the offline page, manifest and icon assets.
+- `public/offline.html` is a fallback page, not full offline task editing.

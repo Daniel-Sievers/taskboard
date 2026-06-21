@@ -24,30 +24,38 @@ This roadmap is grouped into practical product packages.
 - Public demo access without login
 - Task create/edit modal with centered overlay and optional fields
 - Automatic date recognition for manual list titles
+- PWA and GitHub demo-link polish
 
 ## Next
 
-### 1. Realtime robustness
+### 1. GitHub portfolio final check
+
+- Set the GitHub About website link to `/demo` manually
+- Replace/anonymize screenshots
+- Confirm GitHub Actions is green
+- Confirm Vercel demo and login app both work
+
+### 2. Realtime robustness
 
 - More precise sync status
 - Debounced refreshes for bursts of realtime events
 - Reconnect indicator
 - Last synced timestamp
 
-### 2. Auth improvements
+### 3. Auth improvements
 
 - Evaluate custom SMTP for Magic Links
 - Keep Google Login optional, not required
 - Improve login copy and mobile auth flow
 
-### 3. Offline sync
+### 4. Offline sync
 
 - IndexedDB cache
 - Offline mutation queue
 - Reconnect sync
 - Simple conflict strategy
 
-### 4. Security and privacy
+### 5. Security and privacy
 
 - Optional client-side encryption for sensitive tasks
 - Stronger backup/restore safety

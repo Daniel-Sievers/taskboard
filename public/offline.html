@@ -3,21 +3,61 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b0b0f" />
     <title>Taskboard offline</title>
     <style>
       :root { color-scheme: dark; }
-      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: radial-gradient(circle at top left, rgba(59,130,246,.18), transparent 28rem), #0b0b0f; color: #f4f4f5; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-      main { width: min(34rem, calc(100vw - 2rem)); border: 1px solid rgba(255,255,255,.12); border-radius: 2rem; background: rgba(24,24,27,.78); padding: 2rem; box-shadow: 0 24px 80px rgba(0,0,0,.45); }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background:
+          radial-gradient(circle at top left, rgba(59,130,246,.18), transparent 28rem),
+          radial-gradient(circle at bottom right, rgba(16,185,129,.12), transparent 24rem),
+          #0b0b0f;
+        color: #f4f4f5;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        padding: 1rem;
+      }
+      main {
+        width: min(34rem, 100%);
+        border: 1px solid rgba(255,255,255,.12);
+        border-radius: 2rem;
+        background: rgba(24,24,27,.82);
+        padding: 2rem;
+        box-shadow: 0 24px 80px rgba(0,0,0,.45);
+        backdrop-filter: blur(18px);
+      }
+      .label {
+        letter-spacing:.25em;
+        text-transform:uppercase;
+        color:#93c5fd;
+        font-size:.75rem;
+        font-weight: 700;
+      }
+      h1 { margin: .5rem 0 0; font-size: clamp(1.75rem, 5vw, 2.4rem); }
       p { color: #a1a1aa; line-height: 1.7; }
-      a { color: #93c5fd; }
+      a {
+        display: inline-flex;
+        margin-top: .75rem;
+        border: 1px solid rgba(147,197,253,.32);
+        border-radius: 999px;
+        padding: .75rem 1rem;
+        color: #bfdbfe;
+        text-decoration: none;
+        background: rgba(59,130,246,.12);
+      }
     </style>
   </head>
   <body>
     <main>
-      <p style="letter-spacing:.25em;text-transform:uppercase;color:#93c5fd;font-size:.75rem;">Taskboard</p>
+      <p class="label">Taskboard</p>
       <h1>Du bist gerade offline.</h1>
-      <p>Die installierte App ist erreichbar, aber echte Offline-Synchronisierung ist noch ein späterer Entwicklungsschritt. Sobald du wieder online bist, lade das Board erneut.</p>
-      <p><a href="/board">Zurück zum Board</a></p>
+      <p>Die installierte App ist erreichbar, aber echtes Bearbeiten ohne Verbindung ist noch ein späterer Entwicklungsschritt. Sobald du wieder online bist, lade das Board erneut.</p>
+      <p>Für Bewerbungen bleibt die öffentliche Demo online erreichbar, sobald eine Verbindung besteht.</p>
+      <a href="/board">Zurück zum Board</a>
     </main>
   </body>
 </html>

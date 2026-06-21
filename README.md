@@ -4,9 +4,11 @@
 
 A private, installable taskboard app for daily lists, multiple boards, drag & drop planning, realtime sync and manual data ownership.
 
-**Live demo:** https://taskboard-ten-steel.vercel.app/demo  
+**Public demo:** https://taskboard-ten-steel.vercel.app/demo  
 **Live app:** https://taskboard-ten-steel.vercel.app  
 **Repository:** https://github.com/Daniel-Sievers/taskboard
+
+> Recommended GitHub About website link: `https://taskboard-ten-steel.vercel.app/demo`
 
 > Personal portfolio / learning project. The public demo can be tested without login; private board data is only visible after authentication.
 
@@ -106,7 +108,7 @@ Implemented so far:
 - Future scheduled tasks are visually quieter until their due date.
 - Search, filters, labels and a today-focused view foundation are available.
 - Settings include theme, language, accent color, week start, default view, sound effects, delete confirmation and task counts.
-- PWA basics are implemented: manifest, icons, start URL and installable app mode.
+- PWA basics are implemented: manifest, icons, start URL, demo shortcut and installable app mode.
 - JSON backup, JSON import, CSV export, trash recovery and archive management are available.
 - GitHub and Vercel deployment are set up.
 - A public demo route is available at `/demo` without login.
@@ -209,8 +211,10 @@ The app is still under active development.
 - Custom app icon
 - Manifest configured
 - Start URL configured for `/board`
-- Portrait orientation preference
+- Demo shortcut configured for `/demo`
+- Maskable icons and Apple Touch Icon included
 - Browser app and PWA usage
+- Firefox/browser-specific icon behavior documented
 
 ---
 
@@ -486,6 +490,7 @@ Additional implementation notes are stored in `docs/`:
 - `docs/DEVELOPMENT_LOG.md`
 - `docs/DRAG_AND_DROP.md`
 - `docs/GITHUB_PORTFOLIO.md`
+- `docs/GITHUB_REPOSITORY_SETTINGS.md`
 - `docs/NEXT_STEPS.md`
 - `docs/ROADMAP.md`
 - `docs/KNOWN_LIMITS.md`
@@ -522,6 +527,7 @@ This project was built iteratively in focused packages:
 17. Portfolio README and documentation polish
 18. Public demo access without login
 19. Automatic date recognition for manual list titles
+20. PWA and GitHub demo-link polish
 
 Detailed log:
 

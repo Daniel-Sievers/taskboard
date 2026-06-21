@@ -44,6 +44,7 @@ Private installable taskboard app with Supabase Auth, realtime sync, drag & drop
 ## Suggested README sections
 
 - Live demo without login
+- Recommended GitHub About website link
 - Why I built this
 - Screenshots
 - Current status
@@ -60,7 +61,7 @@ Private installable taskboard app with Supabase Auth, realtime sync, drag & drop
 
 ## Public demo
 
-The recommended portfolio entry point is:
+The recommended portfolio entry point and GitHub About website link is:
 
 ```txt
 https://taskboard-ten-steel.vercel.app/demo
@@ -94,8 +95,17 @@ Before making the repository public:
 - [ ] Screenshots do not show private tasks, e-mail addresses or real private data.
 - [ ] Supabase service role keys are not present anywhere in the repository.
 - [x] README contains the live demo link.
+- [ ] GitHub About website field points to `https://taskboard-ten-steel.vercel.app/demo`.
 - [x] README explains that the public demo works without login and private data requires login.
 - [ ] README contains setup instructions.
 - [x] Known limits are documented.
 - [x] Roadmap is clear and realistic.
 - [ ] GitHub Actions build check passes after the latest push.
+
+## GitHub About settings
+
+GitHub does not automatically read the right-side About website link from `README.md` or from a file in the repository. Set it manually in the repository About settings. Detailed steps are documented in:
+
+```txt
+docs/GITHUB_REPOSITORY_SETTINGS.md
+```

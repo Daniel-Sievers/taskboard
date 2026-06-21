@@ -11,9 +11,21 @@ export const metadata: Metadata = {
     default: "Taskboard",
     template: "%s · Taskboard",
   },
-  description: "Private synchronisierte Taskboard-App mit Supabase-Sync.",
+  description:
+    "Private installierbare Taskboard-App mit Tageslisten, Boards, Demo-Modus und Supabase-Sync.",
   manifest: "/manifest.webmanifest",
   applicationName: "Taskboard",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Taskboard",
+    description:
+      "Private installierbare Taskboard-App mit öffentlicher Demo, Tageslisten, Boards und Supabase-Sync.",
+    url: siteUrl,
+    siteName: "Taskboard",
+    type: "website",
+  },
   appleWebApp: {
     capable: true,
     title: "Taskboard",
@@ -32,10 +44,17 @@ export const metadata: Metadata = {
     shortcut: ["/favicon.ico"],
     apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
+  other: {
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-title": "Taskboard",
+  },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0b0b0f",
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0b0b0f" },
+    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
+  ],
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,

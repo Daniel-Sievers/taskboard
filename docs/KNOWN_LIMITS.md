@@ -42,6 +42,7 @@ This document lists current limitations intentionally left visible for portfolio
 
 - App icon behavior can differ between Chrome, Edge, Firefox and mobile launchers.
 - The manifest and icons are configured, but some browser-specific behavior cannot be fully controlled from the app.
+- The GitHub About website link cannot be set from a repository file; it must be set manually in the GitHub UI.
 
 ## Privacy and screenshots
 

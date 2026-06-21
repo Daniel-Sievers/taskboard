@@ -320,3 +320,21 @@ Learning point:
 - falls `Offen` noch nicht existiert, wird die Liste automatisch erstellt
 - Drag & Drop nutzt erkannte Datumslisten ebenfalls für das Aufgabendatum
 - `docs/DATE_AUTOMATION.md` dokumentiert Verhalten, Formate und Grenzen
+
+## 25. PWA and GitHub demo-link polish
+
+**Archiv:** `taskboard-pwa-github-polish.zip`
+
+- Manifest-Dateien `public/manifest.webmanifest` und `public/manifest.json` wurden vereinheitlicht
+- App-Start bleibt auf `/board`, weil das für die private Nutzung sinnvoll ist
+- ein zusätzlicher Manifest-Shortcut führt direkt zur öffentlichen Demo unter `/demo`
+- Maskable Icons, Apple Touch Icon und Favicons sind in Manifest, Metadaten und Service Worker klarer abgebildet
+- `public/sw.js` cachet die wichtigsten PWA-Dateien und Icons robuster
+- `public/offline.html` wurde optisch und inhaltlich poliert
+- `app/layout.tsx` enthält klarere App-/OpenGraph-/PWA-Metadaten
+- `docs/PWA_INSTALLATION.md` erklärt Installation, Browser-Unterschiede und Demo-vs.-App-Verhalten
+- `docs/GITHUB_REPOSITORY_SETTINGS.md` dokumentiert, dass der GitHub-About-Website-Link manuell auf `/demo` gesetzt werden muss
+
+Learning point:
+
+- Der GitHub-About-Link ist Repository-Metadatum und wird nicht automatisch aus dem Code gelesen. Für Bewerbungen sollte er manuell auf die Demo zeigen, während die installierte PWA weiter direkt ins private Board starten darf.
