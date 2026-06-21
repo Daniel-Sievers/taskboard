@@ -1,31 +1,28 @@
 # Taskboard
 
-A private, installable taskboard app built with **Next.js**, **TypeScript**, **Tailwind CSS**, **Supabase**, **Vercel** and **@dnd-kit**.
+A private, installable taskboard app for daily lists, multiple boards, drag & drop planning, realtime sync and manual data ownership.
 
-Taskboard is a personal productivity app inspired by TasksBoard / Google Tasks Board. It focuses on fast daily lists, multiple boards, online sync, drag & drop, themes, backup/export and an installable app-like workflow across devices.
+**Live app:** https://taskboard-ten-steel.vercel.app  
+**Repository:** https://github.com/Daniel-Sievers/taskboard
 
-**Live app:** https://taskboard-ten-steel.vercel.app
-
-> This is a personal portfolio / learning project. Authentication is enabled, so private board data is only visible after login.
+> Personal portfolio / learning project. Authentication is enabled, so private board data is only visible after login.
 
 ---
 
 ## Why I built this
 
-I wanted a taskboard that opens directly into my workflow, syncs across devices, keeps a stable design, and gives me more control than the taskboard extension I was using before.
+I wanted a taskboard that opens directly into my workflow, works across devices, keeps a clean dark interface, and gives me more control over my task data than the taskboard extension I used before.
 
-The goal was not just to build another todo app, but to create a practical, private productivity tool with real-world features:
+The goal was not to build a generic todo tutorial. The goal was to build a practical private productivity tool with real-world concerns:
 
-- online storage and login
-- multiple boards
-- fast daily task lists
+- authentication and private data
+- online sync across devices
+- multiple boards and daily lists
 - drag & drop sorting
-- dark/light mode
+- mobile-friendly touch behavior
 - installable PWA behavior
-- search, filters and labels
-- backup/export/import
-- responsive layout
-- clean documentation for portfolio use
+- manual backup/export/import
+- a documented roadmap and development story
 
 ---
 
@@ -59,41 +56,68 @@ The goal was not just to build another todo app, but to create a practical, priv
 
 ![PWA install](docs/screenshots/07-pwa-install.png)
 
+> Before making the repository public, screenshots should be reviewed so they do not show private tasks, personal e-mail addresses, private project names or real user data.
+
 ---
 
-## Current Status
+## Demo
 
-Taskboard is currently usable as a private online taskboard with authentication, Supabase persistence and Vercel deployment.
+The live deployment is available here:
+
+```txt
+https://taskboard-ten-steel.vercel.app
+```
+
+The app requires login for private board data. A short demo video/GIF is planned as a separate portfolio asset and should show anonymized data only.
+
+Suggested demo flow:
+
+1. Open the board.
+2. Create a task.
+3. Edit priority, date, labels and recurrence.
+4. Drag a task between lists.
+5. Complete a recurring task.
+6. Show realtime sync in a second browser/device.
+7. Open backup/export settings.
+
+---
+
+## Current status
+
+Taskboard is currently usable as a private online taskboard with Supabase authentication, Supabase persistence, realtime sync and Vercel deployment.
 
 Implemented so far:
 
 - Supabase Auth with Magic Link works locally and online.
-- Boards, lists and tasks are stored online in Supabase.
-- Multiple boards can be created, switched, renamed and archived.
+- Boards, lists and tasks are stored in Supabase.
+- Multiple boards can be created, switched, renamed, archived and restored.
 - Lists can be created, renamed, deleted and reordered.
-- Tasks can be created, edited, completed, deleted and reordered.
+- Tasks can be created, edited, completed, soft-deleted, restored and reordered.
 - Drag & drop is implemented with `@dnd-kit`.
-- Drag & drop supports auto-scroll while moving lists.
-- Mobile touch drag uses long-press behavior so normal swipe scrolling stays usable.
-- Horizontal view uses swipeable list columns on mobile and wider screens.
+- Mobile touch drag uses long-press behavior so normal scrolling stays usable.
+- Horizontal view supports swipeable list columns.
 - Board controls are collapsible and mirrored in the hamburger/sidebar menu.
 - Realtime sync v1 was tested online across devices.
-- Search, filters, labels and a “due today” foundation are available.
-- Settings for theme, language, accent color, week start, default view, sound effects, delete confirmation and task counts are active.
+- Recurring tasks v1 can create the next scheduled instance after completion.
+- Future scheduled tasks are visually quieter until their due date.
+- Search, filters, labels and a today-focused view foundation are available.
+- Settings include theme, language, accent color, week start, default view, sound effects, delete confirmation and task counts.
 - PWA basics are implemented: manifest, icons, start URL and installable app mode.
 - JSON backup, JSON import, CSV export, trash recovery and archive management are available.
 - GitHub and Vercel deployment are set up.
-- The app is still under active development.
+- A GitHub Actions CI workflow is included for typechecking and production builds.
+
+The app is still under active development.
 
 ---
 
-## Features
+## Feature overview
 
-### Core Taskboard
+### Core taskboard
 
 - Create, edit, complete and delete tasks
 - Quick-edit task titles directly in the list
-- Full task editor for notes, priority, date, labels and sensitive marking
+- Full task editor for notes, priority, date, labels, recurrence and sensitive marking
 - Create, rename, delete and reorder lists
 - Multiple boards
 - Board switching through sidebar and header chips
@@ -101,20 +125,39 @@ Implemented so far:
 - Hamburger/sidebar access to day lists, horizontal view, details, filters and board actions
 - Soft-delete behavior for tasks
 - Optional delete confirmation
+- Separate completion and delete sound settings
 - Completed task counts
-- Compact task rows for better space usage
+- Compact task rows
 - Emoji-friendly and long-text-friendly task titles
 
-### Drag & Drop
+### Drag & drop
 
 - Drag tasks within a list
 - Drag tasks between lists
 - Drag entire lists
 - Auto-scroll while dragging
 - Saved order through Supabase
-- Smooth interaction with `@dnd-kit`
+- Keyboard sensor support through `@dnd-kit`
+- Mobile long-press behavior for touch devices
 
-### Search, Filters and Labels
+### Realtime sync
+
+- Supabase Realtime subscriptions for boards, lists and tasks
+- Live-Sync status indicator in the board header
+- Updates appear on another open device/browser without manual reload
+- Manual refresh remains available as a fallback
+
+### Recurring tasks
+
+- No recurrence
+- Daily recurrence
+- Weekly recurrence
+- Monthly recurrence
+- Every X days
+- Next task instance is created when a recurring task is completed
+- Future scheduled tasks can be edited/deleted but are visually less prominent until due
+
+### Search, filters and labels
 
 - Search by task title
 - Search by notes
@@ -122,37 +165,29 @@ Implemented so far:
 - Filter by status
 - Filter by priority
 - Filter by label
-- “Due today” / today-focused view foundation
+- Today-focused view foundation
 
 ### Settings
 
 - Dark / light / system theme
 - Multiple accent color modes
-- German / English UI language
+- German / English UI language foundation
 - Week-start setting
 - Default view setting
-- Sound effects toggle
+- Separate completion and delete sound toggles
 - Delete confirmation toggle
 - Task count visibility toggle
 
-### Recurring Tasks
-
-- Repeat tasks daily, weekly, monthly or every X days
-- Completing a recurring task creates the next open copy in the same list
-- Future recurring copies are muted and cannot be checked off before their date
-- Future recurring copies can still be edited or deleted
-- Today's due dates are highlighted in green
-- Overdue due dates are highlighted in orange
-
-### Data Management
+### Data management
 
 - JSON backup
 - JSON import
 - CSV export
-- Trash view for deleted tasks
-- Restore individual deleted tasks
+- View deleted tasks
+- Restore deleted tasks
 - Permanently delete individual deleted tasks
-- Archive view for archived boards
+- Empty trash
+- View archived boards
 - Restore archived boards
 - Permanently delete archived boards
 - Approximate storage usage display
@@ -163,43 +198,32 @@ Implemented so far:
 - Custom app icon
 - Manifest configured
 - Start URL configured for `/board`
+- Portrait orientation preference
 - Browser app and PWA usage
 
 ---
 
-## Tech Stack
+## Tech stack
 
-- **Next.js** — app framework
-- **TypeScript** — type-safe development
-- **Tailwind CSS** — styling
-- **Supabase Auth + Database** — authentication, database and API
-- **PostgreSQL** — database layer through Supabase
-- **Vercel** — hosting and deployment
-- **@dnd-kit** — drag & drop
-- **Lucide React** — icons
-- **PWA manifest / service worker** — installable app foundation
-
----
-
-## Dependency Management
-
-The project intentionally pins core framework dependencies instead of relying on `latest`. During deployment, a `latest` upgrade pulled in a newer Next.js/Turbopack build that behaved differently from the local setup. The project now keeps framework versions explicit and commits `package-lock.json` so local and Vercel builds are more reproducible.
-
-Recommended workflow for dependency changes:
-
-```txt
-npm install
-npm run build
-git add package.json package-lock.json
-git commit -m "Update dependencies"
-git push
-```
+| Area | Technology |
+| --- | --- |
+| App framework | Next.js App Router |
+| Language | TypeScript |
+| Styling | Tailwind CSS |
+| Auth | Supabase Auth |
+| Database | Supabase PostgreSQL |
+| Realtime | Supabase Realtime |
+| Hosting | Vercel |
+| Drag & drop | `@dnd-kit` |
+| Icons | Lucide React |
+| PWA | Web manifest + service worker foundation |
+| CI | GitHub Actions |
 
 ---
 
 ## Architecture
 
-The project is structured around a clear separation of UI, data access, app settings and documentation.
+The project separates UI, hooks, database access, preferences and documentation.
 
 ```txt
 app/
@@ -216,15 +240,17 @@ components/
 
 hooks/
   useAuth.ts
-  useBoard.ts
+  useTaskboard.ts
   usePreferences.ts
   useI18n.ts
 
 lib/
+  db/
   supabase/
   preferences.ts
   i18n.ts
   sound.ts
+  dates/
 
 supabase/
   migrations/
@@ -234,19 +260,38 @@ docs/
   ARCHITECTURE.md
   DATABASE.md
   DEVELOPMENT_LOG.md
-  DRAG_AND_DROP.md
-  GITHUB_PORTFOLIO.md
   NEXT_STEPS.md
-  PWA_INSTALLATION.md
+  ROADMAP.md
   SECURITY.md
-  SUPABASE_SETUP.md
-  VERCEL_DEPLOYMENT.md
-  RECURRING_TASKS.md
+```
+
+High-level flow:
+
+```mermaid
+flowchart LR
+  User[User / Browser] --> UI[Next.js UI]
+  UI --> Hooks[React hooks]
+  Hooks --> DB[lib/db access layer]
+  DB --> Supabase[(Supabase Auth + Postgres)]
+  Supabase --> Realtime[Supabase Realtime]
+  Realtime --> Hooks
+  UI --> PWA[PWA shell]
+  GitHub[GitHub repo] --> Vercel[Vercel deployment]
+  Vercel --> UI
+```
+
+More details:
+
+```txt
+docs/ARCHITECTURE.md
+docs/DATABASE.md
+docs/SECURITY.md
+docs/REALTIME_SYNC.md
 ```
 
 ---
 
-## Local Development
+## Local development
 
 Clone the repository:
 
@@ -305,12 +350,13 @@ Important:
 Do not commit .env.local.
 Do not commit node_modules.
 Do not commit .next.
+Do not commit .vercel.
 Only .env.example belongs in the repository.
 ```
 
 ---
 
-## Environment Variables
+## Environment variables
 
 Required locally and in Vercel:
 
@@ -357,7 +403,7 @@ https://taskboard-ten-steel.vercel.app/**
 http://localhost:3000/**
 ```
 
-More deployment notes are available in:
+Deployment notes:
 
 ```txt
 docs/VERCEL_DEPLOYMENT.md
@@ -379,35 +425,68 @@ Main entities:
 
 The app uses Row Level Security so users can only access their own boards, lists and tasks.
 
-More database notes are available in:
+Additional migrations enable realtime sync, recurring task fields and supporting auth helpers.
+
+Database notes:
 
 ```txt
 docs/DATABASE.md
+supabase/migrations/
 ```
+
+---
+
+## Build and quality checks
+
+Local build check:
+
+```bash
+npm run build
+```
+
+Typecheck:
+
+```bash
+npm run typecheck
+```
+
+The repository also includes a GitHub Actions workflow:
+
+```txt
+.github/workflows/ci.yml
+```
+
+It runs dependency installation, typechecking and production build checks on pushes and pull requests.
+
+A key dependency-management learning from this project: do not use `latest` blindly for framework dependencies. Next.js is pinned to a patched 15.x version so local and Vercel builds remain reproducible and Vercel does not block deployment due to a vulnerable framework version.
 
 ---
 
 ## Documentation
 
-Additional planning and implementation notes are stored in the `docs/` folder:
+Additional implementation notes are stored in `docs/`:
 
-- `docs/SUPABASE_SETUP.md`
-- `docs/DRAG_AND_DROP.md`
-- `docs/DEVELOPMENT_LOG.md`
-- `docs/NEXT_STEPS.md`
 - `docs/ARCHITECTURE.md`
 - `docs/DATABASE.md`
-- `docs/SECURITY.md`
-- `docs/PWA_INSTALLATION.md`
-- `docs/VERCEL_DEPLOYMENT.md`
+- `docs/DEVELOPMENT_LOG.md`
+- `docs/DRAG_AND_DROP.md`
 - `docs/GITHUB_PORTFOLIO.md`
+- `docs/NEXT_STEPS.md`
+- `docs/ROADMAP.md`
+- `docs/KNOWN_LIMITS.md`
+- `docs/PWA_INSTALLATION.md`
+- `docs/REALTIME_SYNC.md`
 - `docs/RECURRING_TASKS.md`
+- `docs/TRASH_ARCHIVE.md`
+- `docs/SECURITY.md`
+- `docs/SUPABASE_SETUP.md`
+- `docs/VERCEL_DEPLOYMENT.md`
 
 ---
 
-## Development Story
+## Development story
 
-This project was built iteratively in focused development packages:
+This project was built iteratively in focused packages:
 
 1. Initial Next.js / TypeScript / Tailwind project setup
 2. Supabase authentication and database connection
@@ -420,9 +499,14 @@ This project was built iteratively in focused development packages:
 9. Backup, export and import tools
 10. Theme, color and language settings
 11. GitHub and Vercel deployment
-12. UI polish and portfolio documentation
+12. Realtime sync across devices
+13. Mobile touch and horizontal view polish
+14. Trash and archive management
+15. Recurring tasks
+16. Collapsible board controls and sidebar actions
+17. Portfolio README and documentation polish
 
-A more detailed development log is available in:
+Detailed log:
 
 ```txt
 docs/DEVELOPMENT_LOG.md
@@ -430,11 +514,24 @@ docs/DEVELOPMENT_LOG.md
 
 ---
 
-## Data Ownership
+## Known limits
 
-The app includes JSON backup, CSV export, JSON import, empty trash and permanent deletion of archived boards.
+The project is intentionally still evolving. Current known limits include:
 
-This reduces vendor lock-in and makes private data easier to move or back up manually.
+- Magic Link email delivery can hit provider/free-plan rate limits during heavy testing.
+- Offline sync is not implemented yet.
+- Push notifications are not implemented yet.
+- Realtime sync v1 refreshes board data rather than applying every remote event locally in a granular way.
+- Recurring tasks are implemented as a first version and may need more series-management controls later.
+- The task editor still needs a stronger modal-based creation/editing flow.
+- Browser/PWA icon behavior can differ between Chrome, Edge, Firefox and mobile platforms.
+- Demo screenshots should be anonymized before a public portfolio release.
+
+More detail:
+
+```txt
+docs/KNOWN_LIMITS.md
+```
 
 ---
 
@@ -442,14 +539,22 @@ This reduces vendor lock-in and makes private data easier to move or back up man
 
 Planned improvements:
 
-- Portfolio polish: final README pass, architecture diagram, known limits and demo GIF/video
-- GitHub Actions build check for every push
-- Task creation/editing as a centered modal instead of inline editing
-- Automatic date recognition from manually named day lists
-- Realtime sync refinements and more detailed sync status
+- Task create/edit modal
+- Automatic date recognition from manual list titles
+- More complete mobile carousel behavior
+- More robust realtime sync status and reconnect behavior
+- Push notification planning
+- Optional custom SMTP for Magic Links
 - Offline sync with IndexedDB
-- Optional custom SMTP for auth emails
-- Client-side encryption for sensitive tasks
+- Optional client-side encryption for sensitive tasks
+- Demo video/GIF for the portfolio README
+
+More detail:
+
+```txt
+docs/ROADMAP.md
+docs/NEXT_STEPS.md
+```
 
 ---
 
@@ -458,15 +563,15 @@ Planned improvements:
 This project helped me practice:
 
 - building a real-world app with Next.js and TypeScript
-- working with Supabase Auth and Row Level Security
+- working with Supabase Auth, Row Level Security and Realtime
 - structuring a frontend project for maintainability
-- implementing drag & drop interactions
+- implementing drag & drop interactions with `@dnd-kit`
+- designing mobile touch interactions
 - deploying through GitHub and Vercel
 - handling environment variables safely
+- working through framework version and deployment issues
+- pinning dependencies for reproducible builds
 - designing around sync, backups, privacy and UX details
-- balancing compact mobile navigation with discoverable desktop controls
-- improving mobile touch interactions with delayed drag activation
-- pinning framework dependencies instead of relying on `latest` for reproducible local and Vercel builds
 - documenting an iterative development process
 
 ---

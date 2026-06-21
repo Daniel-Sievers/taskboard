@@ -261,3 +261,11 @@ The main board actions are now also available from the hamburger/sidebar menu: d
 Learning point:
 
 - A portfolio app benefits from a clean default view. Advanced controls should stay available, but they do not need to consume screen space on every page load.
+
+## Portfolio documentation polish
+
+The README and portfolio documentation were rewritten to present the project more clearly for GitHub and job applications. The new documentation highlights the live demo, motivation, screenshots, architecture, tech stack, build checks, roadmap, known limits and key learnings.
+
+Learning point:
+
+- A portfolio project should not only show features. It should also show why the project exists, what trade-offs were made, how it can be run locally, where the limits are, and how future work is planned.

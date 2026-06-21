@@ -1,78 +1,88 @@
-# GitHub und Portfolio-Story
+# GitHub Portfolio Notes
 
-Dieses Projekt eignet sich gut als Bewerbungsprojekt, weil es kein künstliches Tutorial-Projekt ist, sondern ein reales persönliches Problem löst.
+Taskboard is intended as a portfolio project because it solves a real personal workflow problem and includes realistic product concerns: authentication, persistence, realtime sync, PWA behavior, backup/export, deployment, documentation and long-term maintainability.
 
-## Kernstory
+## Core story
 
-Ausgangspunkt war der Wunsch nach einer privaten Alternative zu TasksBoard / Google Tasks Board:
+The project started from the wish for a private alternative to TasksBoard / Google Tasks Board:
 
-- direktes Öffnen im Board
-- stabiles dunkles Design
-- mehrere Geräte
-- eigene Kontrolle über Daten
-- keine nervige Startseite
-- installierbar wie eine App
+- open directly into a board
+- keep a stable dark interface
+- work across devices
+- keep control over private data
+- avoid unnecessary startup friction
+- install like an app
+- document the development process clearly
 
-## Technische Lernpunkte
+## Portfolio positioning
 
-- Next.js App Router
-- TypeScript-Komponentenstruktur
-- Supabase Auth
-- Supabase Row Level Security
-- Postgres-Datenmodell für Boards, Listen und Tasks
-- Drag & Drop mit `@dnd-kit`
-- PWA-Grundlagen
-- JSON/CSV Export
-- responsive Sidebar
-- schrittweise Produktentwicklung
-
-## Entwicklungspakete
-
-Die Entwicklung wurde bewusst in Paketen dokumentiert:
-
-1. Starter-Projekt und UI-Grundgerüst
-2. Supabase Auth
-3. Supabase-Datenmodell und echte Task-Speicherung
-4. Listen- und Task-Verwaltung
-5. Drag & Drop Iterationen
-6. mehrere Boards und Sidebar
-7. Suche, Filter und Labels
-8. PWA-Basis
-9. Backup, Export und Import
-10. aktive Einstellungen
-11. Vercel/GitHub-Vorbereitung
-
-## Was im README sichtbar sein sollte
-
-- kurze Motivation
-- Screenshot oder GIF
-- Demo-Link
-- Tech Stack
-- Feature-Liste
-- lokales Setup
-- Datenschutz-Hinweis
-- Roadmap
-- Entwicklungsgeschichte als kurzer Abschnitt
-
-## Gute Commit-Ideen
+A good short description:
 
 ```txt
-feat: add supabase auth
-feat: persist boards lists and tasks
-feat: add drag and drop sorting
-feat: add multiple boards
-feat: add search filters and labels
-feat: add pwa manifest and install card
-feat: add backup export and import
-feat: add active app preferences
-chore: add vercel deployment docs
+Private installable taskboard app with Supabase Auth, realtime sync, drag & drop, multiple boards, recurring tasks, backup/export and Vercel deployment.
 ```
 
-## Hinweis zu privaten Daten
+## What the project demonstrates
 
-Vor einem öffentlichen GitHub-Repo prüfen:
+- Next.js App Router
+- TypeScript application structure
+- Supabase Auth
+- Supabase Row Level Security
+- Postgres data modeling for boards, lists and tasks
+- Supabase Realtime
+- Drag & drop with `@dnd-kit`
+- Mobile touch UX
+- PWA setup
+- JSON/CSV backup and import/export
+- GitHub + Vercel deployment workflow
+- Dependency pinning and build reproducibility
+- Iterative product development and documentation
 
-- `.env.local` ist nicht enthalten.
-- keine echten Supabase Secret Keys im Repo.
-- keine privaten Screenshots mit echten Aufgaben.
-- keine persönlichen Daten in Demo-Dateien.
+## Suggested README sections
+
+- Live demo
+- Why I built this
+- Screenshots
+- Current status
+- Feature overview
+- Tech stack
+- Architecture diagram
+- Local setup
+- Environment variables
+- Deployment notes
+- Build checks
+- Known limits
+- Roadmap
+- What I learned
+
+## Demo video/GIF idea
+
+Use demo/anonymized data only.
+
+Suggested flow:
+
+1. Open the board.
+2. Collapse/expand board controls.
+3. Add a task.
+4. Edit date, priority, recurrence and labels.
+5. Drag a task between lists.
+6. Complete a recurring task.
+7. Show realtime sync in a second device/window.
+8. Open backup/export settings.
+
+Keep the GIF short, ideally 30-60 seconds.
+
+## Public repository checklist
+
+Before making the repository public:
+
+- [ ] `.env.local` is not committed.
+- [ ] `.next`, `node_modules` and `.vercel` are not committed.
+- [ ] Screenshots do not show private tasks, e-mail addresses or real private data.
+- [ ] Supabase service role keys are not present anywhere in the repository.
+- [ ] README contains the live demo link.
+- [ ] README explains that private data requires login.
+- [ ] README contains setup instructions.
+- [ ] Known limits are documented.
+- [ ] Roadmap is clear and realistic.
+- [ ] GitHub Actions build check passes.

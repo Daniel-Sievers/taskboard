@@ -1,47 +1,72 @@
 # Roadmap
 
-## Phase 1: Setup + Login
+This roadmap is grouped into practical product packages.
 
-- Next.js Projekt
-- Supabase Projekt
-- Login per Magic Link oder Google
-- geschützte Board-Seite
+## Done
 
-## Phase 2: Tageslisten + Tasks
+- Next.js / TypeScript / Tailwind setup
+- Supabase Auth with Magic Link
+- Supabase data persistence
+- Boards, lists and tasks
+- Drag & drop with `@dnd-kit`
+- Responsive sidebar and mobile drawer
+- Search, filters and labels
+- PWA basics
+- Backup/export/import
+- Active settings
+- Realtime sync v1
+- Mobile touch and horizontal view polish
+- Trash and archive management
+- Recurring tasks v1
+- Collapsible board controls and sidebar actions
+- GitHub/Vercel deployment
+- Portfolio README polish
 
-- Tageslisten anzeigen
-- Tasks anlegen
-- Tasks abhaken
-- Tasks bearbeiten
-- Supabase speichern
+## Next
 
-## Phase 3: Drag & Drop
+### 1. Demo assets
 
-- Tasks innerhalb eines Tages verschieben
-- Tasks zwischen Tagen verschieben
-- Reihenfolge speichern
+- Record short demo video/GIF
+- Use anonymized demo data
+- Show task creation, editing, drag & drop, recurring tasks and realtime sync
 
-## Phase 4: Suche + Shortcuts
+### 2. Task editor modal
 
-- globale Suche
-- Tastaturkürzel
-- mobile Ansicht verbessern
+- Open add/edit flow in a centered modal
+- Mobile: full-height app-like dialog
+- Desktop: compact centered modal
+- Keep the flow fast for quick task creation
+- Optional field selection for date, notes, priority, recurrence, labels and sensitive marker
 
-## Phase 5: Backup + Speicher
+### 3. Automatic date recognition
 
-- JSON Export
-- CSV Export
-- Speicheranzeige
-- alte erledigte Tasks löschen können
+- Detect manual list titles such as `Dienstag, 26.05.2026`
+- Route tasks with matching dates into existing manual lists
+- Move very old open tasks into an `Offen` list if needed
+- Add format hints in settings/documentation
 
-## Phase 6: Wiederholungen + Kanban
+### 4. Realtime robustness
 
-- wiederkehrende Aufgaben
-- alternative Kanban-Ansicht
+- More precise sync status
+- Debounced refreshes for bursts of realtime events
+- Reconnect indicator
+- Last synced timestamp
 
-## Phase 7: Offline-Sync + Security
+### 5. Auth improvements
 
-- IndexedDB Cache
-- Sync Queue
-- Last-write-wins
-- optionale Verschlüsselung einzelner Tasks
+- Evaluate custom SMTP for Magic Links
+- Keep Google Login optional, not required
+- Improve login copy and mobile auth flow
+
+### 6. Offline sync
+
+- IndexedDB cache
+- Offline mutation queue
+- Reconnect sync
+- Simple conflict strategy
+
+### 7. Security and privacy
+
+- Optional client-side encryption for sensitive tasks
+- Stronger backup/restore safety
+- Better public-demo mode
