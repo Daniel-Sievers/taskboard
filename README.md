@@ -429,22 +429,20 @@ More detail is documented in `docs/ROADMAP.md` and `docs/NEXT_STEPS.md`.
 
 ---
 
-## What I learned
+## What this project demonstrates
 
-This project helped me practice:
+Taskboard is a practical learning and portfolio project. Its purpose is not to present advanced software engineering specialization, but to document how I can work through a technical system end to end: understand a workflow problem, build a usable solution with AI-assisted development, connect services, keep a repository organized and debug issues through logs, GitHub Actions and deployment feedback.
 
-- building a practical web app with Next.js and TypeScript
-- using Git/GitHub for version control, commits, pushes and project history
-- working with GitHub Actions, build status and reproducible dependency installs
-- connecting a deployed frontend with Vercel and Supabase
-- working with Supabase Auth, Row Level Security and Realtime
-- structuring a frontend project for maintainability
-- implementing drag & drop interactions with `@dnd-kit`
-- designing mobile touch interactions
-- handling environment variables and public/private keys safely
-- pinning dependencies for reproducible builds
-- designing around sync, backups, privacy and UX details
-- documenting an iterative development process
+The project shows:
+
+- interest in practical code, digital workflows and data-oriented systems
+- routine using VS Code, Git, GitHub commits, pushes and repository history
+- basic project organization with GitHub Actions, Vercel deployments and Supabase
+- responsible handling of environment variables, public keys, private keys and repository hygiene
+- a working understanding of authentication, persistent data, Row Level Security and backups
+- the ability to use documentation, error messages and AI assistance to solve implementation problems step by step
+- careful documentation of setup, architecture, limitations and future improvements
+- a broader interest in data work, including SQL/PostgreSQL concepts, MySQL, Python and statistics
 
 ---
 
