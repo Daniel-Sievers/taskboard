@@ -109,7 +109,7 @@ export async function createTask(userId: string, input: CreateTaskInput): Promis
 
   const nextPosition = maxPositionData?.[0]?.position ? Number(maxPositionData[0].position) + 1 : 1;
   const recurrenceType = input.recurrenceType ?? "none";
-  const scheduledDate = input.scheduledDate ?? null;
+  const scheduledDate = input.scheduledDate || null;
 
   const { data, error } = await supabase
     .from("tasks")

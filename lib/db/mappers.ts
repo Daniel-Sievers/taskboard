@@ -88,7 +88,7 @@ export function mapTask(row: TaskRow): Task {
     title: row.title,
     notes: row.notes ?? "",
     status: (row.status as TaskStatus) ?? "open",
-    scheduledDate: row.scheduled_date ?? row.created_at.slice(0, 10),
+    scheduledDate: row.scheduled_date ?? "",
     position: Number(row.position),
     priority: mapPriority(row.priority),
     tags: row.tags ?? [],

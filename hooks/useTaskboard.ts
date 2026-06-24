@@ -546,7 +546,7 @@ export function useTaskboard(user: User | null, requestedBoardId?: string | null
       currentListId: input.listId,
       scheduledDate: input.scheduledDate,
     });
-    const scheduledDate = routing.scheduledDate || toDateKey(new Date());
+    const scheduledDate = routing.scheduledDate;
     const recurrenceType = input.recurrenceType ?? "none";
 
     if (!user || !board || mode === "demo") {

@@ -139,6 +139,10 @@ export function TaskModal({
   }, [onCancel]);
 
   function toggleField(field: FieldKey) {
+    if (field === "date" && visibleFields.date) {
+      setScheduledDate("");
+    }
+
     setVisibleFields((current) => ({ ...current, [field]: !current[field] }));
   }
 
@@ -317,11 +321,24 @@ export function TaskModal({
                 {visibleFields.date ? (
                   <label className="space-y-1.5 text-xs text-zinc-500">
                     {t("task.due")}
-                    <Input
-                      type="date"
-                      value={scheduledDate}
-                      onChange={(event) => setScheduledDate(event.target.value)}
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        type="date"
+                        value={scheduledDate}
+                        onChange={(event) => setScheduledDate(event.target.value)}
+                      />
+                      {scheduledDate ? (
+                        <button
+                          type="button"
+                          onClick={() => setScheduledDate("")}
+                          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-zinc-500 transition hover:bg-white/[0.06] hover:text-zinc-100"
+                          aria-label={t("task.clearDate")}
+                          title={t("task.clearDate")}
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      ) : null}
+                    </div>
                   </label>
                 ) : null}
 
