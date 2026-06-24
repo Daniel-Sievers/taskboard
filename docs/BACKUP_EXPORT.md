@@ -1,6 +1,6 @@
 # Backup and export
 
-Taskboard includes manual data-management tools so authenticated task data is not locked into the UI.
+Taskboard includes manual data-management tools so authenticated task data is not locked into the UI. These tools are intended for signed-in Supabase boards; the public demo uses local sample data and does not expose the full durable backup/import/restore workflow.
 
 ## Availability
 

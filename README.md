@@ -14,9 +14,11 @@ The public demo uses anonymized local data and works without login. Authenticate
 
 ## Why I built this
 
-I built Taskboard because I wanted a taskboard that opens directly into my own workflow, works across devices, keeps a clean dark interface and gives me more control over my task data than the taskboard extension I used before.
+The initial trigger for Taskboard was a workflow change in the taskboard extension I used before. After an update, the extension no longer opened directly into my board, but first showed a start/overview page. Reaching the actual board took extra clicks every time. That small friction was enough to make me build a taskboard that opens directly into the workflow I wanted. The original extension later improved this behavior again, but by then Taskboard had become a useful project of its own.
 
-The project is intentionally more than a todo-list tutorial. It is a practical fullstack productivity app with realistic concerns: authentication, persistence, realtime synchronization, mobile interaction, PWA behavior, backup/export, deployment and clear documentation.
+Taskboard is intentionally more than a todo-list tutorial. It is a practical systems and workflow project with realistic concerns: authentication, persistence, realtime synchronization, mobile interaction, PWA behavior, backup/export, deployment and clear documentation.
+
+The project is not positioned as a claim that I am a professional fullstack developer. Instead, it demonstrates practical technical literacy: working with Git/GitHub, reproducible dependencies, CI checks, Vercel deployment, Supabase Auth, PostgreSQL-backed persistence, Row Level Security, environment variables, documentation and iterative project maintenance.
 
 ---
 
@@ -40,7 +42,9 @@ The project is intentionally more than a todo-list tutorial. It is a practical f
 
 ### Signed-in data tools
 
-![Backup and export](docs/screenshots/05-backup-export.png)
+Backup, import, restore and export are available for authenticated Supabase boards and are not part of the local public demo.
+
+![Signed-in backup and export tools](docs/screenshots/05-backup-export.png)
 
 ### Responsive drawer / mobile layout
 
@@ -429,13 +433,15 @@ More detail is documented in `docs/ROADMAP.md` and `docs/NEXT_STEPS.md`.
 
 This project helped me practice:
 
-- building a real-world app with Next.js and TypeScript
+- building a practical web app with Next.js and TypeScript
+- using Git/GitHub for version control, commits, pushes and project history
+- working with GitHub Actions, build status and reproducible dependency installs
+- connecting a deployed frontend with Vercel and Supabase
 - working with Supabase Auth, Row Level Security and Realtime
 - structuring a frontend project for maintainability
 - implementing drag & drop interactions with `@dnd-kit`
 - designing mobile touch interactions
-- deploying through GitHub and Vercel
-- handling environment variables safely
+- handling environment variables and public/private keys safely
 - pinning dependencies for reproducible builds
 - designing around sync, backups, privacy and UX details
 - documenting an iterative development process

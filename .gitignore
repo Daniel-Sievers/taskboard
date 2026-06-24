@@ -20,3 +20,6 @@ dist
 # OS / editor noise
 .DS_Store
 *.log
+
+# private learning notes (local only)
+docs/PRIVATE_EXPLAIN_DE.md

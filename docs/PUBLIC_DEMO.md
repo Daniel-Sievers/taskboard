@@ -39,3 +39,7 @@ Demo changes can reset after reload or a new browser session. This keeps the dem
 ## Purpose
 
 The demo removes review friction from Magic Link delivery while the authenticated production data model remains private.
+
+## Signed-in data tools
+
+JSON backup, JSON import, restore workflows and full data persistence require Magic Link login and a Supabase-backed board. This separation keeps the public demo simple while preserving the authenticated app as the private data workspace.
