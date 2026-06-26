@@ -16,6 +16,7 @@ export type AppPreferences = {
   language: AppLanguage;
   weekStartsOn: WeekStartsOn;
   defaultView: DefaultView;
+  startOnDefaultBoard: boolean;
   accentTheme: AccentTheme;
   showTaskCounts: boolean;
   soundEffects: boolean;
@@ -31,6 +32,7 @@ export const defaultPreferences: AppPreferences = {
   language: "de",
   weekStartsOn: "monday",
   defaultView: "days",
+  startOnDefaultBoard: true,
   accentTheme: "cobalt",
   showTaskCounts: true,
   soundEffects: true,

@@ -66,6 +66,40 @@ type TaskModalState =
 
 const pendingBoardActionKey = "taskboard:pending-board-action";
 const boardUiStateStorageKey = "taskboard:board-ui-state";
+const lastBoardLocationKey = "taskboard:last-board-location";
+
+type LastBoardLocation = {
+  boardId: string;
+  view: "days" | "kanban";
+};
+
+function readLastBoardLocation() {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(lastBoardLocationKey);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<LastBoardLocation>;
+    if (!parsed.boardId) return null;
+    return {
+      boardId: parsed.boardId,
+      view: parsed.view === "kanban" ? "kanban" : "days",
+    } satisfies LastBoardLocation;
+  } catch {
+    return null;
+  }
+}
+
+function saveLastBoardLocation(location: LastBoardLocation) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(lastBoardLocationKey, JSON.stringify(location));
+}
+
+function boardRouteFromLocation(location: LastBoardLocation) {
+  const params = new URLSearchParams();
+  params.set("board", location.boardId);
+  if (location.view === "kanban") params.set("view", "kanban");
+  return `/board?${params.toString()}`;
+}
 
 function getDragData(event: DragStartEvent | DragOverEvent | DragEndEvent) {
   return event.active.data.current as
@@ -141,6 +175,28 @@ export function BoardView() {
     );
     setQuery(searchParams.get("q") ?? "");
   }, [preferences.defaultView, searchParams]);
+
+  useEffect(() => {
+    if (
+      forceDemo ||
+      preferences.startOnDefaultBoard ||
+      activeBoardId ||
+      authLoading ||
+      !user
+    ) {
+      return;
+    }
+
+    const lastLocation = readLastBoardLocation();
+    if (!lastLocation) return;
+
+    router.replace(boardRouteFromLocation(lastLocation), { scroll: false });
+  }, [activeBoardId, authLoading, forceDemo, preferences.startOnDefaultBoard, router, user]);
+
+  useEffect(() => {
+    if (forceDemo || mode !== "supabase" || !board?.id) return;
+    saveLastBoardLocation({ boardId: board.id, view });
+  }, [board?.id, forceDemo, mode, view]);
 
   useEffect(() => {
     function handleReload() {

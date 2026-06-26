@@ -185,6 +185,23 @@ export function PreferencesPanel() {
           </select>
         </label>
 
+        <label className="flex items-start justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">
+          <span>
+            <span className="block">{t("settings.startOnDefaultBoard")}</span>
+            <span className="mt-1 block text-xs leading-5 text-zinc-500">
+              {t("settings.startOnDefaultBoardHint")}
+            </span>
+          </span>
+          <input
+            type="checkbox"
+            checked={preferences.startOnDefaultBoard}
+            onChange={(event) =>
+              updatePreferences({ startOnDefaultBoard: event.target.checked })
+            }
+            className="mt-1 h-4 w-4 accent-blue-500"
+          />
+        </label>
+
         <label className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">
           {t("settings.showTaskCounts")}
           <input
