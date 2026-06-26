@@ -38,10 +38,10 @@ function parseTags(value: string) {
     .filter(Boolean);
 }
 
-function defaultVisibleFields(): VisibleFields {
+function defaultVisibleFields(hasDate = false): VisibleFields {
   return {
     notes: true,
-    date: true,
+    date: hasDate,
     priority: true,
     recurrence: true,
     tags: true,
@@ -88,7 +88,7 @@ export function TaskModal({
   const [title, setTitle] = useState(task?.title ?? "");
   const [notes, setNotes] = useState(task?.notes ?? "");
   const [scheduledDate, setScheduledDate] = useState(
-    task?.scheduledDate ?? defaultScheduledDate ?? "",
+    task?.scheduledDate ?? "",
   );
   const [priority, setPriority] = useState<TaskPriority>(
     task?.priority ?? "normal",
@@ -102,7 +102,7 @@ export function TaskModal({
     String(task?.recurrenceInterval || 1),
   );
   const [visibleFields, setVisibleFields] = useState<VisibleFields>(() =>
-    defaultVisibleFields(),
+    defaultVisibleFields(Boolean(task?.scheduledDate)),
   );
   const [isMounted, setIsMounted] = useState(false);
 
@@ -139,8 +139,18 @@ export function TaskModal({
   }, [onCancel]);
 
   function toggleField(field: FieldKey) {
-    if (field === "date" && visibleFields.date) {
-      setScheduledDate("");
+    if (field === "date") {
+      const nextVisible = !visibleFields.date;
+      if (nextVisible) {
+        setScheduledDate((current) =>
+          current || task?.scheduledDate || defaultScheduledDate || "",
+        );
+      } else {
+        setScheduledDate("");
+      }
+
+      setVisibleFields((current) => ({ ...current, date: nextVisible }));
+      return;
     }
 
     setVisibleFields((current) => ({ ...current, [field]: !current[field] }));
@@ -162,13 +172,13 @@ export function TaskModal({
       (preferences.language === "en" ? "Untitled task" : "Ohne Titel");
 
     const interval = Math.max(1, Number.parseInt(recurrenceInterval, 10) || 1);
-    const nextScheduledDate = scheduledDate || "";
+    const nextScheduledDate = visibleFields.date ? scheduledDate || "" : "";
     const nextRecurrenceType = recurrenceType;
 
     onSave({
       title: nextTitle,
       notes: notes.trim(),
-      scheduledDate: nextScheduledDate || undefined,
+      scheduledDate: nextScheduledDate,
       priority,
       tags: parseTags(tags),
       isEncrypted,
